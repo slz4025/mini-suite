@@ -3,10 +3,10 @@
   1. the contents are stored in the sheet,
   2. the cell the editor is synced to is rerendered.
 
-  The editor owns the rerendering of the last focused cell.
-  The settings and navigator do as well through the port.
-  Because these entities can only be interacted with one at a time,
-  we expect no races on the cell's rerendering.
+  No entities but the editor-toggler (Ctrl+1) or focused cell
+  owns the rerendering of the editor.
+  Since these entities can only be interacted with one at a time,
+  we expect no races on the editor's rerendering.
 -->
 <div
   id="editor"

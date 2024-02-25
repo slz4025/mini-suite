@@ -4,10 +4,10 @@
   1. stored in the sheet,
   2. synced to the editor.
 
-  No entities but the editor-toggler (Ctrl+1) or focused cell
-  owns the rerendering of the editor.
-  Since these entities can only be interacted with one at a time,
-  we expect no races on the editor's rerendering.
+  The editor, bulk-editor, settings, and navigator all may
+  rerender the cell.
+  Because these entities can only be interacted with one at a time,
+  we expect no races on the cell's rerendering.
 -->
 
 <td

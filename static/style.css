@@ -36,18 +36,30 @@ div {
 }
 div.wrapper {
   position: absolute;
-  z-index: 0;
-  width: 90%;
   top: 7.5%;
-  bottom: 7.5%;
-  left: 5%;
-  right: 5%;
+  z-index: 0;
 
   margin: 0;
   border: 0;
   padding: 0;
 
   color: var(--main-color); 
+}
+div.left {
+  float: left;
+  width: 20%;
+
+  margin: 0;
+  border: 0;
+}
+div.right {
+  float: left;
+  width: 80%;
+
+  margin: 0;
+  border: 0;
+  padding: 0;
+
 }
 div.inner {
   margin-top: 1rem;
@@ -113,6 +125,7 @@ table {
   table-layout: fixed;
   border-spacing: 0;
   border: 1px solid var(--secondary-color);
+  margin: 0;
 }
 tr:nth-child(even) {
   background-color: var(--shade-color);

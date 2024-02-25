@@ -46,25 +46,29 @@
 </button>
 
 <div class="wrapper">
-  <div
-    id="port"
-    hx-put="/port"
-    hx-trigger="update-port from:body"
-    hx-target="this"
-    hx-swap="innerHTML"
-  >
-    {{ data|safe }}
+  <div class="left">
+    <p>
+      Editor [Ctrl+1]
+      | Bulk-Edit [Ctrl+2]
+      | Navigator [Ctrl+3]
+      | [⚙] Settings [Ctrl+4]
+      | [?] Help [Ctrl+0]
+    </p>
+    {{ editor|safe }}
+    {{ bulk_edit_controls|safe }}
+    {{ view_controls|safe }}
+    {{ navigator|safe }}
+    {{ settings|safe }}
   </div>
-  <p>
-    Editor [Ctrl+1]
-    | Bulk-Edit [Ctrl+2]
-    | Navigator [Ctrl+3]
-    | [⚙] Settings [Ctrl+4]
-    | [?] Help [Ctrl+0]
-  </p>
-  {{ editor|safe }}
-  {{ bulk_edit_controls|safe }}
-  {{ view_controls|safe }}
-  {{ navigator|safe }}
-  {{ settings|safe }}
+    <div class="right">
+    <div
+      id="port"
+      hx-put="/port"
+      hx-trigger="update-port from:body"
+      hx-target="this"
+      hx-swap="innerHTML"
+    >
+      {{ data|safe }}
+    </div>
+  </div>
 </div>

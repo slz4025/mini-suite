@@ -22,6 +22,7 @@
 
 body {
   background-color: var(--background-color);
+  margin: 0;
 
   font-family: var(--main-ff);
   font-size: 1rem;

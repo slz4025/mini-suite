@@ -1,7 +1,7 @@
 <div id="navigator" style="display: {{ 'none' if not show_navigator else 'inherit' }};">
   <h2>NAVIGATOR</h2>
 
-  <span class="group">
+  <div class="inner">
     <button
       id="home-button"
       class="icon"
@@ -71,7 +71,7 @@
         <span>[Ctrl+Right]</span>
       {% endif %}
     </button>
-  </span>
+  </div>
 
   <form
     hx-put="/move/center"
@@ -83,7 +83,7 @@
     <fieldset id="center-cell">
       <legend>Center Cell</legend>
 
-      <span class="group">
+      <div class="inner">
         <label for="center-cell-row">Row</label>
         <input
             id="center-cell-row"
@@ -93,9 +93,9 @@
             pattern="[0-9]*"
             style="width: 50px;"
         >
-      </span>
+      </div>
 
-      <span class="group">
+      <div class="inner">
         <label for="center-cell-col">Column</label>
         <input
             id="center-cell-col"
@@ -105,7 +105,7 @@
             pattern="[0-9]*"
             style="width: 50px;"
         >
-      </span>
+      </div>
     </fieldset>
     <input type="submit" value="↵" id="center-cell-submit" style="margin-top: 1rem;"/>
   </form>

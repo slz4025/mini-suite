@@ -5,7 +5,7 @@
     Indices start from 0. Ranges are start-inclusive, end-exclusive.
   </p>
   {% endif %}
-  <span class="group">
+  <div class="inner">
     <label for="bulk-edit-selection-mode">Mode</label>
     <select
       id="bulk-edit-selection-mode"
@@ -23,6 +23,6 @@
       {% endif %}
       {% endfor %}
     </select>
-  </span>
+  </div>
   {{ selection_inputs|safe }}
 </fieldset>

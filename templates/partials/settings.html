@@ -16,7 +16,7 @@
   </script>
   <div id="none" style="display: none"></div>
 
-  <span class="group">
+  <div class="inner">
     <label for="render-mode">Render Mode</label>
     <select
         id="render-mode"
@@ -27,9 +27,9 @@
       <option value="light" {{ "selected" if render_mode == "light" }}>Light Mode</option>
       <option value="dark" {{ "selected" if render_mode == "dark" }}>Dark Mode</option>
     </select>
-  </span>
+  </div>
 
-  <span class="group">
+  <div class="inner">
     <label for="mrows">Row Increment</label>
     <input
         id="mrows"
@@ -43,9 +43,9 @@
         hx-indicator="#loader"
         style="width: 50px;"
     >
-  </span>
+  </div>
 
-  <span class="group">
+  <div class="inner">
     <label for="mrows">Column Increment</label>
     <input
         id="mcols"
@@ -59,9 +59,9 @@
         hx-indicator="#loader"
         style="width: 50px;"
     >
-  </span>
+  </div>
 
-  <span class="group">
+  <div class="inner">
     <label for="nrows"># Rows</label>
     <input
         id="nrows"
@@ -75,9 +75,9 @@
         hx-indicator="#loader"
         style="width: 50px;"
     >
-  </span>
+  </div>
 
-  <span class="group">
+  <div class="inner">
     <label for="ncols"># Columns</label>
     <input
         id="ncols"
@@ -91,5 +91,5 @@
         hx-indicator="#loader"
         style="width: 50px;"
     >
-  </span>
+  </div>
 </div>

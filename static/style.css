@@ -62,15 +62,16 @@ div.right {
 
 }
 div.inner {
-  margin-top: 1rem;
-  margin-bottom: 0;
+  margin: 0;
+  border: 0;
+  padding: 0;
 }
 
 form {
-  display: inline;
+
 }
 fieldset {
-  display: inline;
+
 }
 textarea {
   background-color: transparent;
@@ -79,7 +80,6 @@ textarea {
   color: var(--main-color);
 }
 input {
-  display: inline;
   background-color: transparent;
   border: 0.1rem solid var(--secondary-color);
 
@@ -95,7 +95,6 @@ input.highlight {
   font-weight: bold;
 }
 select {
-  display: inline;
   background-color: transparent;
   border: 0.1rem solid var(--secondary-color);
   width: 100%;
@@ -110,13 +109,13 @@ option {
 
 
 button {
-  display: inline;
   background-color: transparent;
   border: 0.1rem solid var(--secondary-color);
 
   color: var(--main-color);
 }
 button.icon {
+  display: inline;
   height: 30px;
 }
 
@@ -153,9 +152,6 @@ p {
 
 span {
 
-}
-span.group {
-  margin: 0 0.5rem;
 }
 
 #notification-banner {

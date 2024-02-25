@@ -38,7 +38,7 @@ app.config.from_object('config.Config')
 
 
 # Populate with fake data.
-DEBUG = False
+DEBUG = True
 
 
 def render_editor(session):

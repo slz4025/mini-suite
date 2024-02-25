@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 import numpy as np
 from typing import Callable, List, Optional, Union
 
@@ -6,6 +7,11 @@ from src.types import Index
 
 
 sheet = None
+
+
+class Axis(Enum):
+    ROW = 0
+    COLUMN = 1
 
 
 @dataclass
@@ -17,12 +23,15 @@ class Range:
 def set_range(axis, r):
     bounds = get_bounds()
 
-    if axis == 0:
-        start = 0 if r.start is None else r.start
-        end = bounds.row if r.end is None else r.end
-    if axis == 1:
-        start = 0 if r.start is None else r.start
-        end = bounds.col if r.end is None else r.end
+    start = None
+    end = None
+    match axis:
+        case Axis.ROW:
+            start = 0 if r.start is None else r.start
+            end = bounds.row if r.end is None else r.end
+        case Axis.COLUMN:
+            start = 0 if r.start is None else r.start
+            end = bounds.col if r.end is None else r.end
 
     assert start is not None
     assert end is not None
@@ -42,13 +51,13 @@ class BoxSelection:
 
 @dataclass
 class RangeSelection:
-    axis: int  # 0 or 1
+    axis: Axis
     range: Range
 
 
 @dataclass
 class IndicesSelection:
-    axis: int  # 0 or 1
+    axis: Axis
     indices: List[int]
 
 
@@ -57,7 +66,7 @@ Selection = Union[BoxSelection, RangeSelection, IndicesSelection]
 
 @dataclass
 class InsertInput:
-    axis: int
+    axis: Axis
     index: int
     number: int
 
@@ -77,9 +86,9 @@ def apply_delete(sel):
     if isinstance(sel, RangeSelection):
         start, end = set_range(sel.axis, sel.range)
         indices = get_indices(start, end)
-        sheet = np.delete(sheet, indices, sel.axis)
+        sheet = np.delete(sheet, indices, sel.axis.value)
     elif isinstance(sel, IndicesSelection):
-        sheet = np.delete(sheet, sel.indices, sel.axis)
+        sheet = np.delete(sheet, sel.indices, sel.axis.value)
 
 
 def apply_insert(inp):
@@ -89,8 +98,8 @@ def apply_insert(inp):
     sheet = np.insert(
         sheet,
         [inp.index] * inp.number,
-        insertion if inp.axis == 1 else insertion.T,
-        axis=inp.axis,
+        insertion if inp.axis == Axis.COLUMN else insertion.T,
+        axis=inp.axis.value,
     )
 
 
@@ -101,21 +110,23 @@ def apply_value(inp):
     value = inp.value
 
     if isinstance(sel, BoxSelection):
-        row_start, row_end = set_range(0, sel.rows)
-        col_start, col_end = set_range(0, sel.cols)
+        row_start, row_end = set_range(Axis.ROW, sel.rows)
+        col_start, col_end = set_range(Axis.COLUMN, sel.cols)
         sheet[row_start:row_end, col_start:col_end] = value
     elif isinstance(sel, RangeSelection):
         start, end = set_range(sel.axis, sel.range)
-        if sel.axis == 0:
-            sheet[start:end, :] = value
-        if sel.axis == 1:
-            sheet[:, start:end] = value
+        match sel.axis:
+            case Axis.ROW:
+                sheet[start:end, :] = value
+            case Axis.COLUMN:
+                sheet[:, start:end] = value
     elif isinstance(sel, IndicesSelection):
         for i in sel.indices:
-            if sel.axis == 0:
-                sheet[i, :] = value
-            if sel.axis == 1:
-                sheet[:, i] = value
+            match sel.axis:
+                case Axis.ROW:
+                    sheet[i, :] = value
+                case Axis.COLUMN:
+                    sheet[:, i] = value
 
 
 def apply_erase(sel):

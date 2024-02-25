@@ -7,7 +7,7 @@ from typing import Callable
 from src.form import extract, parse_int, validate_bounds, validate_nonempty
 from src.modes import check_mode
 from src.sheet import (
-    Modification,
+    Axis,
     Range,
     BoxSelection,
     RangeSelection,
@@ -16,6 +16,7 @@ from src.sheet import (
     InsertInput,
     ValueInput,
     Input,
+    Modification,
     get_bounds,
     get_indices,
     set_range,
@@ -26,10 +27,11 @@ def validate_range(axis, r):
     start, end = set_range(axis, r)
 
     bounds = get_bounds()
-    if axis == 0:
-        bound = bounds.row
-    if axis == 1:
-        bound = bounds.col
+    match axis:
+        case Axis.ROW:
+            bound = bounds.row
+        case Axis.COLUMN:
+            bound = bounds.col
 
     validate_bounds(start, 0, bound, name="start")
     validate_bounds(end, 0, bound, name="end")
@@ -94,8 +96,8 @@ def validate_and_parse_row_range(form):
     end = extract(form, "selection-end", name="end")
     end = None if end == "" else parse_int(end, name="end")
     r = Range(start=start, end=end)
-    validate_range(axis=0, r=r)
-    sel = RangeSelection(axis=0, range=r)
+    validate_range(axis=Axis.ROW, r=r)
+    sel = RangeSelection(axis=Axis.ROW, range=r)
     return sel
 
 
@@ -105,8 +107,8 @@ def validate_and_parse_col_range(form):
     end = extract(form, "selection-end", name="end")
     end = None if end == "" else parse_int(end, name="end")
     r = Range(start=start, end=end)
-    validate_range(axis=1, r=r)
-    sel = RangeSelection(axis=1, range=r)
+    validate_range(axis=Axis.COLUMN, r=r)
+    sel = RangeSelection(axis=Axis.COLUMN, range=r)
     return sel
 
 
@@ -114,9 +116,9 @@ def validate_and_parse_row_indices(form):
     query = extract(form, "selection-query", name="query")
     ranges = validate_and_parse_ranges(query)
     for r in ranges:
-        validate_range(axis=0, r=r)
-    indices = get_all_indices(axis=0, ranges=ranges)
-    sel = IndicesSelection(axis=0, indices=indices)
+        validate_range(axis=Axis.ROW, r=r)
+    indices = get_all_indices(axis=Axis.ROW, ranges=ranges)
+    sel = IndicesSelection(axis=Axis.ROW, indices=indices)
     return sel
 
 
@@ -124,9 +126,9 @@ def validate_and_parse_col_indices(form):
     query = extract(form, "selection-query", name="query")
     ranges = validate_and_parse_ranges(query)
     for r in ranges:
-        validate_range(axis=1, r=r)
-    indices = get_all_indices(axis=1, ranges=ranges)
-    sel = IndicesSelection(axis=1, indices=indices)
+        validate_range(axis=Axis.COLUMN, r=r)
+    indices = get_all_indices(axis=Axis.COLUMN, ranges=ranges)
+    sel = IndicesSelection(axis=Axis.COLUMN, indices=indices)
     return sel
 
 
@@ -141,9 +143,9 @@ def validate_and_parse_box(form):
     ec = None if ec == "" else parse_int(ec, name="ending column")
 
     row_range = Range(start=sr, end=er)
-    validate_range(axis=0, r=row_range)
+    validate_range(axis=Axis.ROW, r=row_range)
     col_range = Range(start=sc, end=ec)
-    validate_range(axis=1, r=col_range)
+    validate_range(axis=Axis.COLUMN, r=col_range)
 
     sel = BoxSelection(rows=row_range, cols=col_range)
     return sel
@@ -204,10 +206,10 @@ def validate_and_parse_insert_inputs(form):
     bounds = get_bounds()
     match axis_name:
         case "Row":
-            axis = 0
+            axis = Axis.ROW
             bound = bounds.row
         case "Column":
-            axis = 1
+            axis = Axis.COLUMN
             bound = bounds.col
         case _:
             raise Exception(f"'{axis_name}' is not a valid axis.")

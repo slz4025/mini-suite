@@ -37,6 +37,10 @@ htmx = HTMX(app)
 app.config.from_object('config.Config')
 
 
+# Populate with fake data.
+DEBUG = False
+
+
 def render_editor(session):
     editor_state = check_mode(session, "Editor")
     focused_cell = get_focused_cell(session)
@@ -113,7 +117,7 @@ def root():
     init_settings(session)
 
     # TODO: This should eventually be done only on the creation of the sheet.
-    init_sheet(100, 100)
+    init_sheet(100, 100, DEBUG)
 
     body = render_body(session)
     return render_template(

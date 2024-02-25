@@ -111,12 +111,13 @@ class Modification:
     input: Input
 
 
-def init_sheet(maxrows, maxcols):
+def init_sheet(maxrows, maxcols, debug=False):
     global sheet
     sheet = np.empty((maxrows, maxcols), dtype=object)
-    for row in range(maxrows):
-        for col in range(maxcols):
-            sheet[row, col] = f"{row}x{col}"
+    if debug:
+        for row in range(maxrows):
+            for col in range(maxcols):
+                sheet[row, col] = f"{row}x{col}"
 
 
 def get_value(row, col):

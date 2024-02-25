@@ -63,7 +63,11 @@ div.right {
 
 }
 div.inner {
-  margin: 0;
+  margin-bottom: 1rem;
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+
   border: 0;
   padding: 0;
 }
@@ -72,7 +76,10 @@ form {
 
 }
 fieldset {
-
+  margin-bottom: 1rem;
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
 }
 textarea {
   background-color: transparent;

@@ -90,33 +90,26 @@
     hx-indicator="#loader"
     enctype="multipart/form-data"
   >
-    <fieldset id="center-cell">
-      <legend>Center Cell</legend>
+    <legend>Center Cell</legend>
+    <label for="center-cell-row">Row</label>
+    <input
+        id="center-cell-row"
+        name="center-cell-row"
+        value="{{ center_cell_row }}"
+        type="number"
+        pattern="[0-9]*"
+        style="width: 50px;"
+    >
 
-      <div class="inner">
-        <label for="center-cell-row">Row</label>
-        <input
-            id="center-cell-row"
-            name="center-cell-row"
-            value="{{ center_cell_row }}"
-            type="number"
-            pattern="[0-9]*"
-            style="width: 50px;"
-        >
-      </div>
-
-      <div class="inner">
-        <label for="center-cell-col">Column</label>
-        <input
-            id="center-cell-col"
-            name="center-cell-col"
-            value="{{ center_cell_col }}"
-            type="number"
-            pattern="[0-9]*"
-            style="width: 50px;"
-        >
-      </div>
-    </fieldset>
-    <input type="submit" value="↵" id="center-cell-submit" style="margin-top: 1rem;"/>
+    <label for="center-cell-col">Column</label>
+    <input
+        id="center-cell-col"
+        name="center-cell-col"
+        value="{{ center_cell_col }}"
+        type="number"
+        pattern="[0-9]*"
+        style="width: 50px;"
+    >
+    <input type="submit" value="↵" id="center-cell-submit"/>
   </form>
 </div>

@@ -48,14 +48,14 @@ div.wrapper {
 }
 div.left {
   float: left;
-  width: 20%;
+  width: 15%;
 
   margin: 0;
   border: 0;
 }
 div.right {
   float: left;
-  width: 80%;
+  width: 85%;
 
   margin: 0;
   border: 0;

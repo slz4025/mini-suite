@@ -1,6 +1,13 @@
 <div id="navigator" style="display: {{ 'none' if not show_navigator else 'inherit' }};">
   <h2>NAVIGATOR</h2>
 
+  {% if show_help %}
+    <span>[Shift+Tab]&nbsp;Cell Left</span>
+    <span>[Tab]&nbsp;&nbsp;Cell Right</span>
+    <span>[Shift+Enter]&nbsp;Cell Up</span>
+    <span>[Enter]&nbsp;&nbsp;Cell Down</span>
+  {% endif %}
+
   <div class="inner">
     <button
       id="home-button"

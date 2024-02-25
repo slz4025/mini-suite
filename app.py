@@ -150,7 +150,7 @@ def modes():
     assert htmx is not None
 
     modes_string = get_modes_str(session)
-    return f"{modes_string} >>"
+    return f"{modes_string}"
 
 
 @app.route("/port", methods=['PUT'])

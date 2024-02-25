@@ -111,7 +111,8 @@ def get_modes_str(session):
             else:
                 inner += ", " + mode.name
 
-    if first:
-        return ""
-    else:
-        return f"({inner})"
+    modes_str = ""
+    if not first:
+        modes_str += f"({inner})"
+    modes_str += " >"
+    return modes_str

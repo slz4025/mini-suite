@@ -117,7 +117,7 @@ def root():
     init_settings(session)
 
     # TODO: This should eventually be done only on the creation of the sheet.
-    init_sheet(100, 100, DEBUG)
+    init_sheet(DEBUG)
 
     body = render_body(session)
     return render_template(

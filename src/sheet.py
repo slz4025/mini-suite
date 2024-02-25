@@ -111,8 +111,12 @@ class Modification:
     input: Input
 
 
-def init_sheet(maxrows, maxcols, debug=False):
+def init_sheet(debug=False):
     global sheet
+
+    maxrows = 100
+    maxcols = 100
+
     sheet = np.empty((maxrows, maxcols), dtype=object)
     if debug:
         for row in range(maxrows):

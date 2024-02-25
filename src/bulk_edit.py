@@ -10,55 +10,43 @@ from src.sheet import (
     Modification,
     Range,
     BoxSelection,
+    RangeSelection,
     IndicesSelection,
     Selection,
     InsertInput,
     ValueInput,
     Input,
     get_bounds,
+    get_indices,
+    set_range,
 )
 
 
-def validate_row_range(r):
-    bound = get_bounds().row
-    if r.start is not None:
-        validate_bounds(r.start, 0, bound, name="row start")
-    if r.end is not None:
-        validate_bounds(r.end, 0, bound, name="row end")
-    if r.start is not None and r.end is not None and r.end < r.start:
+def validate_range(axis, r):
+    start, end = set_range(axis, r)
+
+    bounds = get_bounds()
+    if axis == 0:
+        bound = bounds.row
+    if axis == 1:
+        bound = bounds.col
+
+    validate_bounds(start, 0, bound, name="start")
+    validate_bounds(end, 0, bound, name="end")
+
+    if end < start:
         raise Exception(
-            f"Row end, {r.end}, is less than start, {r.start}."
+            f"End, {end}, is less than start, {start}."
         )
 
 
-def validate_col_range(c):
-    bound = get_bounds().col
-    if c.start is not None:
-        validate_bounds(c.start, 0, bound, name="col start")
-    if c.end is not None:
-        validate_bounds(c.end, 0, bound, name="col end")
-    if c.start is not None and c.end is not None and c.end < c.start:
-        raise Exception(
-            f"Column end, {c.end}, is less than start, {c.start}."
-        )
-
-
-def get_row_indices(ranges):
-    indices = []
+def get_all_indices(axis, ranges):
+    all_indices = []
     for r in ranges:
-        start = 0 if r.start is None else r.start
-        end = get_bounds().row if r.end is None else r.end
-        indices.extend(list(range(start, end)))
-    return list(set(indices))
-
-
-def get_col_indices(ranges):
-    indices = []
-    for r in ranges:
-        start = 0 if r.start is None else r.start
-        end = get_bounds().col if r.end is None else r.end
-        indices.extend(list(range(start, end)))
-    return list(set(indices))
+        start, end = set_range(axis, r)
+        indices = get_indices(start, end)
+        all_indices.extend(indices)
+    return list(set(all_indices))
 
 
 range_pattern = "^([0-9]*)(:[0-9]*)?$"
@@ -100,22 +88,44 @@ def validate_and_parse_ranges(query):
     return ranges
 
 
-def validate_and_parse_rows(form):
+def validate_and_parse_row_range(form):
+    start = extract(form, "selection-start", name="start")
+    start = None if start == "" else parse_int(start, name="start")
+    end = extract(form, "selection-end", name="end")
+    end = None if end == "" else parse_int(end, name="end")
+    r = Range(start=start, end=end)
+    validate_range(axis=0, r=r)
+    sel = RangeSelection(axis=0, range=r)
+    return sel
+
+
+def validate_and_parse_col_range(form):
+    start = extract(form, "selection-start", name="start")
+    start = None if start == "" else parse_int(start, name="start")
+    end = extract(form, "selection-end", name="end")
+    end = None if end == "" else parse_int(end, name="end")
+    r = Range(start=start, end=end)
+    validate_range(axis=1, r=r)
+    sel = RangeSelection(axis=1, range=r)
+    return sel
+
+
+def validate_and_parse_row_indices(form):
     query = extract(form, "selection-query", name="query")
     ranges = validate_and_parse_ranges(query)
     for r in ranges:
-        validate_row_range(r)
-    indices = get_row_indices(ranges)
+        validate_range(axis=0, r=r)
+    indices = get_all_indices(axis=0, ranges=ranges)
     sel = IndicesSelection(axis=0, indices=indices)
     return sel
 
 
-def validate_and_parse_cols(form):
+def validate_and_parse_col_indices(form):
     query = extract(form, "selection-query", name="query")
     ranges = validate_and_parse_ranges(query)
     for r in ranges:
-        validate_col_range(r)
-    indices = get_col_indices(ranges)
+        validate_range(axis=1, r=r)
+    indices = get_all_indices(axis=1, ranges=ranges)
     sel = IndicesSelection(axis=1, indices=indices)
     return sel
 
@@ -131,9 +141,9 @@ def validate_and_parse_box(form):
     ec = None if ec == "" else parse_int(ec, name="ending column")
 
     row_range = Range(start=sr, end=er)
-    validate_row_range(row_range)
+    validate_range(axis=0, r=row_range)
     col_range = Range(start=sc, end=ec)
-    validate_col_range(col_range)
+    validate_range(axis=1, r=col_range)
 
     sel = BoxSelection(rows=row_range, cols=col_range)
     return sel
@@ -147,20 +157,30 @@ class SelectionMode:
 
 
 selection_modes = {
-    "Rows (Indices)": SelectionMode(
-        name="Rows (Indices)",
-        template="indices.html",
-        validate_and_parse=validate_and_parse_rows,
-    ),
-    "Columns (Indices)": SelectionMode(
-        name="Columns (Indices)",
-        template="indices.html",
-        validate_and_parse=validate_and_parse_cols,
-    ),
     "Box": SelectionMode(
         name="Box",
         template="box.html",
         validate_and_parse=validate_and_parse_box,
+    ),
+    "Rows (Range)": SelectionMode(
+        name="Rows (Range)",
+        template="range.html",
+        validate_and_parse=validate_and_parse_row_range,
+    ),
+    "Columns (Range)": SelectionMode(
+        name="Columns (Range)",
+        template="range.html",
+        validate_and_parse=validate_and_parse_col_range,
+    ),
+    "Rows (Indices)": SelectionMode(
+        name="Rows (Indices)",
+        template="indices.html",
+        validate_and_parse=validate_and_parse_row_indices,
+    ),
+    "Columns (Indices)": SelectionMode(
+        name="Columns (Indices)",
+        template="indices.html",
+        validate_and_parse=validate_and_parse_col_indices,
     ),
 }
 
@@ -244,7 +264,12 @@ def render_selection(session, selection_mode_options):
 
 
 def render_delete_selection(session):
-    selection_mode_options = ["Rows (Indices)", "Columns (Indices)"]
+    selection_mode_options = [
+        "Rows (Range)",
+        "Columns (Range)",
+        "Rows (Indices)",
+        "Columns (Indices)",
+    ]
     selection_form = render_selection(session, selection_mode_options)
     return render_template(
             "partials/bulk_edit/delete.html",
@@ -253,7 +278,13 @@ def render_delete_selection(session):
 
 
 def render_erase_selection(session):
-    selection_mode_options = ["Box", "Rows (Indices)", "Columns (Indices)"]
+    selection_mode_options = [
+        "Box",
+        "Rows (Range)",
+        "Columns (Range)",
+        "Rows (Indices)",
+        "Columns (Indices)",
+    ]
     selection_form = render_selection(session, selection_mode_options)
     return render_template(
             "partials/bulk_edit/erase.html",
@@ -262,7 +293,13 @@ def render_erase_selection(session):
 
 
 def render_value_inputs(session):
-    selection_mode_options = ["Box", "Rows (Indices)", "Columns (Indices)"]
+    selection_mode_options = [
+        "Box",
+        "Rows (Range)",
+        "Columns (Range)",
+        "Rows (Indices)",
+        "Columns (Indices)",
+    ]
     selection_form = render_selection(session, selection_mode_options)
     return render_template(
             "partials/bulk_edit/value.html",

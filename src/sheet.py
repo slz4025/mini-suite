@@ -14,10 +14,24 @@ class Range:
     end: Optional[int]
 
 
-@dataclass
-class IndicesSelection:
-    axis: int  # 0 or 1
-    indices: List[int]
+def set_range(axis, r):
+    bounds = get_bounds()
+
+    if axis == 0:
+        start = 0 if r.start is None else r.start
+        end = bounds.row if r.end is None else r.end
+    if axis == 1:
+        start = 0 if r.start is None else r.start
+        end = bounds.col if r.end is None else r.end
+
+    assert start is not None
+    assert end is not None
+
+    return start, end
+
+
+def get_indices(start, end):
+    return list(range(start, end))
 
 
 @dataclass
@@ -26,7 +40,19 @@ class BoxSelection:
     cols: Range
 
 
-Selection = Union[BoxSelection, IndicesSelection]
+@dataclass
+class RangeSelection:
+    axis: int  # 0 or 1
+    range: Range
+
+
+@dataclass
+class IndicesSelection:
+    axis: int  # 0 or 1
+    indices: List[int]
+
+
+Selection = Union[BoxSelection, RangeSelection, IndicesSelection]
 
 
 @dataclass
@@ -48,7 +74,11 @@ Input = Union[InsertInput, ValueInput, Selection]
 def apply_delete(sel):
     global sheet
 
-    if isinstance(sel, IndicesSelection):
+    if isinstance(sel, RangeSelection):
+        start, end = set_range(sel.axis, sel.range)
+        indices = get_indices(start, end)
+        sheet = np.delete(sheet, indices, sel.axis)
+    elif isinstance(sel, IndicesSelection):
         sheet = np.delete(sheet, sel.indices, sel.axis)
 
 
@@ -67,23 +97,25 @@ def apply_insert(inp):
 def apply_value(inp):
     global sheet
 
-    bounds = get_bounds()
-
     sel = inp.selection
     value = inp.value
 
-    if isinstance(sel, IndicesSelection):
+    if isinstance(sel, BoxSelection):
+        row_start, row_end = set_range(0, sel.rows)
+        col_start, col_end = set_range(0, sel.cols)
+        sheet[row_start:row_end, col_start:col_end] = value
+    elif isinstance(sel, RangeSelection):
+        start, end = set_range(sel.axis, sel.range)
+        if sel.axis == 0:
+            sheet[start:end, :] = value
+        if sel.axis == 1:
+            sheet[:, start:end] = value
+    elif isinstance(sel, IndicesSelection):
         for i in sel.indices:
             if sel.axis == 0:
                 sheet[i, :] = value
             if sel.axis == 1:
                 sheet[:, i] = value
-    elif isinstance(sel, BoxSelection):
-        row_start = 0 if sel.rows.start is None else sel.rows.start
-        row_end = bounds.row if sel.rows.end is None else sel.rows.end
-        col_start = 0 if sel.cols.start is None else sel.cols.start
-        col_end = bounds.col if sel.cols.end is None else sel.cols.end
-        sheet[row_start:row_end, col_start:col_end] = value
 
 
 def apply_erase(sel):

@@ -14,8 +14,8 @@ def init_settings(session):
     render_mode = "light"
     mrows = 5
     mcols = 5
-    nrows = 20
-    ncols = 10
+    nrows = 30
+    ncols = 15
 
     set_settings(
         session,

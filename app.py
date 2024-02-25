@@ -48,6 +48,8 @@ def render_editor(session):
     col = focused_cell.col
 
     data = get_cell(focused_cell)
+    if data is None:
+        data = ""
     return render_template(
         "partials/editor.html",
         show_editor=editor_state,

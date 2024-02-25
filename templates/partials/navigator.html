@@ -1,0 +1,112 @@
+<div id="navigator" style="display: {{ 'none' if not show_navigator else 'inherit' }};">
+  <h2>NAVIGATOR</h2>
+
+  <span class="group">
+    <button
+      id="home-button"
+      class="icon"
+      hx-put="/move/home"
+      hx-trigger="click"
+      hx-target="#port"
+      hx-swap="innerHTML"
+    >
+      🏠
+      {% if show_help %}
+        <span>[Ctrl+h]</span>
+      {% endif %}
+    </button>
+
+    <button
+      id="up-button"
+      class="icon"
+      hx-put="/move/up"
+      hx-trigger="click"
+      hx-target="#port"
+      hx-swap="innerHTML"
+    >
+      ⮝
+      {% if show_help %}
+        <span>[Ctrl+Up]</span>
+      {% endif %}
+    </button>
+
+    <button
+      id="down-button"
+      class="icon"
+      hx-put="/move/down"
+      hx-trigger="click"
+      hx-target="#port"
+      hx-swap="innerHTML"
+    >
+      ⮟
+      {% if show_help %}
+        <span>[Ctrl+Down]</span>
+      {% endif %}
+    </button>
+
+    <button
+      id="left-button"
+      class="icon"
+      hx-put="/move/left"
+      hx-trigger="click"
+      hx-target="#port"
+      hx-swap="innerHTML"
+    >
+      ⮜
+      {% if show_help %}
+        <span>[Ctrl+Left]</span>
+      {% endif %}
+    </button>
+
+    <button
+      id="right-button"
+      class="icon"
+      hx-put="/move/right"
+      hx-trigger="click"
+      hx-target="#port"
+      hx-swap="innerHTML"
+    >
+      ⮞
+      {% if show_help %}
+        <span>[Ctrl+Right]</span>
+      {% endif %}
+    </button>
+  </span>
+
+  <form
+    hx-put="/move/center"
+    hx-target="#port"
+    hx-swap="innerHTML"
+    hx-indicator="#loader"
+    enctype="multipart/form-data"
+  >
+    <fieldset id="center-cell">
+      <legend>Center Cell</legend>
+
+      <span class="group">
+        <label for="center-cell-row">Row</label>
+        <input
+            id="center-cell-row"
+            name="center-cell-row"
+            value="{{ center_cell_row }}"
+            type="number"
+            pattern="[0-9]*"
+            style="width: 50px;"
+        >
+      </span>
+
+      <span class="group">
+        <label for="center-cell-col">Column</label>
+        <input
+            id="center-cell-col"
+            name="center-cell-col"
+            value="{{ center_cell_col }}"
+            type="number"
+            pattern="[0-9]*"
+            style="width: 50px;"
+        >
+      </span>
+    </fieldset>
+    <input type="submit" value="↵" id="center-cell-submit" style="margin-top: 1rem;"/>
+  </form>
+</div>

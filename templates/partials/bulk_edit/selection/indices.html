@@ -1,0 +1,14 @@
+<span id="bulk-edit-selection-query">
+  <label for="bulk-edit-selection-query-input">Query</label>
+  <input
+    type="text"
+    id="bulk-edit-selection-query-input"
+    name="selection-query"
+  >
+  {% if show_help %}
+  <p>
+    Input comma-separated indices you want to include in your selection.
+    You can also use a range instead of a value, i.e. &lt;start&gt;:&lt;end&gt;.
+  </p>
+  {% endif %}
+</span>

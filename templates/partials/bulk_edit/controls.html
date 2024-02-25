@@ -1,0 +1,38 @@
+{% if show_bulk_edit %}
+<div id="bulk-edit-controls">
+  <h2>BULK EDIT</h2>
+
+  <form
+    hx-post="/bulk-edit"
+    hx-target="#bulk-edit-controls"
+    hx-swap="outerHTML"
+    enctype="multipart/form-data"
+  >
+    <fieldset>
+      <legend>Operation</legend>
+      <select
+        id="bulk-edit-operation"
+        name="operation"
+        hx-get="/bulk-edit/operation-form"
+        hx-target="#bulk-edit-operation-form"
+        hx-swap="outerHTML"
+        style="width: auto;"
+      >
+        {% for operation_option in operation_options %}
+        {% if operation_option == operation or (not operation and loop.index == 0) %}
+        <option value="{{ operation_option }}" selected>{{ operation_option }}</option>
+        {% else %}
+        <option value="{{ operation_option }}">{{ operation_option }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </fieldset>
+
+    {{ operation_form|safe }}
+
+    <input type="submit" value="↵" id="bulk-edit-submit" style="margin-top: 1rem;"/>
+  </form>
+</div>
+{% else %}
+ <div id="bulk-edit-controls" style="display: none;"></div>
+{% endif %}

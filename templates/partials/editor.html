@@ -1,0 +1,62 @@
+<!--
+  When the editor is focused on or its contents submitted,
+  1. the contents are stored in the sheet,
+  2. the cell the editor is synced to is rerendered.
+
+  The editor owns the rerendering of the last focused cell.
+  The settings and navigator do as well through the port.
+  Because these entities can only be interacted with one at a time,
+  we expect no races on the cell's rerendering.
+-->
+<div
+  id="editor"
+  hx-get="/editor"
+  hx-trigger="editor from:body"
+  hx-target="this"
+  hx-swap="outerHTML"
+  style="display: {{ 'none' if not show_editor else 'inherit' }};"
+>
+  <h2>EDITOR</h2>
+
+  <form
+    hx-put="/cell/{{ row }}/{{ col }}/update"
+    hx-target="#cell-{{ row }}-{{ col }}"
+    hx-swap="outerHTML"
+    enctype="multipart/form-data"
+  >
+    <textarea
+      id="editor-contents"
+      name="input-cell-{{ row }}-{{ col }}"
+      rows=5,
+      style="width: 100%;"
+      >{{ data }}</textarea>
+    <input
+      id="editor-submit"
+      type="submit"
+      value="↵"
+      style="margin-top: 1rem;"
+    />
+  </form>
+  <script>
+    // Make variable use `var` instead of `const`.
+    // Upon rerenders, will redefine value.
+    var editorContentsElement = document.querySelector("#editor-contents");
+
+    editorContentsElement.addEventListener("focusin", (event) => {
+      const row = "{{ row }}";
+      const col = "{{ col }}";
+      htmx.ajax('PUT', `/cell/${row}/${col}/highlight/on`, {
+        target: `#cell-${row}-${col}`,
+        swap: "outerHTML",
+      });
+    });
+    editorContentsElement.addEventListener("focusout", (event) => {
+      const row = "{{ row }}";
+      const col = "{{ col }}";
+      htmx.ajax('PUT', `/cell/${row}/${col}/highlight/off`, {
+        target: `#cell-${row}-${col}`,
+        swap: "outerHTML",
+      });
+    });
+  </script>
+</div>

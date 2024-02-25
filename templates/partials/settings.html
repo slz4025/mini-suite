@@ -1,0 +1,95 @@
+<div id="settings" style="display: {{ 'none' if not show_settings else 'inherit' }};">
+  <h2>[⚙] SETTINGS</h2>
+
+  <script>
+    // I could not make htmx update just a css link full of variables.
+    // I'm using JavaScript to handle this instead.
+    async function change_render_mode(render_mode) {
+      const resp = await fetch(`/static/${render_mode}_variables.json`);
+      const json = await resp.json();
+      const style = document.documentElement.style;
+      Object.entries(json).forEach(([key, value]) => {
+        style.setProperty(key, value);
+      });
+      htmx.ajax('PUT', `/settings/render-mode/${render_mode}`, '#none');
+    }
+  </script>
+  <div id="none" style="display: none"></div>
+
+  <span class="group">
+    <label for="render-mode">Render Mode</label>
+    <select
+        id="render-mode"
+        value="{{ render_mode }}"
+        onchange="change_render_mode(this.value)"
+        style="width: auto;"
+    >
+      <option value="light" {{ "selected" if render_mode == "light" }}>Light Mode</option>
+      <option value="dark" {{ "selected" if render_mode == "dark" }}>Dark Mode</option>
+    </select>
+  </span>
+
+  <span class="group">
+    <label for="mrows">Row Increment</label>
+    <input
+        id="mrows"
+        name="mrows"
+        value="{{ mrows }}"
+        type="number"
+        step=1
+        hx-put="/settings/mrows"
+        hx-target="#port"
+        hx-swap="innerHTML"
+        hx-indicator="#loader"
+        style="width: 50px;"
+    >
+  </span>
+
+  <span class="group">
+    <label for="mrows">Column Increment</label>
+    <input
+        id="mcols"
+        name="mcols"
+        type="number"
+        value="{{ mcols }}"
+        step=1
+        hx-put="/settings/mcols"
+        hx-target="#port"
+        hx-swap="innerHTML"
+        hx-indicator="#loader"
+        style="width: 50px;"
+    >
+  </span>
+
+  <span class="group">
+    <label for="nrows"># Rows</label>
+    <input
+        id="nrows"
+        name="nrows"
+        value="{{ nrows }}"
+        type="number"
+        step=1
+        hx-put="/settings/nrows"
+        hx-target="#port"
+        hx-swap="innerHTML"
+        hx-indicator="#loader"
+        style="width: 50px;"
+    >
+  </span>
+
+  <span class="group">
+    <label for="ncols"># Columns</label>
+    <input
+        id="ncols"
+        name="ncols"
+        value="{{ ncols }}"
+        type="number"
+        step=1
+        hx-put="/settings/ncols"
+        hx-target="#port"
+        hx-swap="innerHTML"
+        hx-indicator="#loader"
+        style="width: 50px;"
+    >
+  </span>
+</div>

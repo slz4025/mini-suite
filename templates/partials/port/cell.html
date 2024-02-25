@@ -1,0 +1,48 @@
+<!--
+  When a cell is focused on or edited,
+  its contents are:
+  1. stored in the sheet,
+  2. synced to the editor.
+
+  No entities but the editor-toggler (Ctrl+1) or focused cell
+  owns the rerendering of the editor.
+  Since these entities can only be interacted with one at a time,
+  we expect no races on the editor's rerendering.
+-->
+
+<td
+  id="cell-{{ row }}-{{ col }}"
+  style="width: 100%;"
+>
+  <label for="input-cell-{{ row }}-{{ col }}" hidden></label>
+  <input
+    type="text"
+    class="cell{{ ' highlight' if show_highlight else '' }}"
+    hx-put="/cell/{{ row }}/{{ col }}/edit"
+    hx-target="#editor"
+    hx-trigger="keyup changed"
+    hx-swap="outerHTML"
+    id="input-cell-{{ row }}-{{ col }}"
+    name="input-cell-{{ row }}-{{ col }}"
+    value="{{ data }}"
+    style="width: 100%;"
+  >
+  <script>
+    // Make variable use `var` instead of `const`.
+    // Upon rerenders, will redefine value.
+    var cellInputElement = document.querySelector(
+      `#input-cell-${ {{ row }} }-${ {{ col }} }`
+    );
+    console.log("HI", `#input-cell-${ {{ row }} }-${ {{ col }} }`);
+
+    cellInputElement.addEventListener("focusin", (event) => {
+      const row = "{{ row }}";
+      const col = "{{ col }}";
+
+      htmx.ajax('PUT', `/cell/${row}/${col}/edit`, {
+        target: `#editor`,
+        swap: "outerHTML",
+      });
+    });
+  </script>
+</td>

@@ -1,0 +1,28 @@
+<fieldset id="bulk-edit-selection">
+  <legend>Selection</legend>
+  {% if show_help %}
+  <p>
+    Indices start from 0. Ranges are start-inclusive, end-exclusive.
+  </p>
+  {% endif %}
+  <span class="group">
+    <label for="bulk-edit-selection-mode">Mode</label>
+    <select
+      id="bulk-edit-selection-mode"
+      name="selection-mode"
+      hx-get="/bulk-edit/selection-inputs"
+      hx-target="#bulk-edit-selection-query"
+      hx-swap="outerHTML"
+      style="width: auto;"
+    >
+      {% for selection_mode_option in selection_mode_options %}
+      {% if selection_mode_option == selection_mode or (not selection_mode and loop.index == 0) %}
+      <option value="{{ selection_mode_option }}" selected>{{ selection_mode_option }}</option>
+      {% else %}
+      <option value="{{ selection_mode_option }}">{{ selection_mode_option }}</option>
+      {% endif %}
+      {% endfor %}
+    </select>
+  </span>
+  {{ selection_inputs|safe }}
+</fieldset>

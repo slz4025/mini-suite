@@ -1,0 +1,10 @@
+{
+  "--background-color": "#0F0F0F",
+  "--main-color": "#EEEEEE",
+  "--secondary-color": "#4F4F4F",
+  "--inverse-color": "#0F0F0F",
+  "--shade-color": "#3F3F3F",
+  "--info-color": "#00B800",
+  "--error-color": "#B80000",
+  "--warning-color": "#B8B800"
+}

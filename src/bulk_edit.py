@@ -10,7 +10,7 @@ from src.sheet import (
     Modification,
     Range,
     BoxSelection,
-    IndexSelection,
+    IndicesSelection,
     Selection,
     InsertInput,
     ValueInput,
@@ -106,7 +106,7 @@ def validate_and_parse_rows(form):
     for r in ranges:
         validate_row_range(r)
     indices = get_row_indices(ranges)
-    sel = IndexSelection(axis=0, indices=indices)
+    sel = IndicesSelection(axis=0, indices=indices)
     return sel
 
 
@@ -116,7 +116,7 @@ def validate_and_parse_cols(form):
     for r in ranges:
         validate_col_range(r)
     indices = get_col_indices(ranges)
-    sel = IndexSelection(axis=1, indices=indices)
+    sel = IndicesSelection(axis=1, indices=indices)
     return sel
 
 
@@ -147,13 +147,13 @@ class SelectionMode:
 
 
 selection_modes = {
-    "Rows": SelectionMode(
-        name="Rows",
+    "Rows (Indices)": SelectionMode(
+        name="Rows (Indices)",
         template="indices.html",
         validate_and_parse=validate_and_parse_rows,
     ),
-    "Columns": SelectionMode(
-        name="Columns",
+    "Columns (Indices)": SelectionMode(
+        name="Columns (Indices)",
         template="indices.html",
         validate_and_parse=validate_and_parse_cols,
     ),
@@ -244,7 +244,7 @@ def render_selection(session, selection_mode_options):
 
 
 def render_delete_selection(session):
-    selection_mode_options = ["Rows", "Columns"]
+    selection_mode_options = ["Rows (Indices)", "Columns (Indices)"]
     selection_form = render_selection(session, selection_mode_options)
     return render_template(
             "partials/bulk_edit/delete.html",
@@ -253,7 +253,7 @@ def render_delete_selection(session):
 
 
 def render_erase_selection(session):
-    selection_mode_options = ["Box", "Rows", "Columns"]
+    selection_mode_options = ["Box", "Rows (Indices)", "Columns (Indices)"]
     selection_form = render_selection(session, selection_mode_options)
     return render_template(
             "partials/bulk_edit/erase.html",
@@ -262,7 +262,7 @@ def render_erase_selection(session):
 
 
 def render_value_inputs(session):
-    selection_mode_options = ["Box", "Rows", "Columns"]
+    selection_mode_options = ["Box", "Rows (Indices)", "Columns (Indices)"]
     selection_form = render_selection(session, selection_mode_options)
     return render_template(
             "partials/bulk_edit/value.html",

@@ -100,19 +100,29 @@ def apply_delete(sel):
         sheet = np.delete(sheet, indices, sel.axis.value)
     elif isinstance(sel, IndicesSelection):
         sheet = np.delete(sheet, sel.indices, sel.axis.value)
+    else:
+        raise ClientError(
+            f"Selection type, {type(sel)}, is not valid for delete."
+        )
 
 
 def apply_insert(inp):
     global sheet
 
     sel = inp.selection
-    insertion = np.array([[None] * inp.number])
-    sheet = np.insert(
-        sheet,
-        [sel.index] * inp.number,
-        insertion if sel.axis == Axis.COLUMN else insertion.T,
-        axis=sel.axis.value,
-    )
+
+    if isinstance(sel, IndexSelection):
+        insertion = np.array([[None] * inp.number])
+        sheet = np.insert(
+            sheet,
+            [sel.index] * inp.number,
+            insertion if sel.axis == Axis.COLUMN else insertion.T,
+            axis=sel.axis.value,
+        )
+    else:
+        raise ClientError(
+            f"Selection type, {type(sel)}, is not valid for insert."
+        )
 
 
 def apply_value(inp):
@@ -139,6 +149,10 @@ def apply_value(inp):
                     sheet[i, :] = value
                 case Axis.COLUMN:
                     sheet[:, i] = value
+    else:
+        raise ClientError(
+            f"Selection type, {type(sel)}, is not valid for value."
+        )
 
 
 def apply_erase(sel):

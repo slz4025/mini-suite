@@ -22,10 +22,10 @@ def validate_bounds(num, min_bound, max_bound, name):
             f"Field '{name}' with value {num} "
             f"is lower than min bound, {min_bound}."
         )
-    if num >= max_bound:
+    if num > max_bound:
         raise UserError(
             f"Field '{name}' with value {num} "
-            f"is not within max bound, {max_bound}."
+            f"is greater than max bound, {max_bound}."
         )
 
 

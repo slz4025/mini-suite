@@ -43,9 +43,9 @@ def validate_range(axis, r):
     validate_bounds(start, 0, bound, name="start")
     validate_bounds(end, 0, bound, name="end")
 
-    if end < start:
+    if end <= start:
         raise UserError(
-            f"{name} end, {end}, is less than start, {start}."
+            f"{name} end, {end}, is not greater than start, {start}."
         )
 
 

@@ -1,8 +1,23 @@
 import json
-from flask import Flask, render_template, session, request, Response
+from flask import (
+    Flask,
+    render_template,
+    session,
+    request,
+    Response,
+    make_response,
+    url_for,
+)
 from flask_htmx import HTMX
+import traceback
 from waitress import serve
 
+from src.errors import (
+    ClientError,
+    UserError,
+    get_error_message,
+    set_error_message,
+)
 from src.port import (
     init_port,
     move_upperleft,
@@ -39,6 +54,57 @@ app.config.from_object('config.Config')
 
 # Populate with fake data.
 DEBUG = True
+
+
+@app.route("/error")
+def unexpected_error():
+    error_message = get_error_message(session)
+    app.logger.error(error_message)
+
+    user_error_msg = f"""
+    <p>
+        Encountered unexpected error. Please reload.
+        Feel free to report the error with the following stack-trace:
+    </p>
+    <p>
+        {error_message}
+    </p>
+    """
+    return user_error_msg
+
+
+def error_handler(func):
+    def wrapper(*args, **kwargs):
+        resp = None
+
+        error = None
+        error_location = None
+
+        try:
+            resp = func(*args, **kwargs)
+        except ClientError as e:
+            error = e
+            error_location = "CLIENT"
+        except Exception as e:
+            error = e
+            error_location = "SERVER"
+
+        if resp is None:
+            assert error is not None
+            assert error_location is not None
+
+            stack_trace = "".join(traceback.format_tb(error.__traceback__))
+            error_message = f"{error_location}: {error}\n{stack_trace}"
+            set_error_message(session, error_message)
+
+            resp = make_response()
+            resp.headers["HX-Redirect"] = url_for("unexpected_error")
+
+        return resp
+
+    # Register each wrapper for each endpoint under a different name.
+    wrapper.__name__ = func.__name__ + "__error_handler"
+    return wrapper
 
 
 def render_editor(session):
@@ -106,6 +172,7 @@ def render_body(session):
 
 
 @app.route("/")
+@error_handler
 def root():
     assert htmx is not None
 
@@ -129,6 +196,7 @@ def root():
 
 
 @app.route("/data", methods=['GET'])
+@error_handler
 def data():
     assert htmx is not None
 
@@ -142,6 +210,7 @@ def data():
 
 
 @app.route("/help", methods=['PUT'])
+@error_handler
 def toggle_help():
     assert htmx is not None
 
@@ -152,6 +221,7 @@ def toggle_help():
 
 
 @app.route("/modes", methods=['GET'])
+@error_handler
 def modes():
     assert htmx is not None
 
@@ -160,6 +230,7 @@ def modes():
 
 
 @app.route("/port", methods=['PUT'])
+@error_handler
 def port():
     assert htmx is not None
 
@@ -168,6 +239,7 @@ def port():
 
 
 @app.route("/cell/<row>/<col>/highlight/<state>", methods=['PUT'])
+@error_handler
 def cell_highlight(row, col, state):
     assert htmx is not None
 
@@ -178,6 +250,7 @@ def cell_highlight(row, col, state):
 
 
 @app.route("/cell/<row>/<col>/update", methods=['PUT'])
+@error_handler
 def cell_rerender(row, col):
     assert htmx is not None
 
@@ -196,6 +269,7 @@ def cell_rerender(row, col):
 
 
 @app.route("/cell/<row>/<col>/edit", methods=['PUT'])
+@error_handler
 def cell_sync(row, col):
     assert htmx is not None
 
@@ -216,6 +290,7 @@ def cell_sync(row, col):
 
 
 @app.route("/editor", methods=['GET', 'PUT'])
+@error_handler
 def editor():
     assert htmx is not None
 
@@ -233,6 +308,7 @@ def editor():
 
 
 @app.route("/bulk-edit", methods=['PUT', 'POST'])
+@error_handler
 def open_bulk_edit():
     assert htmx is not None
 
@@ -250,7 +326,7 @@ def open_bulk_edit():
                 modification = bulk_edit.validate_and_parse(request.form)
                 apply_modification(modification)
                 success = True
-            except Exception as e:
+            except UserError as e:
                 set_notification(session, Notification(
                     message=str(e),
                     mode=NotificationMode.ERROR,
@@ -271,6 +347,7 @@ def open_bulk_edit():
 
 
 @app.route("/bulk-edit/operation-form", methods=['GET'])
+@error_handler
 def bulk_edit_operation_form():
     assert htmx is not None
 
@@ -279,6 +356,7 @@ def bulk_edit_operation_form():
 
 
 @app.route("/bulk-edit/selection-inputs", methods=['GET'])
+@error_handler
 def bulk_edit_selection_inputs():
     assert htmx is not None
 
@@ -287,6 +365,7 @@ def bulk_edit_selection_inputs():
 
 
 @app.route("/navigator", methods=['PUT', 'POST'])
+@error_handler
 def navigator():
     assert htmx is not None
 
@@ -307,6 +386,7 @@ def navigator():
 # TODO: Later, consider supporting an array of notifications
 # with timeouts we maintain server-side.
 @app.route("/notification/<show>", methods=['PUT'])
+@error_handler
 def notification(show):
     assert htmx is not None
 
@@ -318,6 +398,7 @@ def notification(show):
 
 
 @app.route("/move/center", methods=['PUT'])
+@error_handler
 def center():
     assert htmx is not None
 
@@ -325,7 +406,7 @@ def center():
     try:
         set_center(session, request.form)
         success = True
-    except Exception as e:
+    except UserError as e:
         set_notification(session, Notification(
             message=str(e),
             mode=NotificationMode.ERROR,
@@ -344,6 +425,7 @@ def center():
 
 
 @app.route("/move/<method>", methods=['PUT'])
+@error_handler
 def move(method):
     assert htmx is not None
 
@@ -353,6 +435,7 @@ def move(method):
 
 
 @app.route("/settings", methods=['PUT'])
+@error_handler
 def toggle_settings():
     assert htmx is not None
 
@@ -371,6 +454,7 @@ def toggle_settings():
 
 
 @app.route("/settings/render-mode/<render_mode>", methods=['PUT'])
+@error_handler
 def render_mode(render_mode):
     assert htmx is not None
 
@@ -386,6 +470,7 @@ def render_mode(render_mode):
 
 
 @app.route("/settings/mrows", methods=['PUT'])
+@error_handler
 def mrows():
     assert htmx is not None
 
@@ -403,6 +488,7 @@ def mrows():
 
 
 @app.route("/settings/mcols", methods=['PUT'])
+@error_handler
 def mcols():
     assert htmx is not None
 
@@ -420,6 +506,7 @@ def mcols():
 
 
 @app.route("/settings/nrows", methods=['PUT'])
+@error_handler
 def nrows():
     assert htmx is not None
 
@@ -437,6 +524,7 @@ def nrows():
 
 
 @app.route("/settings/ncols", methods=['PUT'])
+@error_handler
 def ncols():
     assert htmx is not None
 

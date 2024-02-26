@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Callable
 
+from src.errors import ClientError
+
 
 @dataclass
 class Mode:
@@ -80,7 +82,7 @@ modes = {
 
 def get_mode(name):
     if name not in modes:
-        raise Exception(f"'{name}' is not a valid mode.")
+        raise ClientError(f"'{name}' is not a valid mode.")
     mode = modes[name]
     return mode
 

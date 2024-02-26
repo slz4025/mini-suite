@@ -1,5 +1,6 @@
 from flask import render_template
 
+from src.errors import ClientError, UserError
 from src.form import extract, parse_int, validate_bounds
 from src.settings import get_settings
 from src.sheet import get_value, get_bounds, check_index
@@ -60,10 +61,10 @@ def set_center(session, form):
 
     bound = maxindex.row
     if row >= bound:
-        raise Exception(f"Row index, {row}, is not within bounds, {bound}.")
+        raise UserError(f"Row index, {row}, is not within bounds, {bound}.")
     bound = maxindex.col
     if col >= bound:
-        raise Exception(f"Row index, {col}, is not within bounds, {bound}.")
+        raise UserError(f"Row index, {col}, is not within bounds, {bound}.")
 
     row_end = min(row + (nrows) // 2 + 1, maxindex.row)
     col_end = min(col + (ncols) // 2 + 1, maxindex.col)
@@ -96,7 +97,7 @@ def move_upperleft(session, method):
             case 'right':
                 delta = Index(row=0, col=mcols)
             case _:
-                raise Exception(f"Unexpected method: {method}")
+                raise ClientError(f"Unexpected method: {method}.")
 
         row = upperleft.row
         potential_row = max(0, upperleft.row+delta.row)

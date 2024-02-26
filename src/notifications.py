@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from flask import render_template
 
+from src.errors import ClientError
 from src.modes import get_modes_str
 
 
@@ -24,7 +25,7 @@ def get_notification(session):
     try:
         mode = NotificationMode(raw_mode)
     except ValueError:
-        raise Exception(f"'{raw_mode}' is not a valid notification mode.")
+        raise ClientError(f"'{raw_mode}' is not a valid notification mode.")
     return Notification(message=message, mode=mode)
 
 

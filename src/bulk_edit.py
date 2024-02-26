@@ -4,6 +4,7 @@ import os
 import re
 from typing import Callable
 
+from src.errors import ClientError, UserError
 from src.form import extract, parse_int, validate_bounds, validate_nonempty
 from src.modes import check_mode
 from src.sheet import (
@@ -30,15 +31,17 @@ def validate_range(axis, r):
     match axis:
         case Axis.ROW:
             bound = bounds.row
+            name = "Row"
         case Axis.COLUMN:
             bound = bounds.col
+            name = "Column"
 
     validate_bounds(start, 0, bound, name="start")
     validate_bounds(end, 0, bound, name="end")
 
     if end < start:
-        raise Exception(
-            f"End, {end}, is less than start, {start}."
+        raise UserError(
+            f"{name} end, {end}, is less than start, {start}."
         )
 
 
@@ -63,7 +66,7 @@ def validate_and_parse_ranges(query):
     for e in entries:
         m = range_re.search(e)
         if not m:
-            raise Exception(
+            raise UserError(
                 f"Pattern '{e}' does not match a valid index or range."
             )
         else:
@@ -191,7 +194,7 @@ def get_selection_mode(name):
     if name in selection_modes:
         return selection_modes[name]
     else:
-        raise Exception(f"Unknown selection mode: {name}")
+        raise ClientError(f"Unknown selection mode: {name}.")
 
 
 def validate_and_parse_selection(form):
@@ -212,7 +215,7 @@ def validate_and_parse_insert_inputs(form):
             axis = Axis.COLUMN
             bound = bounds.col
         case _:
-            raise Exception(f"'{axis_name}' is not a valid axis.")
+            raise ClientError(f"Name '{axis_name}' is not a valid axis.")
 
     index = extract(form, "insert-index", name="index")
     validate_nonempty(index, name="index")
@@ -230,7 +233,7 @@ def validate_and_parse_value_inputs(form):
 
     value = extract(form, "value", name="value")
     if value == "":
-        raise Exception("Field 'value' was not given.")
+        raise UserError("Field 'value' was not given.")
 
     return ValueInput(selection=selection, value=value)
 
@@ -342,7 +345,7 @@ default_operation = operation_options[0]
 
 def get_operation_form(operation):
     if operation not in operation_forms:
-        raise Exception(f"Operation {operation} not supported in bulk edit.")
+        raise ClientError(f"Operation {operation} not supported in bulk edit.")
     operation_form = operation_forms[operation]
     return operation_form
 

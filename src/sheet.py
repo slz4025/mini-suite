@@ -3,6 +3,7 @@ from enum import Enum
 import numpy as np
 from typing import Callable, List, Optional, Union
 
+from src.errors import ClientError
 from src.types import Index
 
 
@@ -183,7 +184,7 @@ def check_index(index):
     maxindex = get_bounds()
     if (index.row < 0 or index.row >= maxindex.row) \
             or (index.col < 0 or index.col >= maxindex.col):
-        raise Exception(
+        raise ClientError(
             f"Cell index ({index.row},{index.col}) "
             f"is out of bounds ({0}:{maxindex.row},{0}:{maxindex.col})."
         )

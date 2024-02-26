@@ -47,13 +47,13 @@
 
 <div class="wrapper">
   <div class="left">
-    <p>
-    [Ctrl+1] Editor<br>
-    [Ctrl+2] Bulk-Edit<br>
-    [Ctrl+3] Navigator<br>
-    [⚙][Ctrl+4] Settings<br>
-    [?][Ctrl+0] Help
-    </p>
+    <div class="inner">
+      <div class="justify"><span>Editor</span><span>[Ctrl+1]</span></div>
+      <div class="justify"><span>Bulk-Edit</span><span>[Ctrl+2]</span></div>
+      <div class="justify"><span>Navigator</span><span>[Ctrl+3]</span></div>
+      <div class="justify"><span>[⚙] Settings</span><span>[Ctrl+4]</span></div>
+      <div class="justify"><span>[?] Help</span><span>[Ctrl+0]</span></div>
+    </div>
     {{ editor|safe }}
     {{ bulk_edit|safe }}
     {{ view_controls|safe }}

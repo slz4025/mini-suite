@@ -71,6 +71,13 @@ div.inner {
   border: 0;
   padding: 0;
 }
+div.justify {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+}
 
 form {
 

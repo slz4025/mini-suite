@@ -12,6 +12,7 @@ from src.sheet import (
     Range,
     BoxSelection,
     RangeSelection,
+    IndexSelection,
     IndicesSelection,
     Selection,
     InsertInput,
@@ -115,6 +116,22 @@ def validate_and_parse_col_range(form):
     return sel
 
 
+def validate_and_parse_row_index(form):
+    index = extract(form, "selection-index", name="index")
+    validate_nonempty(index, name="index")
+    index = parse_int(index, name="index")
+    validate_bounds(index, 0, get_bounds().row, name="index")
+    return IndexSelection(axis=Axis.ROW, index=index)
+
+
+def validate_and_parse_col_index(form):
+    index = extract(form, "selection-index", name="index")
+    validate_nonempty(index, name="index")
+    index = parse_int(index, name="index")
+    validate_bounds(index, 0, get_bounds().col, name="index")
+    return IndexSelection(axis=Axis.COLUMN, index=index)
+
+
 def validate_and_parse_row_indices(form):
     query = extract(form, "selection-query", name="query")
     ranges = validate_and_parse_ranges(query)
@@ -167,6 +184,16 @@ selection_modes = {
         template="box.html",
         validate_and_parse=validate_and_parse_box,
     ),
+    "Row": SelectionMode(
+        name="Row",
+        template="index.html",
+        validate_and_parse=validate_and_parse_row_index,
+    ),
+    "Column": SelectionMode(
+        name="Column",
+        template="index.html",
+        validate_and_parse=validate_and_parse_col_index,
+    ),
     "Rows (Range)": SelectionMode(
         name="Rows (Range)",
         template="range.html",
@@ -205,27 +232,16 @@ def validate_and_parse_selection(form):
 
 
 def validate_and_parse_insert_inputs(form):
-    axis_name = extract(form, "insert-axis", name="axis")
-    bounds = get_bounds()
-    match axis_name:
-        case "Row":
-            axis = Axis.ROW
-            bound = bounds.row
-        case "Column":
-            axis = Axis.COLUMN
-            bound = bounds.col
-        case _:
-            raise ClientError(f"Name '{axis_name}' is not a valid axis.")
-
-    index = extract(form, "insert-index", name="index")
-    validate_nonempty(index, name="index")
-    index = parse_int(index, name="index")
-    validate_bounds(index, 0, bound, name="index")
+    selection = validate_and_parse_selection(form)
 
     number = extract(form, "insert-number", name="number")
     validate_nonempty(number, name="number")
     number = parse_int(number, name="number")
-    return InsertInput(axis=axis, index=index, number=number)
+
+    return InsertInput(
+        selection=selection,
+        number=number,
+    )
 
 
 def validate_and_parse_value_inputs(form):
@@ -236,12 +252,6 @@ def validate_and_parse_value_inputs(form):
         raise UserError("Field 'value' was not given.")
 
     return ValueInput(selection=selection, value=value)
-
-
-def render_insert_inputs(session):
-    return render_template(
-            "partials/bulk_edit/insert.html",
-    )
 
 
 def render_selection_inputs(session, mode):
@@ -278,6 +288,18 @@ def render_delete_selection(session):
     selection_form = render_selection(session, selection_mode_options)
     return render_template(
             "partials/bulk_edit/delete.html",
+            selection_form=selection_form,
+    )
+
+
+def render_insert_inputs(session):
+    selection_mode_options = [
+        "Row",
+        "Column",
+    ]
+    selection_form = render_selection(session, selection_mode_options)
+    return render_template(
+            "partials/bulk_edit/insert.html",
             selection_form=selection_form,
     )
 

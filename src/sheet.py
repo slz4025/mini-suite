@@ -51,6 +51,12 @@ class BoxSelection:
 
 
 @dataclass
+class IndexSelection:
+    axis: Axis
+    index: int
+
+
+@dataclass
 class RangeSelection:
     axis: Axis
     range: Range
@@ -62,13 +68,17 @@ class IndicesSelection:
     indices: List[int]
 
 
-Selection = Union[BoxSelection, RangeSelection, IndicesSelection]
+Selection = Union[
+    BoxSelection,
+    RangeSelection,
+    IndexSelection,
+    IndicesSelection,
+]
 
 
 @dataclass
 class InsertInput:
-    axis: Axis
-    index: int
+    selection: IndexSelection
     number: int
 
 
@@ -95,12 +105,13 @@ def apply_delete(sel):
 def apply_insert(inp):
     global sheet
 
+    sel = inp.selection
     insertion = np.array([[None] * inp.number])
     sheet = np.insert(
         sheet,
-        [inp.index] * inp.number,
-        insertion if inp.axis == Axis.COLUMN else insertion.T,
-        axis=inp.axis.value,
+        [sel.index] * inp.number,
+        insertion if sel.axis == Axis.COLUMN else insertion.T,
+        axis=sel.axis.value,
     )
 
 

@@ -5,12 +5,12 @@ def get_selection_mode(session):
 
 
 def set_selection_mode(session, selection_mode):
-    session["bulk-edit-selection-mode"] = \
-        "" if selection_mode is None else selection_mode
+    session["bulk-edit-selection-mode"] = selection_mode
 
 
 def reset_selection_mode(session):
-    set_selection_mode(session, None)
+    if "bulk-edit-selection-mode" in session:
+        session.pop("bulk-edit-selection-mode")
 
 
 def get_operation(session):
@@ -20,11 +20,12 @@ def get_operation(session):
 
 
 def set_operation(session, operation):
-    session["bulk-edit-operation"] = "" if operation is None else operation
+    session["bulk-edit-operation"] = operation
 
 
 def reset_operation(session):
-    set_operation(session, None)
+    if "bulk-edit-operation" in session:
+        session.pop("bulk-edit-operation")
 
 
 def get_buffer_selection_mode(session):

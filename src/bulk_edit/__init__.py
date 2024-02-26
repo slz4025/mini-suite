@@ -24,9 +24,12 @@ def render(session):
     )
 
 
-def attempt_apply(form):
+def attempt_apply(session, form):
     op = extract(form, "operation")
     operation_form = operations.get(op)
     operation_input = operation_form.validate_and_parse(form)
     modification = Modification(operation=op, input=operation_input)
     apply_modification(modification)
+
+    if operation_form.name == "COPY":
+        operations.save_copy_selection_mode(session, operation_input)

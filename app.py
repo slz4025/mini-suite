@@ -322,7 +322,7 @@ def open_bulk_edit():
         case 'POST':
             success = False
             try:
-                bulk_edit.attempt_apply(request.form)
+                bulk_edit.attempt_apply(session, request.form)
                 success = True
             except UserError as e:
                 set_notification(session, Notification(

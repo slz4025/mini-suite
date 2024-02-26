@@ -5,16 +5,22 @@ from typing import Callable
 from src.errors import ClientError, UserError
 from src.form import extract, parse_int, validate_nonempty
 from src.sheet import (
+    Axis,
+    BoxSelection,
+    RangeSelection,
+    Selection,
     Input,
     InsertInput,
     ValueInput,
 )
 
 import src.bulk_edit.selection as selection
+import src.bulk_edit.state as state
 
 
 @dataclass
 class OperationForm:
+    name: str
     validate_and_parse: Callable[[object], Input]
     render: Callable[[], str]
 
@@ -99,6 +105,58 @@ def render_value_inputs(session):
     )
 
 
+def save_copy_selection_mode(session, operation_input):
+    input_type = type(operation_input)
+
+    selection_mode = None
+    if isinstance(operation_input, BoxSelection):
+        selection_mode = "Box"
+    elif isinstance(operation_input, RangeSelection):
+        match operation_input.axis:
+            case Axis.ROW:
+                selection_mode = "Row (Range)"
+            case Axis.COLUMN:
+                selection_mode = "Column (Range)"
+    elif isinstance(operation_input, Selection):
+        raise ClientError(
+            "Expected copy selection to be Box, Row, or Column. "
+            f"Got type {input_type} instead."
+        )
+    else:
+        raise ClientError(
+            f"Expected copy input to be a selection. "
+            f"Got type {input_type} instead."
+        )
+
+    assert selection_mode is not None
+    state.set_buffer_selection_mode(session, selection_mode)
+
+
+def get_paste_selection_mode_options(session):
+    copy_to_paste = {
+        "Box": "Cell",
+        "Row (Range)": "Row",
+        "Column (Range)": "Column",
+    }
+    copy_selection_mode = state.get_buffer_selection_mode(session)
+    if copy_selection_mode is None:
+        raise UserError("Did not copy anything yet to paste.")
+    if copy_selection_mode not in copy_to_paste:
+        raise ClientError(
+            "Expected copy selection to be Box, Row, or Column. "
+            f"Got type {copy_selection_mode} instead."
+        )
+
+    paste_selection_mode = copy_to_paste[copy_selection_mode]
+    other_selection_mode_options = [
+        o for o in copy_to_paste.values() if o != paste_selection_mode
+    ]
+
+    selection_mode_options = \
+        [paste_selection_mode] + other_selection_mode_options
+    return selection_mode_options
+
+
 def render_copy_inputs(session):
     selection_mode_options = [
         "Box",
@@ -113,12 +171,7 @@ def render_copy_inputs(session):
 
 
 def render_paste_inputs(session):
-    # TODO: Have the one that matches the copy selection best first.
-    selection_mode_options = [
-        "Cell",
-        "Row",
-        "Column",
-    ]
+    selection_mode_options = get_paste_selection_mode_options(session)
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
             "partials/bulk_edit/paste.html",
@@ -128,26 +181,32 @@ def render_paste_inputs(session):
 
 operation_forms = {
     "COPY": OperationForm(
+        name="COPY",
         validate_and_parse=selection.validate_and_parse,
         render=render_copy_inputs,
     ),
     "PASTE": OperationForm(
+        name="PASTE",
         validate_and_parse=selection.validate_and_parse,
         render=render_paste_inputs,
     ),
     "DELETE": OperationForm(
+        name="DELETE",
         validate_and_parse=selection.validate_and_parse,
         render=render_delete_inputs,
     ),
     "INSERT": OperationForm(
+        name="INSERT",
         validate_and_parse=validate_and_parse_insert,
         render=render_insert_inputs,
     ),
     "ERASE": OperationForm(
+        name="ERASE",
         validate_and_parse=selection.validate_and_parse,
         render=render_erase_inputs,
     ),
     "VALUE": OperationForm(
+        name="VALUE",
         validate_and_parse=validate_and_parse_value,
         render=render_value_inputs,
     ),

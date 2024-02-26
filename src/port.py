@@ -165,7 +165,7 @@ def render_row(session, leftmost, ncols, maxindex):
 
 
 def render_table_header(session, upperleft, ncols, maxindex):
-    corner = render_header(session, axis="row", index="")
+    corner = render_header(session, axis="none", index="")
 
     header = []
     for col in range(upperleft.col, min(upperleft.col+ncols, maxindex.col)):

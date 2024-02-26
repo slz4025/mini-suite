@@ -1,6 +1,6 @@
 <th
   id="header-{{ axis }}-{{ index }}"
-  style="width: {{ '50%' if axis == 'row' else '100%' }}; text-align: {{ 'right' if axis == 'row' else 'center' }};"
+  class="{{ axis }}"
 >
   {{ data|safe }}
 </th>

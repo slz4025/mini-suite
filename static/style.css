@@ -138,18 +138,33 @@ table {
   width: 100%;
   table-layout: fixed;
   border-spacing: 0;
-  border: 1px solid var(--secondary-color);
+  border: 0.5px solid var(--secondary-color);
   margin: 0;
 }
 tr:nth-child(even) {
   background-color: var(--shade-color);
 }
 th {
+  padding: 0.25rem;
+}
+th.none {
+  width: 50%;
+}
+th.row {
+  width: 50%;
+  border-right: 1px solid var(--main-color);
 
+  text-align: right;
+}
+th.col {
+  width: 100%;
+  border-bottom: 1px solid var(--main-color);
+
+  text-align: center;
 }
 td {
   padding: 0;
-  border: 1px solid var(--secondary-color);
+  border: 0.5px solid var(--secondary-color);
 }
 
 h1 {

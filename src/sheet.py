@@ -45,6 +45,15 @@ def get_indices(start, end):
     return list(range(start, end))
 
 
+def get_all_indices(axis, ranges):
+    all_indices = []
+    for r in ranges:
+        start, end = set_range(axis, r)
+        indices = get_indices(start, end)
+        all_indices.extend(indices)
+    return list(set(all_indices))
+
+
 @dataclass
 class CellSelection:
     index: Index

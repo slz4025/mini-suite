@@ -155,7 +155,7 @@ def render_body(session):
     port = render_port(session)
     navigator = render_navigator(session)
     editor = render_editor(session)
-    bulk_edit_controls = bulk_edit.render_controls(session)
+    bulk_edit_html = bulk_edit.render(session)
     settings_html = render_settings(session)
     body = render_template(
             "partials/body.html",
@@ -163,7 +163,7 @@ def render_body(session):
             notification_banner=notification_banner,
             data=port,
             editor=editor,
-            bulk_edit_controls=bulk_edit_controls,
+            bulk_edit=bulk_edit_html,
             navigator=navigator,
             settings=settings_html,
             )
@@ -339,7 +339,7 @@ def open_bulk_edit():
                 resp.headers['HX-Trigger'] += ",notification"
                 resp.headers['HX-Trigger'] += ",update-port"
 
-    html = bulk_edit.render_controls(session)
+    html = bulk_edit.render(session)
     resp.response = html
     return resp
 
@@ -350,7 +350,7 @@ def bulk_edit_operation_form():
     assert htmx is not None
 
     operation = request.args["operation"]
-    return bulk_edit.render_operation_form(session, operation)
+    return bulk_edit.operations.render(session, operation)
 
 
 @app.route("/bulk-edit/selection-inputs", methods=['GET'])
@@ -359,7 +359,7 @@ def bulk_edit_selection_inputs():
     assert htmx is not None
 
     mode = request.args["selection-mode"]
-    return bulk_edit.render_selection_inputs(session, mode)
+    return bulk_edit.selection.render_inputs(session, mode)
 
 
 @app.route("/navigator", methods=['PUT', 'POST'])

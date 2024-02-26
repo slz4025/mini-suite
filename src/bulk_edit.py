@@ -404,6 +404,14 @@ class OperationForm:
 
 
 operation_forms = {
+    "COPY": OperationForm(
+        validate_and_parse=validate_and_parse_selection,
+        render=render_copy_inputs,
+    ),
+    "PASTE": OperationForm(
+        validate_and_parse=validate_and_parse_selection,
+        render=render_paste_inputs,
+    ),
     "DELETE": OperationForm(
         validate_and_parse=validate_and_parse_selection,
         render=render_delete_selection,
@@ -420,18 +428,10 @@ operation_forms = {
         validate_and_parse=validate_and_parse_value_inputs,
         render=render_value_inputs,
     ),
-    "COPY": OperationForm(
-        validate_and_parse=validate_and_parse_selection,
-        render=render_copy_inputs,
-    ),
-    "PASTE": OperationForm(
-        validate_and_parse=validate_and_parse_selection,
-        render=render_paste_inputs,
-    ),
 }
 
 
-operation_options = sorted(operation_forms)
+operation_options = list(operation_forms.keys())
 default_operation = operation_options[0]
 
 

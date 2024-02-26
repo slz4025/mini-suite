@@ -2,9 +2,5 @@
   "--background-color": "#F0F0F0",
   "--main-color": "#111111",
   "--secondary-color": "#B0B0B0",
-  "--inverse-color": "#F0F0F0",
-  "--shade-color": "#D0D0D0",
-  "--info-color": "#008B00",
-  "--error-color": "#8B0000",
-  "--warning-color": "#8B8B00"
+  "--shade-color": "#D8D8D8"
 }

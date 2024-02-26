@@ -8,11 +8,12 @@
   --background-color: #F0F0F0;
   --main-color: #111111;
   --secondary-color: #B0B0B0;
-  --inverse-color: #F0F0F0;
-  --shade-color: #D0D0D0;
-  --info-color: #008B00;
-  --error-color: #8B0000;
-  --warning-color: #8B8B00;
+  --shade-color: #D8D8D8;
+
+  --info-color: #0F0F0F;
+  --info-background-color: #00B800;
+  --error-color: #F0F0F0;
+  --error-background-color: #8B0000;
 
   --highlight-color: #111111;
   --highlight-background-color: #FFFF00;
@@ -192,19 +193,22 @@ span {
   width: 100%;
   z-index: 1;
 
-  color: var(--inverse-color); 
+  margin: 0;
+  border: 0;
+
+  font-weight: bold;
 }
 #notification-banner.none {
+  color: var(--background-color);
   background-color: var(--main-color);
 }
 #notification-banner.info {
-  background-color: var(--info-color);
-}
-#notification-banner.warning {
-  background-color: var(--warning-color);
+  color: var(--info-color);
+  background-color: var(--info-background-color);
 }
 #notification-banner.error {
-  background-color: var(--error-color);
+  color: var(--error-color);
+  background-color: var(--error-background-color);
 }
 
 #loader{

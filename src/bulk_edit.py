@@ -10,6 +10,7 @@ from src.modes import check_mode
 from src.sheet import (
     Axis,
     Range,
+    CellSelection,
     BoxSelection,
     RangeSelection,
     IndexSelection,
@@ -24,6 +25,7 @@ from src.sheet import (
     set_range,
     apply_modification,
 )
+from src.types import Index
 
 
 def validate_range(axis, r):
@@ -153,6 +155,21 @@ def validate_and_parse_col_indices(form):
     return sel
 
 
+def validate_and_parse_cell(form):
+    row = extract(form, "selection-row", name="row")
+    validate_nonempty(row, name="row")
+    row = parse_int(row, name="row")
+    validate_bounds(row, 0, get_bounds().row, name="row")
+
+    col = extract(form, "selection-col", name="column")
+    validate_nonempty(col, name="column")
+    col = parse_int(col, name="column")
+    validate_bounds(col, 0, get_bounds().col, name="column")
+
+    sel = CellSelection(index=Index(row=row, col=col))
+    return sel
+
+
 def validate_and_parse_box(form):
     sr = extract(form, "selection-sr", name="starting row")
     sr = None if sr == "" else parse_int(sr, name="starting row")
@@ -180,6 +197,11 @@ class SelectionMode:
 
 
 selection_modes = {
+    "Cell": SelectionMode(
+        name="Cell",
+        template="cell.html",
+        validate_and_parse=validate_and_parse_cell,
+    ),
     "Box": SelectionMode(
         name="Box",
         template="box.html",
@@ -216,6 +238,18 @@ selection_modes = {
         validate_and_parse=validate_and_parse_col_indices,
     ),
 }
+
+
+def get_buffer_selection_mode(session):
+    if "buffer-selection-mode" not in session:
+        return None
+    return session["buffer-selection-mode"]
+
+
+def set_buffer_selection_mode(session, selection_mode):
+    if selection_mode not in selection_modes:
+        raise ClientError(f"'{selection_mode}' is not a selection mode.")
+    session["buffer-selection-mode"] = selection_mode
 
 
 def get_selection_mode(name):
@@ -336,6 +370,33 @@ def render_value_inputs(session):
     )
 
 
+def render_copy_inputs(session):
+    selection_mode_options = [
+        "Box",
+        "Rows (Range)",
+        "Columns (Range)",
+    ]
+    selection_form = render_selection(session, selection_mode_options)
+    return render_template(
+            "partials/bulk_edit/copy.html",
+            selection_form=selection_form,
+    )
+
+
+def render_paste_inputs(session):
+    # TODO: Have the one that matches the copy selection best first.
+    selection_mode_options = [
+        "Cell",
+        "Row",
+        "Column",
+    ]
+    selection_form = render_selection(session, selection_mode_options)
+    return render_template(
+            "partials/bulk_edit/paste.html",
+            selection_form=selection_form,
+    )
+
+
 @dataclass
 class OperationForm:
     validate_and_parse: Callable[[object], Input]
@@ -358,6 +419,14 @@ operation_forms = {
     "VALUE": OperationForm(
         validate_and_parse=validate_and_parse_value_inputs,
         render=render_value_inputs,
+    ),
+    "COPY": OperationForm(
+        validate_and_parse=validate_and_parse_selection,
+        render=render_copy_inputs,
+    ),
+    "PASTE": OperationForm(
+        validate_and_parse=validate_and_parse_selection,
+        render=render_paste_inputs,
     ),
 }
 

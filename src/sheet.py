@@ -1,9 +1,10 @@
+import copy
 from dataclasses import dataclass
 from enum import Enum
 import numpy as np
 from typing import Callable, List, Optional, Union
 
-from src.errors import ClientError
+from src.errors import ClientError, UserError
 from src.types import Index
 
 
@@ -45,6 +46,11 @@ def get_indices(start, end):
 
 
 @dataclass
+class CellSelection:
+    index: Index
+
+
+@dataclass
 class BoxSelection:
     rows: Range
     cols: Range
@@ -69,6 +75,7 @@ class IndicesSelection:
 
 
 Selection = Union[
+    CellSelection,
     BoxSelection,
     RangeSelection,
     IndexSelection,
@@ -160,6 +167,87 @@ def apply_erase(sel):
     apply_value(inp)
 
 
+buffer = None
+
+
+def apply_copy(sel):
+    global buffer
+
+    ref = None
+    if isinstance(sel, BoxSelection):
+        row_start, row_end = set_range(Axis.ROW, sel.rows)
+        col_start, col_end = set_range(Axis.COLUMN, sel.cols)
+        ref = sheet[row_start:row_end, col_start:col_end]
+    elif isinstance(sel, RangeSelection):
+        start, end = set_range(sel.axis, sel.range)
+        match sel.axis:
+            case Axis.ROW:
+                ref = sheet[start:end, :]
+            case Axis.COLUMN:
+                ref = sheet[:, start:end]
+    else:
+        raise ClientError(
+            f"Selection type, {type(sel)}, is not valid for copy."
+        )
+
+    if ref is not None:
+        # Copy objects, e.g. strings, within the array.
+        buffer = copy.deepcopy(ref)
+
+
+def maybe_insert_at_end(axis, needed):
+    bounds = get_bounds()
+    match axis:
+        case Axis.ROW:
+            bound = bounds.row
+        case Axis.COLUMN:
+            bound = bounds.col
+
+    extra = needed - bound
+    if extra > 0:
+        apply_insert(InsertInput(
+            selection=IndexSelection(
+                axis=axis,
+                index=bound,
+            ),
+            number=extra,
+        ))
+
+
+def apply_paste(sel):
+    if buffer is None:
+        raise UserError("Nothing in buffer to paste from.")
+
+    # Copy objects, e.g. strings, within the array.
+    copied_buffer = copy.deepcopy(buffer)
+
+    if isinstance(sel, CellSelection):
+        row_start = sel.index.row
+        row_end = row_start + buffer.shape[0]
+        col_start = sel.index.col
+        col_end = col_start + buffer.shape[1]
+    elif isinstance(sel, IndexSelection):
+        match sel.axis:
+            case Axis.ROW:
+                row_start = sel.index
+                row_end = row_start + buffer.shape[0]
+                col_start = 0
+                col_end = get_bounds().col
+            case Axis.COLUMN:
+                row_start = 0
+                row_end = get_bounds().row
+                col_start = sel.index
+                col_end = col_start + buffer.shape[1]
+    else:
+        raise ClientError(
+            f"Selection type, {type(sel)}, is not valid for paste."
+        )
+
+    maybe_insert_at_end(Axis.ROW, row_end)
+    maybe_insert_at_end(Axis.COLUMN, col_end)
+    sheet[row_start:row_end, col_start:col_end] = copied_buffer
+
+
 @dataclass
 class Operation:
     name: str
@@ -171,6 +259,8 @@ operations = {
     "INSERT": Operation(name="INSERT", apply=apply_insert),
     "ERASE": Operation(name="ERASE", apply=apply_erase),
     "VALUE": Operation(name="VALUE", apply=apply_value),
+    "COPY": Operation(name="COPY", apply=apply_copy),
+    "PASTE": Operation(name="PASTE", apply=apply_paste),
 }
 
 

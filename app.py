@@ -333,7 +333,7 @@ def open_bulk_edit():
 
             if success:
                 set_notification(session, Notification(
-                    message="Bulk updated spreadsheet.",
+                    message="Bulk operation complete.",
                     mode=NotificationMode.INFO,
                 ))
                 resp.headers['HX-Trigger'] += ",notification"

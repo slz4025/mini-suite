@@ -41,7 +41,6 @@ from src.settings import init_settings, set_settings, get_settings
 from src.sheet import (
     init_sheet,
     get_sheet,
-    apply_modification,
     get_cell,
     update_cell,
 )
@@ -323,8 +322,7 @@ def open_bulk_edit():
         case 'POST':
             success = False
             try:
-                modification = bulk_edit.validate_and_parse(request.form)
-                apply_modification(modification)
+                bulk_edit.attempt_apply(request.form)
                 success = True
             except UserError as e:
                 set_notification(session, Notification(

@@ -22,6 +22,7 @@ from src.sheet import (
     get_bounds,
     get_indices,
     set_range,
+    apply_modification,
 )
 
 
@@ -372,12 +373,12 @@ def get_operation_form(operation):
     return operation_form
 
 
-def validate_and_parse(form):
+def attempt_apply(form):
     operation = extract(form, "operation")
     operation_form = get_operation_form(operation)
     operation_input = operation_form.validate_and_parse(form)
     modification = Modification(operation=operation, input=operation_input)
-    return modification
+    apply_modification(modification)
 
 
 def render_operation_form(session, operation):

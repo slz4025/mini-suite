@@ -3,53 +3,51 @@ from flask import render_template
 import os
 from typing import Callable
 
-from src.errors import ClientError
+from src.errors import UnknownOptionError
 from src.form import extract
 from src.modes import check_mode
-from src.sheet import (
-    Selection,
-)
 
 import src.bulk_edit.selection_inputs as inputs
+import src.data.selections as selections
 
 
 @dataclass
 class SelectionForm:
     name: str
     template: str
-    validate_and_parse: Callable[[object], Selection]
+    validate_and_parse: Callable[[object], selections.Selection]
 
 
 selection_forms = {
-    "Cell": SelectionForm(
-        name="Cell",
-        template="cell.html",
-        validate_and_parse=inputs.cell,
+    "Row": SelectionForm(
+        name="Row",
+        template="row_index.html",
+        validate_and_parse=inputs.get_row_index,
+    ),
+    "Column": SelectionForm(
+        name="Column",
+        template="col_index.html",
+        validate_and_parse=inputs.get_col_index,
+    ),
+    "Cell Position": SelectionForm(
+        name="Cell Position",
+        template="cell_position.html",
+        validate_and_parse=inputs.get_cell_position,
+    ),
+    "Rows": SelectionForm(
+        name="Rows",
+        template="row_range.html",
+        validate_and_parse=inputs.get_row_range,
+    ),
+    "Columns": SelectionForm(
+        name="Columns",
+        template="col_range.html",
+        validate_and_parse=inputs.get_col_range,
     ),
     "Box": SelectionForm(
         name="Box",
         template="box.html",
-        validate_and_parse=inputs.box,
-    ),
-    "Row": SelectionForm(
-        name="Row",
-        template="index.html",
-        validate_and_parse=inputs.row_index,
-    ),
-    "Column": SelectionForm(
-        name="Column",
-        template="index.html",
-        validate_and_parse=inputs.col_index,
-    ),
-    "Rows (Range)": SelectionForm(
-        name="Rows (Range)",
-        template="range.html",
-        validate_and_parse=inputs.row_range,
-    ),
-    "Columns (Range)": SelectionForm(
-        name="Columns (Range)",
-        template="range.html",
-        validate_and_parse=inputs.col_range,
+        validate_and_parse=inputs.get_box,
     ),
 }
 
@@ -58,7 +56,7 @@ def get(name):
     if name in selection_forms:
         return selection_forms[name]
     else:
-        raise ClientError(f"Unknown selection type: {name}.")
+        raise UnknownOptionError(f"Unknown selection type: {name}.")
 
 
 def validate_and_parse(form):

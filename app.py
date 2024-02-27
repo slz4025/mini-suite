@@ -1,4 +1,3 @@
-import json
 from flask import (
     Flask,
     render_template,
@@ -13,7 +12,7 @@ import traceback
 from waitress import serve
 
 from src.errors import (
-    ClientError,
+    OutOfBoundsError,
     UserError,
     get_error_message,
     set_error_message,
@@ -24,8 +23,8 @@ from src.port import (
     render_port,
     render_cell,
     set_center,
-    get_focused_cell,
-    set_focused_cell,
+    get_focused_cell_position,
+    set_focused_cell_position,
 )
 import src.bulk_edit as bulk_edit
 from src.modes import init_modes, check_mode, set_mode, get_modes_str
@@ -38,13 +37,9 @@ from src.notifications import (
     set_notification,
 )
 from src.settings import init_settings, set_settings, get_settings
-from src.sheet import (
-    init_sheet,
-    get_sheet,
-    get_cell,
-    update_cell,
-)
-from src.types import Index
+import src.data.sheet as sheet
+import src.data.selections as selections
+import src.data.operations as operations
 
 app = Flask(__name__)
 htmx = HTMX(app)
@@ -77,23 +72,17 @@ def error_handler(func):
         resp = None
 
         error = None
-        error_location = None
 
         try:
             resp = func(*args, **kwargs)
-        except ClientError as e:
-            error = e
-            error_location = "CLIENT"
         except Exception as e:
             error = e
-            error_location = "SERVER"
 
         if resp is None:
             assert error is not None
-            assert error_location is not None
 
             stack_trace = "".join(traceback.format_tb(error.__traceback__))
-            error_message = f"{error_location}: {error}\n{stack_trace}"
+            error_message = f"ERROR: {error}\n{stack_trace}"
             set_error_message(session, error_message)
 
             resp = make_response()
@@ -108,11 +97,11 @@ def error_handler(func):
 
 def render_editor(session):
     editor_state = check_mode(session, "Editor")
-    focused_cell = get_focused_cell(session)
-    row = focused_cell.row
-    col = focused_cell.col
+    focused_cell = get_focused_cell_position(session)
+    row = focused_cell.row_index.value
+    col = focused_cell.col_index.value
 
-    data = get_cell(focused_cell)
+    data = operations.get_cell(focused_cell)
     if data is None:
         data = ""
     return render_template(
@@ -185,7 +174,7 @@ def root():
     init_settings(session)
 
     # TODO: This should eventually be done only on the creation of the sheet.
-    init_sheet(DEBUG)
+    sheet.init(DEBUG)
 
     body = render_body(session)
     return render_template(
@@ -199,13 +188,9 @@ def root():
 def data():
     assert htmx is not None
 
-    sheet = get_sheet()
+    dump = sheet.get_dump()
 
-    data = []
-    for row in range(sheet.shape[0]):
-        data.append(sheet[row].tolist())
-
-    return json.dumps(data)
+    return dump
 
 
 @app.route("/help", methods=['PUT'])
@@ -242,10 +227,13 @@ def port():
 def cell_highlight(row, col, state):
     assert htmx is not None
 
-    cell_index = Index(row=int(row), col=int(col))
+    cell_position = selections.CellPosition(
+        row_index=selections.RowIndex(int(row)),
+        col_index=selections.ColIndex(int(col)),
+    )
     highlight = state == "on"
 
-    return render_cell(session, cell_index, highlight=highlight)
+    return render_cell(session, cell_position, highlight=highlight)
 
 
 @app.route("/cell/<row>/<col>/update", methods=['PUT'])
@@ -256,13 +244,16 @@ def cell_rerender(row, col):
     # May come from:
     # 1. A submission by the editor.
 
-    cell_index = Index(row=int(row), col=int(col))
+    cell_position = selections.CellPosition(
+        row_index=selections.RowIndex(int(row)),
+        col_index=selections.ColIndex(int(col)),
+    )
 
-    key = f"input-cell-{cell_index.row}-{cell_index.col}"
+    key = f"input-cell-{row}-{col}"
     value = request.form[key]
-    update_cell(cell_index, value)
+    operations.update_cell(cell_position, value)
 
-    cell = render_cell(session, cell_index)
+    cell = render_cell(session, cell_position)
     resp = Response(cell)
     return resp
 
@@ -277,14 +268,17 @@ def cell_sync(row, col):
     # 2. An update on the cell value.
 
     # Update cell.
-    cell_index = Index(row=int(row), col=int(col))
-    key = f"input-cell-{cell_index.row}-{cell_index.col}"
+    cell_position = selections.CellPosition(
+        row_index=selections.RowIndex(int(row)),
+        col_index=selections.ColIndex(int(col)),
+    )
+    key = f"input-cell-{row}-{col}"
     if key in request.form:
         value = request.form[key]
-        update_cell(cell_index, value)
+        operations.update_cell(cell_position, value)
 
     # Sync with editor.
-    set_focused_cell(session, cell_index)
+    set_focused_cell_position(session, cell_position)
     return render_editor(session)
 
 
@@ -324,7 +318,7 @@ def open_bulk_edit():
             try:
                 bulk_edit.attempt_apply(session, request.form)
                 success = True
-            except UserError as e:
+            except (UserError, OutOfBoundsError) as e:
                 set_notification(session, Notification(
                     message=str(e),
                     mode=NotificationMode.ERROR,
@@ -404,7 +398,7 @@ def center():
     try:
         set_center(session, request.form)
         success = True
-    except UserError as e:
+    except (UserError, OutOfBoundsError) as e:
         set_notification(session, Notification(
             message=str(e),
             mode=NotificationMode.ERROR,

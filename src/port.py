@@ -1,160 +1,196 @@
 from flask import render_template
 
-from src.errors import ClientError, UserError
-from src.form import extract, parse_int, validate_bounds
+from src.errors import UnknownOptionError
+from src.form import extract, parse_int
 from src.settings import get_settings
-from src.sheet import get_value, get_bounds, check_index
-from src.types import Index
+
+import src.data.operations as operations
+import src.data.selections as selections
+import src.data.sheet as sheet
 
 
-def cells_equal(cell1, cell2):
-    return cell1.row == cell2.row and cell1.col == cell2.col
+def cell_position_eq(cell_position, other_cell_position):
+    return cell_position.row_index.value \
+        == other_cell_position.row_index.value \
+        and cell_position.col_index.value \
+        == other_cell_position.col_index.value
 
 
-def get_focused_cell(session):
-    return Index(
-        row=int(session["focused-cell"]["row"]),
-        col=int(session["focused-cell"]["col"]),
+def get_focused_cell_position(session):
+    return selections.CellPosition(
+        row_index=selections.RowIndex(
+            int(session["focused-cell-position"]["row-index"])
+        ),
+        col_index=selections.ColIndex(
+            int(session["focused-cell-position"]["col-index"])
+        ),
     )
 
 
-def set_focused_cell(session, focused_cell):
-    session["focused-cell"] = {
-        "row": str(focused_cell.row),
-        "col": str(focused_cell.col),
+def set_focused_cell_position(session, focused_cell_position):
+    session["focused-cell-position"] = {
+        "row-index": str(focused_cell_position.row_index.value),
+        "col-index": str(focused_cell_position.col_index.value),
     }
 
 
-def is_focused(session, cell):
-    focused_cell = get_focused_cell(session)
-    return cells_equal(focused_cell, cell)
+def is_focused(session, cell_position):
+    focused_cell_position = get_focused_cell_position(session)
+    return cell_position_eq(focused_cell_position, cell_position)
 
 
 def get_upperleft(session):
-    return Index(
-        row=int(session["upper-left"]["row"]),
-        col=int(session["upper-left"]["col"]),
+    return selections.CellPosition(
+        row_index=selections.RowIndex(int(session["upper-left"]["row-index"])),
+        col_index=selections.ColIndex(int(session["upper-left"]["col-index"])),
     )
 
 
 def set_upperleft(session, upperleft):
     session["upper-left"] = {
-        "row": str(upperleft.row),
-        "col": str(upperleft.col),
+        "row-index": str(upperleft.row_index.value),
+        "col-index": str(upperleft.col_index.value),
     }
 
 
 def set_center(session, form):
-    maxindex = get_bounds()
-
     settings = get_settings(session)
     nrows = settings.nrows
     ncols = settings.ncols
 
-    row = extract(form, "center-cell-row", name="row")
-    row = parse_int(row, name="row")
-    validate_bounds(row, 0, maxindex.row, "row")
+    row = extract(form, "center-cell-row-index", name="row index")
+    row = parse_int(row, name="row index")
 
-    col = extract(form, "center-cell-col", name="col")
-    col = parse_int(col, name="col")
-    validate_bounds(col, 0, maxindex.col, "column")
+    col = extract(form, "center-cell-col-index", name="col index")
+    col = parse_int(col, name="column index")
 
-    bound = maxindex.row
-    if row >= bound:
-        raise UserError(f"Row index, {row}, is not within bounds, {bound}.")
-    bound = maxindex.col
-    if col >= bound:
-        raise UserError(f"Row index, {col}, is not within bounds, {bound}.")
-
-    row_end = min(row + (nrows) // 2 + 1, maxindex.row)
-    col_end = min(col + (ncols) // 2 + 1, maxindex.col)
+    bounds = sheet.get_bounds()
+    row_end = min(row + (nrows) // 2 + 1, bounds.row.value)
+    col_end = min(col + (ncols) // 2 + 1, bounds.col.value)
     row_start = max(0, row_end - nrows)
     col_start = max(0, col_end - ncols)
 
-    upperleft = Index(row=row_start, col=col_start)
+    upperleft = selections.CellPosition(
+        row_index=selections.RowIndex(row_start),
+        col_index=selections.RowIndex(col_start),
+    )
     set_upperleft(session, upperleft)
 
 
 def move_upperleft(session, method):
-    upperleft = get_upperleft(session)
-
     settings = get_settings(session)
     mrows = settings.mrows
     mcols = settings.mcols
 
-    maxindex = get_bounds()
-
     if method == 'home':
-        moved = Index(row=0, col=0)
+        moved = selections.CellPosition(
+            row_index=selections.RowIndex(0),
+            col_index=selections.ColIndex(0),
+        )
     else:
+        delta_row = 0
+        delta_col = 0
         match method:
             case 'up':
-                delta = Index(row=-mrows, col=0)
+                delta_row = -mrows
             case 'down':
-                delta = Index(row=mrows, col=0)
+                delta_row = mrows
             case 'left':
-                delta = Index(row=0, col=-mcols)
+                delta_col = -mcols
             case 'right':
-                delta = Index(row=0, col=mcols)
+                delta_col = mcols
             case _:
-                raise ClientError(f"Unexpected method: {method}.")
+                raise UnknownOptionError(f"Unexpected method: {method}.")
 
-        row = upperleft.row
-        potential_row = max(0, upperleft.row+delta.row)
-        if potential_row < maxindex.row:
+        upperleft = get_upperleft(session)
+        bounds = sheet.get_bounds()
+
+        row = upperleft.row_index.value
+        potential_row = max(0, upperleft.row_index.value+delta_row)
+        if potential_row < bounds.row.value:
             row = potential_row
 
-        col = upperleft.col
-        potential_col = max(0, upperleft.col+delta.col)
-        if potential_col < maxindex.col:
+        col = upperleft.col_index.value
+        potential_col = max(0, upperleft.col_index.value+delta_col)
+        if potential_col < bounds.col.value:
             col = potential_col
 
-        moved = Index(row=row, col=col)
+        moved = selections.CellPosition(
+            row_index=selections.RowIndex(row),
+            col_index=selections.ColIndex(col),
+        )
 
     set_upperleft(session, moved)
 
 
 def init_port(session):
-    upperleft = Index(row=0, col=0)
+    upperleft = selections.CellPosition(
+        row_index=selections.RowIndex(0),
+        col_index=selections.ColIndex(0),
+    )
     set_upperleft(session, upperleft)
-    focused_cell = Index(row=0, col=0)
-    set_focused_cell(session, focused_cell)
+    focused_cell_position = selections.CellPosition(
+        row_index=selections.RowIndex(0),
+        col_index=selections.ColIndex(0),
+    )
+    set_focused_cell_position(session, focused_cell_position)
 
 
-def render_cell(session, index, highlight=False):
-    check_index(index)
+def render_cell(session, cell_position, highlight=False):
+    selections.check_cell_position(cell_position)
 
-    show_highlight = highlight and is_focused(session, index)
+    show_highlight = highlight and is_focused(session, cell_position)
 
-    value = get_value(index.row, index.col)
+    value = operations.get_cell(cell_position)
     if value is None:
         value = ""
     return render_template(
             "partials/port/cell.html",
-            row=index.row,
-            col=index.col,
+            row=cell_position.row_index.value,
+            col=cell_position.col_index.value,
             data=value,
             show_highlight=show_highlight,
     )
 
 
-def render_header(session, axis, index):
+def render_corner_header(session):
     return render_template(
-        "partials/port/header.html",
-        axis=axis,
-        index=index,
-        data=index,
+        "partials/port/corner_header.html",
+        data="",
     )
 
 
-def render_row(session, leftmost, ncols, maxindex):
-    row = leftmost.row
+def render_row_header(session, row_index):
+    return render_template(
+        "partials/port/row_header.html",
+        index=row_index.value,
+        data=row_index.value,
+    )
 
-    header = render_header(session, axis="row", index=row)
+
+def render_col_header(session, col_index):
+    return render_template(
+        "partials/port/col_header.html",
+        index=col_index.value,
+        data=col_index.value,
+    )
+
+
+def render_row(session, leftmost, ncols, bounds):
+    header = render_row_header(session, row_index=leftmost.row_index)
 
     cells = []
-    for col in range(leftmost.col, min(leftmost.col+ncols, maxindex.col)):
-        cell = render_cell(session, Index(row=row, col=col))
+    for col in range(
+        leftmost.col_index.value,
+        min(leftmost.col_index.value+ncols, bounds.col.value)
+    ):
+        cell = render_cell(
+            session,
+            selections.CellPosition(
+                row_index=leftmost.row_index,
+                col_index=selections.ColIndex(col),
+            ),
+        )
         cells.append(cell)
 
     return render_template(
@@ -164,12 +200,15 @@ def render_row(session, leftmost, ncols, maxindex):
     )
 
 
-def render_table_header(session, upperleft, ncols, maxindex):
-    corner = render_header(session, axis="none", index="")
+def render_table_header(session, upperleft, ncols, bounds):
+    corner = render_corner_header(session)
 
     header = []
-    for col in range(upperleft.col, min(upperleft.col+ncols, maxindex.col)):
-        h = render_header(session, axis="col", index=col)
+    for col in range(
+        upperleft.col_index.value,
+        min(upperleft.col_index.value+ncols, bounds.col.value)
+    ):
+        h = render_col_header(session, col_index=selections.ColIndex(col))
         header.append(h)
 
     return render_template(
@@ -179,17 +218,22 @@ def render_table_header(session, upperleft, ncols, maxindex):
     )
 
 
-def render_table(session, upperleft, nrows, ncols, maxindex):
-    header = render_table_header(session, upperleft, ncols, maxindex)
+def render_table(session, upperleft, nrows, ncols, bounds):
+    header = render_table_header(session, upperleft, ncols, bounds)
 
     tablerows = []
-    col = upperleft.col
-    for row in range(upperleft.row, min(upperleft.row+nrows, maxindex.row)):
+    for row in range(
+        upperleft.row_index.value,
+        min(upperleft.row_index.value+nrows, bounds.row.value)
+    ):
         tablerow = render_row(
             session,
-            Index(row=row, col=col),
+            selections.CellPosition(
+                row_index=selections.RowIndex(row),
+                col_index=upperleft.col_index,
+            ),
             ncols,
-            maxindex,
+            bounds,
         )
         tablerows.append(tablerow)
 
@@ -203,12 +247,13 @@ def render_table(session, upperleft, nrows, ncols, maxindex):
 def render_port(session):
     upperleft = get_upperleft(session)
     settings = get_settings(session)
-    maxindex = get_bounds()
+    bounds = sheet.get_bounds()
+
     table = render_table(
         session,
         upperleft=upperleft,
         nrows=settings.nrows,
         ncols=settings.ncols,
-        maxindex=maxindex,
+        bounds=bounds,
     )
     return table

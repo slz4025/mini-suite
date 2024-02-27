@@ -1,10 +1,13 @@
-# Errors that arise that we should have checks against on the client.
-class ClientError(Exception):
+# Errors that arise due to bad user input/action.
+class UserError(Exception):
     pass
 
 
-# Errors that arise due to bad user input/action.
-class UserError(Exception):
+class OutOfBoundsError(Exception):
+    pass
+
+
+class UnknownOptionError(Exception):
     pass
 
 

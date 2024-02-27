@@ -5,43 +5,47 @@
     bound of the sheet.
   </p>
   {% endif %}
+
   <div class="inner">
     Rows
-    <label for="bulk-edit-selection-sr" hidden>Start-Row</label>
+
+    <label for="bulk-edit-selection-row-start" hidden>Row Start</label>
     <input
       type="number"
       pattern="[0-9]*"
-      id="bulk-edit-selection-sr"
-      name="selection-sr"
+      id="bulk-edit-selection-row-start"
+      name="selection-row-start"
       style="width: 50px;"
     >
-    :
-    <label for="bulk-edit-selection-er" hidden>End-Row</label>
+
+    <label for="bulk-edit-selection-row-end" hidden>Row End</label>
     <input
       type="number"
       pattern="[0-9]*"
-      id="bulk-edit-selection-er"
-      name="selection-er"
+      id="bulk-edit-selection-row-end"
+      name="selection-row-end"
       style="width: 50px;"
     >
   </div>
+
   <div class="inner">
     Columns
-    <label for="bulk-edit-selection-sc" hidden>Start-Column</label>
+
+    <label for="bulk-edit-selection-col-start" hidden>Column Start</label>
     <input
       type="number"
       pattern="[0-9]*"
-      id="bulk-edit-selection-sc"
-      name="selection-sc"
+      id="bulk-edit-selection-col-start"
+      name="selection-col-start"
       style="width: 50px;"
     >
-    :
-    <label for="bulk-edit-selection-ec" hidden>End-Column</label>
+
+    <label for="bulk-edit-selection-col-end" hidden>Column End</label>
     <input
       type="number"
       pattern="[0-9]*"
-      id="bulk-edit-selection-ec"
-      name="selection-ec"
+      id="bulk-edit-selection-col-end"
+      name="selection-col-end"
       style="width: 50px;"
     >
   </div>

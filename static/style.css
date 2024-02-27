@@ -148,7 +148,7 @@ tr:nth-child(even) {
 th {
   padding: 0.25rem;
 }
-th.none {
+th.corner {
   width: 50%;
 }
 th.row {

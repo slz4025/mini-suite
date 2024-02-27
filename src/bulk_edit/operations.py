@@ -2,18 +2,11 @@ from dataclasses import dataclass
 from flask import render_template
 from typing import Callable
 
-from src.errors import ClientError, UserError
+from src.errors import UnknownOptionError, UserError
 from src.form import extract, parse_int, validate_nonempty
-from src.sheet import (
-    Axis,
-    BoxSelection,
-    RangeSelection,
-    Selection,
-    Input,
-    InsertInput,
-    ValueInput,
-)
 
+import src.data.operations as operations
+import src.data.selections as selections
 import src.bulk_edit.selection as selection
 import src.bulk_edit.state as state
 
@@ -21,7 +14,7 @@ import src.bulk_edit.state as state
 @dataclass
 class OperationForm:
     name: str
-    validate_and_parse: Callable[[object], Input]
+    validate_and_parse: Callable[[object], operations.Input]
     render: Callable[[], str]
 
 
@@ -32,26 +25,28 @@ def validate_and_parse_insert(form):
     validate_nonempty(number, name="number")
     number = parse_int(number, name="number")
 
-    return InsertInput(
+    return operations.InsertInput(
         selection=sel,
         number=number,
     )
 
 
 def validate_and_parse_value(form):
-    sel = selection(form)
+    sel = selection.validate_and_parse(form)
 
     value = extract(form, "value", name="value")
     if value == "":
         raise UserError("Field 'value' was not given.")
 
-    return ValueInput(selection=sel, value=value)
+    return operations.ValueInput(selection=sel, value=value)
 
 
 def render_delete_inputs(session):
     selection_mode_options = [
-        "Rows (Range)",
-        "Columns (Range)",
+        "Row",
+        "Column",
+        "Rows",
+        "Columns",
     ]
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
@@ -74,9 +69,12 @@ def render_insert_inputs(session):
 
 def render_erase_inputs(session):
     selection_mode_options = [
+        "Row",
+        "Column",
+        "Cell Position",
+        "Rows",
+        "Columns",
         "Box",
-        "Rows (Range)",
-        "Columns (Range)",
     ]
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
@@ -87,9 +85,12 @@ def render_erase_inputs(session):
 
 def render_value_inputs(session):
     selection_mode_options = [
+        "Row",
+        "Column",
+        "Cell Position",
+        "Rows",
+        "Columns",
         "Box",
-        "Rows (Range)",
-        "Columns (Range)",
     ]
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
@@ -103,23 +104,21 @@ def save_copy_selection_mode(session, operation_input):
     input_type = type(operation_input)
 
     selection_mode = None
-    if isinstance(operation_input, BoxSelection):
+    if isinstance(operation_input, selections.RowIndex):
+        selection_mode = "Row"
+    elif isinstance(operation_input, selections.ColIndex):
+        selection_mode = "Column"
+    elif isinstance(operation_input, selections.CellPosition):
+        selection_mode = "Cell Position"
+    elif isinstance(operation_input, selections.RowRange):
+        selection_mode = "Rows"
+    elif isinstance(operation_input, selections.ColRange):
+        selection_mode = "Columns"
+    elif isinstance(operation_input, selections.Box):
         selection_mode = "Box"
-    elif isinstance(operation_input, RangeSelection):
-        match operation_input.axis:
-            case Axis.ROW:
-                selection_mode = "Row (Range)"
-            case Axis.COLUMN:
-                selection_mode = "Column (Range)"
-    elif isinstance(operation_input, Selection):
-        raise ClientError(
-            "Expected copy selection to be Box, Row, or Column. "
-            f"Got type {input_type} instead."
-        )
     else:
-        raise ClientError(
-            f"Expected copy input to be a selection. "
-            f"Got type {input_type} instead."
+        raise UnknownOptionError(
+            f"Unexpected type {input_type} is not valid copy input."
         )
 
     assert selection_mode is not None
@@ -128,15 +127,18 @@ def save_copy_selection_mode(session, operation_input):
 
 def get_paste_selection_mode_options(session):
     copy_to_paste = {
-        "Box": "Cell",
-        "Row (Range)": "Row",
-        "Column (Range)": "Column",
+        "Row": "Row",
+        "Column": "Column",
+        "Cell Position": "Cell Position",
+        "Rows": "Row",
+        "Columns": "Column",
+        "Box": "Cell Position",
     }
     copy_selection_mode = state.get_buffer_selection_mode(session)
     if copy_selection_mode is None:
         raise UserError("Did not copy anything yet to paste.")
     if copy_selection_mode not in copy_to_paste:
-        raise ClientError(
+        raise UnknownOptionError(
             "Expected copy selection to be Box, Row, or Column. "
             f"Got type {copy_selection_mode} instead."
         )
@@ -153,9 +155,12 @@ def get_paste_selection_mode_options(session):
 
 def render_copy_inputs(session):
     selection_mode_options = [
+        "Row",
+        "Column",
+        "Cell Position",
+        "Rows",
+        "Columns",
         "Box",
-        "Rows (Range)",
-        "Columns (Range)",
     ]
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
@@ -213,7 +218,7 @@ default = options[0]
 
 def get(name):
     if name not in operation_forms:
-        raise ClientError(f"Unknown operation type: {name}.")
+        raise UnknownOptionError(f"Unknown operation type: {name}.")
     operation_form = operation_forms[name]
     return operation_form
 

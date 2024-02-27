@@ -1,13 +1,9 @@
 from flask import render_template
 
 from src.modes import check_mode
-from src.sheet import (
-    Modification,
-    apply_modification,
-)
-
 from src.form import extract
 
+import src.data.operations as ops
 import src.bulk_edit.operations as operations
 
 
@@ -28,8 +24,8 @@ def attempt_apply(session, form):
     op = extract(form, "operation")
     operation_form = operations.get(op)
     operation_input = operation_form.validate_and_parse(form)
-    modification = Modification(operation=op, input=operation_input)
-    apply_modification(modification)
+    modification = ops.Modification(operation=op, input=operation_input)
+    ops.apply_modification(modification)
 
     if operation_form.name == "COPY":
         operations.save_copy_selection_mode(session, operation_input)

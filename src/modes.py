@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable
 
-from src.errors import ClientError
+from src.errors import UnknownOptionError
 
 
 @dataclass
@@ -82,7 +82,7 @@ modes = {
 
 def get_mode(name):
     if name not in modes:
-        raise ClientError(f"'{name}' is not a valid mode.")
+        raise UnknownOptionError(f"'{name}' is not a valid mode.")
     mode = modes[name]
     return mode
 

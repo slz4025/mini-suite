@@ -52,8 +52,6 @@ def render_delete_inputs(session):
     selection_mode_options = [
         "Rows (Range)",
         "Columns (Range)",
-        "Rows (Indices)",
-        "Columns (Indices)",
     ]
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
@@ -79,8 +77,6 @@ def render_erase_inputs(session):
         "Box",
         "Rows (Range)",
         "Columns (Range)",
-        "Rows (Indices)",
-        "Columns (Indices)",
     ]
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
@@ -94,8 +90,6 @@ def render_value_inputs(session):
         "Box",
         "Rows (Range)",
         "Columns (Range)",
-        "Rows (Indices)",
-        "Columns (Indices)",
     ]
     selection_form = selection.render(session, selection_mode_options)
     return render_template(

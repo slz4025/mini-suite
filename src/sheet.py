@@ -2,7 +2,7 @@ import copy
 from dataclasses import dataclass
 from enum import Enum
 import numpy as np
-from typing import Callable, List, Optional, Union
+from typing import Callable, Optional, Union
 
 from src.errors import ClientError, UserError
 from src.types import Index
@@ -45,15 +45,6 @@ def get_indices(start, end):
     return list(range(start, end))
 
 
-def get_all_indices(axis, ranges):
-    all_indices = []
-    for r in ranges:
-        start, end = set_range(axis, r)
-        indices = get_indices(start, end)
-        all_indices.extend(indices)
-    return list(set(all_indices))
-
-
 @dataclass
 class CellSelection:
     index: Index
@@ -77,18 +68,11 @@ class RangeSelection:
     range: Range
 
 
-@dataclass
-class IndicesSelection:
-    axis: Axis
-    indices: List[int]
-
-
 Selection = Union[
     CellSelection,
     BoxSelection,
     RangeSelection,
     IndexSelection,
-    IndicesSelection,
 ]
 
 
@@ -114,8 +98,6 @@ def apply_delete(sel):
         start, end = set_range(sel.axis, sel.range)
         indices = get_indices(start, end)
         sheet = np.delete(sheet, indices, sel.axis.value)
-    elif isinstance(sel, IndicesSelection):
-        sheet = np.delete(sheet, sel.indices, sel.axis.value)
     else:
         raise ClientError(
             f"Selection type, {type(sel)}, is not valid for delete."
@@ -158,13 +140,6 @@ def apply_value(inp):
                 sheet[start:end, :] = value
             case Axis.COLUMN:
                 sheet[:, start:end] = value
-    elif isinstance(sel, IndicesSelection):
-        for i in sel.indices:
-            match sel.axis:
-                case Axis.ROW:
-                    sheet[i, :] = value
-                case Axis.COLUMN:
-                    sheet[:, i] = value
     else:
         raise ClientError(
             f"Selection type, {type(sel)}, is not valid for value."

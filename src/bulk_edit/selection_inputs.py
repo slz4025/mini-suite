@@ -9,9 +9,7 @@ from src.sheet import (
     BoxSelection,
     RangeSelection,
     IndexSelection,
-    IndicesSelection,
     get_bounds,
-    get_all_indices,
     set_range,
 )
 from src.types import Index
@@ -40,41 +38,6 @@ def validate_range(axis, r):
         raise UserError(
             f"{name} end, {end}, is not greater than start, {start}."
         )
-
-
-def ranges(query):
-    entries = query.split(",")
-    entries = [e.strip() for e in entries]
-    entries = [e for e in entries if e != ""]
-    rs = []
-    for e in entries:
-        m = range_re.search(e)
-        if not m:
-            raise UserError(
-                f"Pattern '{e}' does not match a valid index or range."
-            )
-        else:
-            raw = m.groups()[0]
-            first = None
-            second = None
-            if raw != "":
-                first = parse_int(raw, "start")
-                second = first+1
-
-            raw = m.groups()[1]
-            if raw is not None:
-                raw = raw[1:]
-                if raw != "":
-                    second = parse_int(raw, "end")
-                else:
-                    second = None  # handles case like '1:'
-            range = Range(first, second)
-            rs.append(range)
-
-    if len(rs) == 0:
-        rs.append(Range(None, None))
-
-    return rs
 
 
 def row_range(form):
@@ -113,26 +76,6 @@ def col_index(form):
     index = parse_int(index, name="index")
     validate_bounds(index, 0, get_bounds().col, name="index")
     return IndexSelection(axis=Axis.COLUMN, index=index)
-
-
-def row_indices(form):
-    query = extract(form, "selection-query", name="query")
-    rs = ranges(query)
-    for r in rs:
-        validate_range(axis=Axis.ROW, r=r)
-    indices = get_all_indices(axis=Axis.ROW, ranges=rs)
-    sel = IndicesSelection(axis=Axis.ROW, indices=indices)
-    return sel
-
-
-def col_indices(form):
-    query = extract(form, "selection-query", name="query")
-    rs = ranges(query)
-    for r in rs:
-        validate_range(axis=Axis.COLUMN, r=r)
-    indices = get_all_indices(axis=Axis.COLUMN, ranges=rs)
-    sel = IndicesSelection(axis=Axis.COLUMN, indices=indices)
-    return sel
 
 
 def cell(form):

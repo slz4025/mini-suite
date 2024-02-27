@@ -51,16 +51,6 @@ selection_forms = {
         template="range.html",
         validate_and_parse=inputs.col_range,
     ),
-    "Rows (Indices)": SelectionForm(
-        name="Rows (Indices)",
-        template="indices.html",
-        validate_and_parse=inputs.row_indices,
-    ),
-    "Columns (Indices)": SelectionForm(
-        name="Columns (Indices)",
-        template="indices.html",
-        validate_and_parse=inputs.col_indices,
-    ),
 }
 
 

@@ -1,4 +1,10 @@
 <div class="inner" id="bulk-edit-selection-query">
+  {% if show_help %}
+  <p>
+    If a constraint is left blank, it will default to the corresponding
+    bound of the sheet.
+  </p>
+  {% endif %}
   <label for="bulk-edit-selection-start" hidden>Start</label>
   <input
     type="number"

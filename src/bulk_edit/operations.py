@@ -2,13 +2,14 @@ from dataclasses import dataclass
 from flask import render_template
 from typing import Callable
 
-from src.errors import UnknownOptionError, UserError
-from src.form import extract, parse_int, validate_nonempty
+import src.errors as errors
+import src.form_helpers as form_helpers
+
+import src.bulk_edit.selection as selection
+import src.bulk_edit.state as state
 
 import src.data.operations as operations
 import src.data.selections as selections
-import src.bulk_edit.selection as selection
-import src.bulk_edit.state as state
 
 
 @dataclass
@@ -21,9 +22,9 @@ class OperationForm:
 def validate_and_parse_insert(form):
     sel = selection.validate_and_parse(form)
 
-    number = extract(form, "insert-number", name="number")
-    validate_nonempty(number, name="number")
-    number = parse_int(number, name="number")
+    number = form_helpers.extract(form, "insert-number", name="number")
+    form_helpers.validate_nonempty(number, name="number")
+    number = form_helpers.parse_int(number, name="number")
 
     return operations.InsertInput(
         selection=sel,
@@ -34,9 +35,9 @@ def validate_and_parse_insert(form):
 def validate_and_parse_value(form):
     sel = selection.validate_and_parse(form)
 
-    value = extract(form, "value", name="value")
+    value = form_helpers.extract(form, "value", name="value")
     if value == "":
-        raise UserError("Field 'value' was not given.")
+        raise errors.UserError("Field 'value' was not given.")
 
     return operations.ValueInput(selection=sel, value=value)
 
@@ -117,7 +118,7 @@ def save_copy_selection_mode(session, operation_input):
     elif isinstance(operation_input, selections.Box):
         selection_mode = "Box"
     else:
-        raise UnknownOptionError(
+        raise errors.UnknownOptionError(
             f"Unexpected type {input_type} is not valid copy input."
         )
 
@@ -136,9 +137,9 @@ def get_paste_selection_mode_options(session):
     }
     copy_selection_mode = state.get_buffer_selection_mode(session)
     if copy_selection_mode is None:
-        raise UserError("Did not copy anything yet to paste.")
+        raise errors.UserError("Did not copy anything yet to paste.")
     if copy_selection_mode not in copy_to_paste:
-        raise UnknownOptionError(
+        raise errors.UnknownOptionError(
             "Expected copy selection to be Box, Row, or Column. "
             f"Got type {copy_selection_mode} instead."
         )
@@ -218,7 +219,7 @@ default = options[0]
 
 def get(name):
     if name not in operation_forms:
-        raise UnknownOptionError(f"Unknown operation type: {name}.")
+        raise errors.UnknownOptionError(f"Unknown operation type: {name}.")
     operation_form = operation_forms[name]
     return operation_form
 

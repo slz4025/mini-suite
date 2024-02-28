@@ -3,9 +3,9 @@ from flask import render_template
 import os
 from typing import Callable
 
-from src.errors import UnknownOptionError
-from src.form import extract
-from src.modes import check_mode
+import src.errors as errors
+import src.form_helpers as form_helpers
+import src.modes as modes
 
 import src.bulk_edit.selection_inputs as inputs
 import src.data.selections as selections
@@ -56,18 +56,18 @@ def get(name):
     if name in selection_forms:
         return selection_forms[name]
     else:
-        raise UnknownOptionError(f"Unknown selection type: {name}.")
+        raise errors.UnknownOptionError(f"Unknown selection type: {name}.")
 
 
 def validate_and_parse(form):
-    mode = extract(form, "selection-mode", name="selection mode")
+    mode = form_helpers.extract(form, "selection-mode", name="selection mode")
     selection_form = get(mode)
     selection = selection_form.validate_and_parse(form)
     return selection
 
 
 def render_inputs(session, mode):
-    help_state = check_mode(session, "Help")
+    help_state = modes.check(session, "Help")
     selection_form = selection_forms.get(mode)
     template_path = os.path.join(
         "partials/bulk_edit/selection",
@@ -78,7 +78,7 @@ def render_inputs(session, mode):
 
 
 def render(session, selection_mode_options):
-    help_state = check_mode(session, "Help")
+    help_state = modes.check(session, "Help")
     default_selection_mode = selection_mode_options[0]
     selection_inputs = render_inputs(session, default_selection_mode)
     return render_template(

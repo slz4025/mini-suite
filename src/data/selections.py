@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Union
 
-from src.errors import OutOfBoundsError
+import src.errors as errors
 import src.data.sheet as sheet
 
 
@@ -52,13 +52,13 @@ def check_row_index(row_index, end_inclusive=False):
 
     if end_inclusive:
         if row_index.value < 0 or row_index.value > bounds.row.value:
-            raise OutOfBoundsError(
+            raise errors.OutOfBoundsError(
                 f"Row index, {row_index.value}, "
                 f"is out of bounds [{0}:{bounds.row.value}]."
             )
     else:
         if row_index.value < 0 or row_index.value >= bounds.row.value:
-            raise OutOfBoundsError(
+            raise errors.OutOfBoundsError(
                 f"Row index, {row_index.value}, "
                 f"is out of bounds [{0}:{bounds.row.value})."
             )
@@ -69,13 +69,13 @@ def check_col_index(col_index, end_inclusive=False):
 
     if end_inclusive:
         if col_index.value < 0 or col_index.value > bounds.col.value:
-            raise OutOfBoundsError(
+            raise errors.OutOfBoundsError(
                 f"Column index, {col_index.value}, "
                 f"is out of bounds [{0}:{bounds.col.value}]."
             )
     else:
         if col_index.value < 0 or col_index.value >= bounds.col.value:
-            raise OutOfBoundsError(
+            raise errors.OutOfBoundsError(
                 f"Column index, {col_index.value}, "
                 f"is out of bounds [{0}:{bounds.col.value})."
             )
@@ -95,17 +95,17 @@ def check_and_set_row_range(row_range):
         row_range.end = sheet.Bound(bounds.row.value)
 
     if row_range.start.value < 0:
-        raise OutOfBoundsError(
+        raise errors.OutOfBoundsError(
             f"Row range start, {row_range.start.value}, "
             "is negative."
         )
     if row_range.end.value > bounds.row.value:
-        raise OutOfBoundsError(
+        raise errors.OutOfBoundsError(
             f"Row range end, {row_range.end.value}, "
             f"exceeds sheet bound, {bounds.row.value}."
         )
     if row_range.start.value >= row_range.end.value:
-        raise OutOfBoundsError(
+        raise errors.OutOfBoundsError(
             f"Row range start, {row_range.start.value}, "
             "is greater than or equal to "
             f"row range end, {row_range.end.value}."
@@ -123,17 +123,17 @@ def check_and_set_col_range(col_range):
         col_range.end = sheet.Bound(bounds.col.value)
 
     if col_range.start.value < 0:
-        raise OutOfBoundsError(
+        raise errors.OutOfBoundsError(
             f"Column range start, {col_range.start.value}, "
             "is negative."
         )
     if col_range.end.value > bounds.col.value:
-        raise OutOfBoundsError(
+        raise errors.OutOfBoundsError(
             f"Column range end, {col_range.end.value}, "
             f"exceeds sheet bound, {bounds.col.value}."
         )
     if col_range.start.value >= col_range.end.value:
-        raise OutOfBoundsError(
+        raise errors.OutOfBoundsError(
             f"Column range start, {col_range.start.value}, "
             "is greater than or equal to "
             f"column range end, {col_range.end.value}."

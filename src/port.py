@@ -1,8 +1,8 @@
 from flask import render_template
 
-from src.errors import UnknownOptionError
-from src.form import extract, parse_int
-from src.settings import get_settings
+import src.errors as errors
+import src.form_helpers as form_helpers
+import src.settings as settings
 
 import src.data.operations as operations
 import src.data.selections as selections
@@ -54,15 +54,15 @@ def set_upperleft(session, upperleft):
 
 
 def set_center(session, form):
-    settings = get_settings(session)
-    nrows = settings.nrows
-    ncols = settings.ncols
+    current_settings = settings.get(session)
+    nrows = current_settings.nrows
+    ncols = current_settings.ncols
 
-    row = extract(form, "center-cell-row-index", name="row index")
-    row = parse_int(row, name="row index")
+    row = form_helpers.extract(form, "center-cell-row-index", name="row index")
+    row = form_helpers.parse_int(row, name="row index")
 
-    col = extract(form, "center-cell-col-index", name="col index")
-    col = parse_int(col, name="column index")
+    col = form_helpers.extract(form, "center-cell-col-index", name="col index")
+    col = form_helpers.parse_int(col, name="column index")
 
     bounds = sheet.get_bounds()
     row_end = min(row + (nrows) // 2 + 1, bounds.row.value)
@@ -78,9 +78,9 @@ def set_center(session, form):
 
 
 def move_upperleft(session, method):
-    settings = get_settings(session)
-    mrows = settings.mrows
-    mcols = settings.mcols
+    current_settings = settings.get(session)
+    mrows = current_settings.mrows
+    mcols = current_settings.mcols
 
     if method == 'home':
         moved = selections.CellPosition(
@@ -100,7 +100,9 @@ def move_upperleft(session, method):
             case 'right':
                 delta_col = mcols
             case _:
-                raise UnknownOptionError(f"Unexpected method: {method}.")
+                raise errors.UnknownOptionError(
+                    f"Unexpected method: {method}."
+                )
 
         upperleft = get_upperleft(session)
         bounds = sheet.get_bounds()
@@ -123,7 +125,7 @@ def move_upperleft(session, method):
     set_upperleft(session, moved)
 
 
-def init_port(session):
+def init(session):
     upperleft = selections.CellPosition(
         row_index=selections.RowIndex(0),
         col_index=selections.ColIndex(0),
@@ -244,16 +246,16 @@ def render_table(session, upperleft, nrows, ncols, bounds):
     )
 
 
-def render_port(session):
+def render(session):
     upperleft = get_upperleft(session)
-    settings = get_settings(session)
+    current_settings = settings.get(session)
     bounds = sheet.get_bounds()
 
     table = render_table(
         session,
         upperleft=upperleft,
-        nrows=settings.nrows,
-        ncols=settings.ncols,
+        nrows=current_settings.nrows,
+        ncols=current_settings.ncols,
         bounds=bounds,
     )
     return table

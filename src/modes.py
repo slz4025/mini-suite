@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable
 
-from src.errors import UnknownOptionError
+import src.errors as errors
 
 
 @dataclass
@@ -82,27 +82,27 @@ modes = {
 
 def get_mode(name):
     if name not in modes:
-        raise UnknownOptionError(f"'{name}' is not a valid mode.")
+        raise errors.UnknownOptionError(f"'{name}' is not a valid mode.")
     mode = modes[name]
     return mode
 
 
-def check_mode(session, name):
+def check(session, name):
     mode = get_mode(name)
     return mode.check_on(session)
 
 
-def set_mode(session, name, state):
+def set(session, name, state):
     mode = get_mode(name)
     mode.set(session, state)
 
 
-def init_modes(session):
+def init(session):
     for m, mode in modes.items():
         mode.set(session, False)
 
 
-def get_modes_str(session):
+def get_str(session):
     inner = ""
     first = True
     for m, mode in modes.items():

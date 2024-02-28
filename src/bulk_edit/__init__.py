@@ -1,14 +1,14 @@
 from flask import render_template
 
-from src.modes import check_mode
-from src.form import extract
+import src.modes as modes
+import src.form_helpers as form_helpers
 
 import src.data.operations as ops
 import src.bulk_edit.operations as operations
 
 
 def render(session):
-    bulk_edit_state = check_mode(session, "Bulk-Edit")
+    bulk_edit_state = modes.check(session, "Bulk-Edit")
     operation_form = operations.render(session, operations.default)
 
     return render_template(
@@ -21,7 +21,7 @@ def render(session):
 
 
 def attempt_apply(session, form):
-    op = extract(form, "operation")
+    op = form_helpers.extract(form, "operation")
     operation_form = operations.get(op)
     operation_input = operation_form.validate_and_parse(form)
     modification = ops.Modification(operation=op, input=operation_input)

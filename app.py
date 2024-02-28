@@ -4,39 +4,17 @@ from flask import (
     session,
     request,
     Response,
-    make_response,
-    url_for,
 )
 from flask_htmx import HTMX
-import traceback
 from waitress import serve
 
-from src.errors import (
-    OutOfBoundsError,
-    UserError,
-    get_error_message,
-    set_error_message,
-)
-from src.port import (
-    init_port,
-    move_upperleft,
-    render_port,
-    render_cell,
-    set_center,
-    get_focused_cell_position,
-    set_focused_cell_position,
-)
+import src.errors as errors
+import src.port as port
 import src.bulk_edit as bulk_edit
-from src.modes import init_modes, check_mode, set_mode, get_modes_str
-from src.notifications import (
-    NotificationMode,
-    Notification,
-    init_notifications,
-    reset_notifications,
-    render_notifications,
-    set_notification,
-)
-from src.settings import init_settings, set_settings, get_settings
+import src.modes as modes
+import src.notifications as notifications
+import src.settings as settings
+
 import src.data.sheet as sheet
 import src.data.selections as selections
 import src.data.operations as operations
@@ -52,7 +30,7 @@ DEBUG = True
 
 @app.route("/error")
 def unexpected_error():
-    error_message = get_error_message(session)
+    error_message = errors.get_message(session)
     app.logger.error(error_message)
 
     user_error_msg = f"""
@@ -67,37 +45,9 @@ def unexpected_error():
     return user_error_msg
 
 
-def error_handler(func):
-    def wrapper(*args, **kwargs):
-        resp = None
-
-        error = None
-
-        try:
-            resp = func(*args, **kwargs)
-        except Exception as e:
-            error = e
-
-        if resp is None:
-            assert error is not None
-
-            stack_trace = "".join(traceback.format_tb(error.__traceback__))
-            error_message = f"ERROR: {error}\n{stack_trace}"
-            set_error_message(session, error_message)
-
-            resp = make_response()
-            resp.headers["HX-Redirect"] = url_for("unexpected_error")
-
-        return resp
-
-    # Register each wrapper for each endpoint under a different name.
-    wrapper.__name__ = func.__name__ + "__error_handler"
-    return wrapper
-
-
 def render_editor(session):
-    editor_state = check_mode(session, "Editor")
-    focused_cell = get_focused_cell_position(session)
+    editor_state = modes.check(session, "Editor")
+    focused_cell = port.get_focused_cell_position(session)
     row = focused_cell.row_index.value
     col = focused_cell.col_index.value
 
@@ -114,8 +64,8 @@ def render_editor(session):
 
 
 def render_navigator(session):
-    help_state = check_mode(session, "Help")
-    navigator_state = check_mode(session, "Navigator")
+    help_state = modes.check(session, "Help")
+    navigator_state = modes.check(session, "Navigator")
     return render_template(
             "partials/navigator.html",
             show_help=help_state,
@@ -123,34 +73,19 @@ def render_navigator(session):
     )
 
 
-def render_settings(session):
-    settings_state = check_mode(session, "Settings")
-
-    settings = get_settings(session)
-    return render_template(
-        "partials/settings.html",
-        show_settings=settings_state,
-        render_mode=settings.render_mode,
-        mrows=settings.mrows,
-        mcols=settings.mcols,
-        nrows=settings.nrows,
-        ncols=settings.ncols,
-    )
-
-
 def render_body(session):
-    help_state = check_mode(session, "Help")
-    notification_banner = render_notifications(session, False)
-    port = render_port(session)
+    help_state = modes.check(session, "Help")
+    notification_banner = notifications.render(session, False)
+    port_html = port.render(session)
     navigator = render_navigator(session)
     editor = render_editor(session)
     bulk_edit_html = bulk_edit.render(session)
-    settings_html = render_settings(session)
+    settings_html = settings.render(session)
     body = render_template(
             "partials/body.html",
             show_help=help_state,
             notification_banner=notification_banner,
-            data=port,
+            data=port_html,
             editor=editor,
             bulk_edit=bulk_edit_html,
             navigator=navigator,
@@ -160,18 +95,18 @@ def render_body(session):
 
 
 @app.route("/")
-@error_handler
+@errors.handler
 def root():
     assert htmx is not None
 
     # TODO: This should eventually be done for the user for the sheet.
-    init_modes(session)
-    init_notifications(session)
-    init_port(session)
+    modes.init(session)
+    notifications.init(session)
+    port.init(session)
 
     # TODO: This should eventually be done for the user
     # or for the user for the sheet.
-    init_settings(session)
+    settings.init(session)
 
     # TODO: This should eventually be done only on the creation of the sheet.
     sheet.init(DEBUG)
@@ -184,7 +119,7 @@ def root():
 
 
 @app.route("/data", methods=['GET'])
-@error_handler
+@errors.handler
 def data():
     assert htmx is not None
 
@@ -194,36 +129,35 @@ def data():
 
 
 @app.route("/help", methods=['PUT'])
-@error_handler
+@errors.handler
 def toggle_help():
     assert htmx is not None
 
-    help_state = check_mode(session, "Help")
-    set_mode(session, "Help", not help_state)
+    help_state = modes.check(session, "Help")
+    modes.set(session, "Help", not help_state)
 
     return render_body(session)
 
 
 @app.route("/modes", methods=['GET'])
-@error_handler
-def modes():
+@errors.handler
+def get_modes_string():
     assert htmx is not None
 
-    modes_string = get_modes_str(session)
+    modes_string = modes.get_str(session)
     return f"{modes_string}"
 
 
 @app.route("/port", methods=['PUT'])
-@error_handler
-def port():
+@errors.handler
+def update_port():
     assert htmx is not None
 
-    port = render_port(session)
-    return port
+    return port.render(session)
 
 
 @app.route("/cell/<row>/<col>/highlight/<state>", methods=['PUT'])
-@error_handler
+@errors.handler
 def cell_highlight(row, col, state):
     assert htmx is not None
 
@@ -233,11 +167,11 @@ def cell_highlight(row, col, state):
     )
     highlight = state == "on"
 
-    return render_cell(session, cell_position, highlight=highlight)
+    return port.render_cell(session, cell_position, highlight=highlight)
 
 
 @app.route("/cell/<row>/<col>/update", methods=['PUT'])
-@error_handler
+@errors.handler
 def cell_rerender(row, col):
     assert htmx is not None
 
@@ -253,13 +187,13 @@ def cell_rerender(row, col):
     value = request.form[key]
     operations.update_cell(cell_position, value)
 
-    cell = render_cell(session, cell_position)
+    cell = port.render_cell(session, cell_position)
     resp = Response(cell)
     return resp
 
 
 @app.route("/cell/<row>/<col>/edit", methods=['PUT'])
-@error_handler
+@errors.handler
 def cell_sync(row, col):
     assert htmx is not None
 
@@ -278,12 +212,12 @@ def cell_sync(row, col):
         operations.update_cell(cell_position, value)
 
     # Sync with editor.
-    set_focused_cell_position(session, cell_position)
+    port.set_focused_cell_position(session, cell_position)
     return render_editor(session)
 
 
 @app.route("/editor", methods=['GET', 'PUT'])
-@error_handler
+@errors.handler
 def editor():
     assert htmx is not None
 
@@ -291,8 +225,8 @@ def editor():
     match request.method:
         case 'PUT':
             # toggle mode
-            editor_state = check_mode(session, "Editor")
-            set_mode(session, "Editor", not editor_state)
+            editor_state = modes.check(session, "Editor")
+            modes.set(session, "Editor", not editor_state)
             resp.headers['HX-Trigger'] = "modes"
 
     html = render_editor(session)
@@ -301,7 +235,7 @@ def editor():
 
 
 @app.route("/bulk-edit", methods=['PUT', 'POST'])
-@error_handler
+@errors.handler
 def open_bulk_edit():
     assert htmx is not None
 
@@ -311,24 +245,24 @@ def open_bulk_edit():
     match request.method:
         case 'PUT':
             # toggle mode
-            bulk_edit_state = check_mode(session, "Bulk-Edit")
-            set_mode(session, "Bulk-Edit", not bulk_edit_state)
+            bulk_edit_state = modes.check(session, "Bulk-Edit")
+            modes.set(session, "Bulk-Edit", not bulk_edit_state)
         case 'POST':
             success = False
             try:
                 bulk_edit.attempt_apply(session, request.form)
                 success = True
-            except (UserError, OutOfBoundsError) as e:
-                set_notification(session, Notification(
+            except (errors.UserError, errors.OutOfBoundsError) as e:
+                notifications.set(session, notifications.Notification(
                     message=str(e),
-                    mode=NotificationMode.ERROR,
+                    mode=notifications.Mode.ERROR,
                 ))
                 resp.headers['HX-Trigger'] += ",notification"
 
             if success:
-                set_notification(session, Notification(
+                notifications.set(session, notifications.Notification(
                     message="Bulk operation complete.",
-                    mode=NotificationMode.INFO,
+                    mode=notifications.Mode.INFO,
                 ))
                 resp.headers['HX-Trigger'] += ",notification"
                 resp.headers['HX-Trigger'] += ",update-port"
@@ -339,7 +273,7 @@ def open_bulk_edit():
 
 
 @app.route("/bulk-edit/operation-form", methods=['GET'])
-@error_handler
+@errors.handler
 def bulk_edit_operation_form():
     assert htmx is not None
 
@@ -348,7 +282,7 @@ def bulk_edit_operation_form():
 
 
 @app.route("/bulk-edit/selection-inputs", methods=['GET'])
-@error_handler
+@errors.handler
 def bulk_edit_selection_inputs():
     assert htmx is not None
 
@@ -357,7 +291,7 @@ def bulk_edit_selection_inputs():
 
 
 @app.route("/navigator", methods=['PUT', 'POST'])
-@error_handler
+@errors.handler
 def navigator():
     assert htmx is not None
 
@@ -367,8 +301,8 @@ def navigator():
     match request.method:
         case 'PUT':
             # toggle mode
-            navigator_state = check_mode(session, "Navigator")
-            set_mode(session, "Navigator", not navigator_state)
+            navigator_state = modes.check(session, "Navigator")
+            modes.set(session, "Navigator", not navigator_state)
 
     html = render_navigator(session)
     resp.response = html
@@ -378,56 +312,56 @@ def navigator():
 # TODO: Later, consider supporting an array of notifications
 # with timeouts we maintain server-side.
 @app.route("/notification/<show>", methods=['PUT'])
-@error_handler
+@errors.handler
 def notification(show):
     assert htmx is not None
 
     show_notifications = show == "on"
     if not show_notifications:
-        reset_notifications(session)
+        notifications.reset(session)
 
-    return render_notifications(session, show_notifications)
+    return notifications.render(session, show_notifications)
 
 
 @app.route("/move/center", methods=['PUT'])
-@error_handler
+@errors.handler
 def center():
     assert htmx is not None
 
     success = False
     try:
-        set_center(session, request.form)
+        port.set_center(session, request.form)
         success = True
-    except (UserError, OutOfBoundsError) as e:
-        set_notification(session, Notification(
+    except (errors.UserError, errors.OutOfBoundsError) as e:
+        notifications.set(session, notifications.Notification(
             message=str(e),
-            mode=NotificationMode.ERROR,
+            mode=notifications.Mode.ERROR,
         ))
 
     if success:
-        set_notification(session, Notification(
+        notifications.set(session, notifications.Notification(
             message="Updated centered cell.",
-            mode=NotificationMode.INFO,
+            mode=notifications.Mode.INFO,
         ))
 
-    port = render_port(session)
-    resp = Response(port)
+    port_html = port.render(session)
+    resp = Response(port_html)
     resp.headers['HX-Trigger'] = "notification"
     return resp
 
 
 @app.route("/move/<method>", methods=['PUT'])
-@error_handler
+@errors.handler
 def move(method):
     assert htmx is not None
 
-    move_upperleft(session, method)
+    port.move_upperleft(session, method)
 
-    return render_port(session)
+    return port.render(session)
 
 
 @app.route("/settings", methods=['PUT'])
-@error_handler
+@errors.handler
 def toggle_settings():
     assert htmx is not None
 
@@ -437,23 +371,23 @@ def toggle_settings():
     match request.method:
         case 'PUT':
             # toggle mode
-            settings_state = check_mode(session, "Settings")
-            set_mode(session, "Settings", not settings_state)
+            settings_state = modes.check(session, "Settings")
+            modes.set(session, "Settings", not settings_state)
 
-    html = render_settings(session)
+    html = settings.render(session)
     resp.response = html
     return resp
 
 
 @app.route("/settings/render-mode/<render_mode>", methods=['PUT'])
-@error_handler
+@errors.handler
 def render_mode(render_mode):
     assert htmx is not None
 
-    set_settings(session, render_mode)
-    set_notification(session, Notification(
+    settings.set(session, render_mode)
+    notifications.set(session, notifications.Notification(
         message="Updated render mode.",
-        mode=NotificationMode.INFO,
+        mode=notifications.Mode.INFO,
     ))
 
     resp = Response()
@@ -462,73 +396,73 @@ def render_mode(render_mode):
 
 
 @app.route("/settings/mrows", methods=['PUT'])
-@error_handler
+@errors.handler
 def mrows():
     assert htmx is not None
 
     mrows = int(request.form['mrows'])
-    set_settings(session, mrows=mrows)
-    set_notification(session, Notification(
+    settings.set(session, mrows=mrows)
+    notifications.set(session, notifications.Notification(
         message="Updated row increments.",
-        mode=NotificationMode.INFO,
+        mode=notifications.Mode.INFO,
     ))
 
-    port = render_port(session)
-    resp = Response(port)
+    port_html = port.render(session)
+    resp = Response(port_html)
     resp.headers['HX-Trigger'] = "notification"
     return resp
 
 
 @app.route("/settings/mcols", methods=['PUT'])
-@error_handler
+@errors.handler
 def mcols():
     assert htmx is not None
 
     mcols = int(request.form['mcols'])
-    set_settings(session, mcols=mcols)
-    set_notification(session, Notification(
+    settings.set(session, mcols=mcols)
+    notifications.set(session, notifications.Notification(
         message="Updated column increments.",
-        mode=NotificationMode.INFO,
+        mode=notifications.Mode.INFO,
     ))
 
-    port = render_port(session)
-    resp = Response(port)
+    port_html = port.render(session)
+    resp = Response(port_html)
     resp.headers['HX-Trigger'] = "notification"
     return resp
 
 
 @app.route("/settings/nrows", methods=['PUT'])
-@error_handler
+@errors.handler
 def nrows():
     assert htmx is not None
 
     nrows = int(request.form['nrows'])
-    set_settings(session, nrows=nrows)
-    set_notification(session, Notification(
+    settings.set(session, nrows=nrows)
+    notifications.set(session, notifications.Notification(
         message="Updated # of displayed rows.",
-        mode=NotificationMode.INFO,
+        mode=notifications.Mode.INFO,
     ))
 
-    port = render_port(session)
-    resp = Response(port)
+    port_html = port.render(session)
+    resp = Response(port_html)
     resp.headers['HX-Trigger'] = "notification"
     return resp
 
 
 @app.route("/settings/ncols", methods=['PUT'])
-@error_handler
+@errors.handler
 def ncols():
     assert htmx is not None
 
     ncols = int(request.form['ncols'])
-    set_settings(session, ncols=ncols)
-    set_notification(session, Notification(
+    settings.set(session, ncols=ncols)
+    notifications.set(session, notifications.Notification(
         message="Updated # of displayed columns.",
-        mode=NotificationMode.INFO,
+        mode=notifications.Mode.INFO,
     ))
 
-    port = render_port(session)
-    resp = Response(port)
+    port_html = port.render(session)
+    resp = Response(port_html)
     resp.headers['HX-Trigger'] = "notification"
     return resp
 

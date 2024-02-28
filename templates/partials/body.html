@@ -21,7 +21,7 @@
     id="bulk-editor-toggler"
     hx-put="/bulk-editor"
     hx-trigger="click"
-    hx-target="#bulk-editor-controls"
+    hx-target="#bulk-editor"
     hx-swap="outerHTML"
     style="display: none"
 >
@@ -56,7 +56,6 @@
     </div>
     {{ editor|safe }}
     {{ bulk_editor|safe }}
-    {{ view_controls|safe }}
     {{ navigator|safe }}
     {{ settings|safe }}
   </div>

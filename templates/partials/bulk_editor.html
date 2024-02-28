@@ -1,10 +1,10 @@
 {% if show_bulk_editor %}
-<div id="bulk-editor-controls">
+<div id="bulk-editor">
   <h2>BULK EDITOR</h2>
 
   <form
     hx-post="/bulk-editor"
-    hx-target="#bulk-editor-controls"
+    hx-target="#bulk-editor"
     hx-swap="outerHTML"
     enctype="multipart/form-data"
   >
@@ -34,5 +34,5 @@
   </form>
 </div>
 {% else %}
- <div id="bulk-editor-controls" style="display: none;"></div>
+ <div id="bulk-editor" style="display: none;"></div>
 {% endif %}

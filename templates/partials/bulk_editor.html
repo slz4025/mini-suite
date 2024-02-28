@@ -1,20 +1,20 @@
-{% if show_bulk_edit %}
-<div id="bulk-edit-controls">
-  <h2>BULK EDIT</h2>
+{% if show_bulk_editor %}
+<div id="bulk-editor-controls">
+  <h2>BULK EDITOR</h2>
 
   <form
-    hx-post="/bulk-edit"
-    hx-target="#bulk-edit-controls"
+    hx-post="/bulk-editor"
+    hx-target="#bulk-editor-controls"
     hx-swap="outerHTML"
     enctype="multipart/form-data"
   >
     <fieldset>
       <legend>Operation</legend>
       <select
-        id="bulk-edit-operation"
+        id="bulk-editor-operation"
         name="operation"
-        hx-get="/bulk-edit/operation-form"
-        hx-target="#bulk-edit-operation-form"
+        hx-get="/bulk-editor/operation-form"
+        hx-target="#bulk-editor-operation-form"
         hx-swap="outerHTML"
         style="width: auto;"
       >
@@ -30,9 +30,9 @@
 
     {{ operation_form|safe }}
 
-    <input type="submit" value="↵" id="bulk-edit-submit"/>
+    <input type="submit" value="↵" id="bulk-editor-submit"/>
   </form>
 </div>
 {% else %}
- <div id="bulk-edit-controls" style="display: none;"></div>
+ <div id="bulk-editor-controls" style="display: none;"></div>
 {% endif %}

@@ -5,8 +5,8 @@ from typing import Callable
 import src.errors as errors
 import src.form_helpers as form_helpers
 
-import src.bulk_edit.selection as selection
-import src.bulk_edit.state as state
+import src.bulk_editor.selection as selection
+import src.bulk_editor.state as state
 
 import src.data.operations as operations
 import src.data.selections as selections
@@ -51,7 +51,7 @@ def render_delete_inputs(session):
     ]
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
-            "partials/bulk_edit/delete.html",
+            "partials/bulk_editor/delete.html",
             selection_form=selection_form,
     )
 
@@ -63,7 +63,7 @@ def render_insert_inputs(session):
     ]
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
-            "partials/bulk_edit/insert.html",
+            "partials/bulk_editor/insert.html",
             selection_form=selection_form,
     )
 
@@ -79,7 +79,7 @@ def render_erase_inputs(session):
     ]
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
-            "partials/bulk_edit/erase.html",
+            "partials/bulk_editor/erase.html",
             selection_form=selection_form,
     )
 
@@ -95,7 +95,7 @@ def render_value_inputs(session):
     ]
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
-            "partials/bulk_edit/value.html",
+            "partials/bulk_editor/value.html",
             value="",
             selection_form=selection_form,
     )
@@ -159,7 +159,7 @@ def render_copy_inputs(session):
     ]
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
-            "partials/bulk_edit/copy.html",
+            "partials/bulk_editor/copy.html",
             selection_form=selection_form,
     )
 
@@ -168,7 +168,7 @@ def render_paste_inputs(session):
     selection_mode_options = get_paste_selection_mode_options(session)
     selection_form = selection.render(session, selection_mode_options)
     return render_template(
-            "partials/bulk_edit/paste.html",
+            "partials/bulk_editor/paste.html",
             selection_form=selection_form,
     )
 

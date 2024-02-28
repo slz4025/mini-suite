@@ -9,7 +9,7 @@ window.addEventListener('keyup', function(event) {
         document.getElementById("editor-toggler").click();
         break;
       case '2':
-        document.getElementById("bulk-edit-toggler").click();
+        document.getElementById("bulk-editor-toggler").click();
         break;
       case '3':
         document.getElementById("navigator-toggler").click();

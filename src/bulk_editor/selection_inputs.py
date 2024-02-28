@@ -1,4 +1,4 @@
-import src.form_helpers as form_helpers 
+import src.form_helpers as form_helpers
 
 import src.data.selections as selections
 import src.data.sheet as sheet

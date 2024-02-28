@@ -27,12 +27,12 @@ def set_editor(session, state):
     session["editor"] = str(state)
 
 
-def check_bulk_edit(session):
-    return session["bulk-edit"] == "True"
+def check_bulk_editor(session):
+    return session["bulk-editor"] == "True"
 
 
-def set_bulk_edit(session, state):
-    session["bulk-edit"] = str(state)
+def set_bulk_editor(session, state):
+    session["bulk-editor"] = str(state)
 
 
 def check_navigator(session):
@@ -62,10 +62,10 @@ modes = {
             check_on=check_editor,
             set=set_editor,
         ),
-        "Bulk-Edit": Mode(
-            name="Bulk-Edit",
-            check_on=check_bulk_edit,
-            set=set_bulk_edit,
+        "Bulk-Editor": Mode(
+            name="Bulk-Editor",
+            check_on=check_bulk_editor,
+            set=set_bulk_editor,
         ),
         "Navigator": Mode(
             name="Navigator",

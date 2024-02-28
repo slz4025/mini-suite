@@ -18,10 +18,10 @@
 >
 </button>
 <button
-    id="bulk-edit-toggler"
-    hx-put="/bulk-edit"
+    id="bulk-editor-toggler"
+    hx-put="/bulk-editor"
     hx-trigger="click"
-    hx-target="#bulk-edit-controls"
+    hx-target="#bulk-editor-controls"
     hx-swap="outerHTML"
     style="display: none"
 >
@@ -49,13 +49,13 @@
   <div class="left">
     <div class="inner">
       <div class="justify"><span>Editor</span><span>[Ctrl+1]</span></div>
-      <div class="justify"><span>Bulk-Edit</span><span>[Ctrl+2]</span></div>
+      <div class="justify"><span>Bulk-Editor</span><span>[Ctrl+2]</span></div>
       <div class="justify"><span>Navigator</span><span>[Ctrl+3]</span></div>
       <div class="justify"><span>[⚙] Settings</span><span>[Ctrl+4]</span></div>
       <div class="justify"><span>[?] Help</span><span>[Ctrl+0]</span></div>
     </div>
     {{ editor|safe }}
-    {{ bulk_edit|safe }}
+    {{ bulk_editor|safe }}
     {{ view_controls|safe }}
     {{ navigator|safe }}
     {{ settings|safe }}

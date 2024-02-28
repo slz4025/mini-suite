@@ -8,11 +8,11 @@ from flask import (
 from flask_htmx import HTMX
 from waitress import serve
 
+import src.bulk_editor as bulk_editor
 import src.errors as errors
-import src.port as port
-import src.bulk_edit as bulk_edit
 import src.modes as modes
 import src.notifications as notifications
+import src.port as port
 import src.settings as settings
 
 import src.data.sheet as sheet
@@ -79,7 +79,7 @@ def render_body(session):
     port_html = port.render(session)
     navigator = render_navigator(session)
     editor = render_editor(session)
-    bulk_edit_html = bulk_edit.render(session)
+    bulk_editor_html = bulk_editor.render(session)
     settings_html = settings.render(session)
     body = render_template(
             "partials/body.html",
@@ -87,7 +87,7 @@ def render_body(session):
             notification_banner=notification_banner,
             data=port_html,
             editor=editor,
-            bulk_edit=bulk_edit_html,
+            bulk_editor=bulk_editor_html,
             navigator=navigator,
             settings=settings_html,
             )
@@ -234,9 +234,9 @@ def editor():
     return resp
 
 
-@app.route("/bulk-edit", methods=['PUT', 'POST'])
+@app.route("/bulk-editor", methods=['PUT', 'POST'])
 @errors.handler
-def open_bulk_edit():
+def open_bulk_editor():
     assert htmx is not None
 
     resp = Response()
@@ -245,12 +245,12 @@ def open_bulk_edit():
     match request.method:
         case 'PUT':
             # toggle mode
-            bulk_edit_state = modes.check(session, "Bulk-Edit")
-            modes.set(session, "Bulk-Edit", not bulk_edit_state)
+            bulk_editor_state = modes.check(session, "Bulk-Editor")
+            modes.set(session, "Bulk-Editor", not bulk_editor_state)
         case 'POST':
             success = False
             try:
-                bulk_edit.attempt_apply(session, request.form)
+                bulk_editor.attempt_apply(session, request.form)
                 success = True
             except (errors.UserError, errors.OutOfBoundsError) as e:
                 notifications.set(session, notifications.Notification(
@@ -267,27 +267,27 @@ def open_bulk_edit():
                 resp.headers['HX-Trigger'] += ",notification"
                 resp.headers['HX-Trigger'] += ",update-port"
 
-    html = bulk_edit.render(session)
+    html = bulk_editor.render(session)
     resp.response = html
     return resp
 
 
-@app.route("/bulk-edit/operation-form", methods=['GET'])
+@app.route("/bulk-editor/operation-form", methods=['GET'])
 @errors.handler
-def bulk_edit_operation_form():
+def bulk_editor_operation_form():
     assert htmx is not None
 
     operation = request.args["operation"]
-    return bulk_edit.operations.render(session, operation)
+    return bulk_editor.operations.render(session, operation)
 
 
-@app.route("/bulk-edit/selection-inputs", methods=['GET'])
+@app.route("/bulk-editor/selection-inputs", methods=['GET'])
 @errors.handler
-def bulk_edit_selection_inputs():
+def bulk_editor_selection_inputs():
     assert htmx is not None
 
     mode = request.args["selection-mode"]
-    return bulk_edit.selection.render_inputs(session, mode)
+    return bulk_editor.selection.render_inputs(session, mode)
 
 
 @app.route("/navigator", methods=['PUT', 'POST'])

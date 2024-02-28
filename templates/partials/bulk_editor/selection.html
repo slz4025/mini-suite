@@ -1,4 +1,4 @@
-<fieldset id="bulk-edit-selection">
+<fieldset id="bulk-editor-selection">
   <legend>Selection</legend>
   {% if show_help %}
   <p>
@@ -6,12 +6,12 @@
   </p>
   {% endif %}
   <div class="inner">
-    <label for="bulk-edit-selection-mode">Mode</label>
+    <label for="bulk-editor-selection-mode">Mode</label>
     <select
-      id="bulk-edit-selection-mode"
+      id="bulk-editor-selection-mode"
       name="selection-mode"
-      hx-get="/bulk-edit/selection-inputs"
-      hx-target="#bulk-edit-selection-query"
+      hx-get="/bulk-editor/selection-inputs"
+      hx-target="#bulk-editor-selection-query"
       hx-swap="outerHTML"
       style="width: auto;"
     >

@@ -1,31 +1,31 @@
 def get_selection_mode(session):
-    if "bulk-edit-selection-mode" not in session:
+    if "bulk-editor-selection-mode" not in session:
         return None
-    return session["bulk-edit-selection-mode"]
+    return session["bulk-editor-selection-mode"]
 
 
 def set_selection_mode(session, selection_mode):
-    session["bulk-edit-selection-mode"] = selection_mode
+    session["bulk-editor-selection-mode"] = selection_mode
 
 
 def reset_selection_mode(session):
-    if "bulk-edit-selection-mode" in session:
-        session.pop("bulk-edit-selection-mode")
+    if "bulk-editor-selection-mode" in session:
+        session.pop("bulk-editor-selection-mode")
 
 
 def get_operation(session):
-    if "bulk-edit-operation" not in session:
+    if "bulk-editor-operation" not in session:
         return None
-    return session["bulk-edit-operation"]
+    return session["bulk-editor-operation"]
 
 
 def set_operation(session, operation):
-    session["bulk-edit-operation"] = operation
+    session["bulk-editor-operation"] = operation
 
 
 def reset_operation(session):
-    if "bulk-edit-operation" in session:
-        session.pop("bulk-edit-operation")
+    if "bulk-editor-operation" in session:
+        session.pop("bulk-editor-operation")
 
 
 def get_buffer_selection_mode(session):

@@ -7,7 +7,7 @@ import src.errors as errors
 import src.form_helpers as form_helpers
 import src.modes as modes
 
-import src.bulk_edit.selection_inputs as inputs
+import src.bulk_editor.selection_inputs as inputs
 import src.data.selections as selections
 
 
@@ -70,7 +70,7 @@ def render_inputs(session, mode):
     help_state = modes.check(session, "Help")
     selection_form = selection_forms.get(mode)
     template_path = os.path.join(
-        "partials/bulk_edit/selection",
+        "partials/bulk_editor/selection",
         selection_form.template,
     )
     html = render_template(template_path, show_help=help_state)
@@ -82,7 +82,7 @@ def render(session, selection_mode_options):
     default_selection_mode = selection_mode_options[0]
     selection_inputs = render_inputs(session, default_selection_mode)
     return render_template(
-            "partials/bulk_edit/selection.html",
+            "partials/bulk_editor/selection.html",
             selection_mode=default_selection_mode,
             selection_mode_options=selection_mode_options,
             selection_inputs=selection_inputs,

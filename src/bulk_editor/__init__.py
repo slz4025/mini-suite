@@ -4,16 +4,16 @@ import src.modes as modes
 import src.form_helpers as form_helpers
 
 import src.data.operations as ops
-import src.bulk_edit.operations as operations
+import src.bulk_editor.operations as operations
 
 
 def render(session):
-    bulk_edit_state = modes.check(session, "Bulk-Edit")
+    bulk_editor_state = modes.check(session, "Bulk-Editor")
     operation_form = operations.render(session, operations.default)
 
     return render_template(
-            "partials/bulk_edit.html",
-            show_bulk_edit=bulk_edit_state,
+            "partials/bulk_editor.html",
+            show_bulk_editor=bulk_editor_state,
             operation=operations.default,
             operation_options=operations.options,
             operation_form=operation_form,

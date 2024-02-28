@@ -140,17 +140,11 @@ def get_paste_selection_mode_options(session):
         raise errors.UserError("Did not copy anything yet to paste.")
     if copy_selection_mode not in copy_to_paste:
         raise errors.UnknownOptionError(
-            "Expected copy selection to be Box, Row, or Column. "
-            f"Got type {copy_selection_mode} instead."
+            f"Unexpected copy type {copy_selection_mode} "
+            "is not supported by paste."
         )
 
-    paste_selection_mode = copy_to_paste[copy_selection_mode]
-    other_selection_mode_options = [
-        o for o in copy_to_paste.values() if o != paste_selection_mode
-    ]
-
-    selection_mode_options = \
-        [paste_selection_mode] + other_selection_mode_options
+    selection_mode_options = [copy_to_paste[copy_selection_mode]]
     return selection_mode_options
 
 

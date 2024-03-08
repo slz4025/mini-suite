@@ -5,7 +5,7 @@ import src.form_helpers as form_helpers
 import src.settings as settings
 
 import src.data.operations as operations
-import src.data.selections as selections
+import src.selection.types as sel_types
 import src.data.sheet as sheet
 
 
@@ -17,11 +17,11 @@ def cell_position_eq(cell_position, other_cell_position):
 
 
 def get_focused_cell_position(session):
-    return selections.CellPosition(
-        row_index=selections.RowIndex(
+    return sel_types.CellPosition(
+        row_index=sel_types.RowIndex(
             int(session["focused-cell-position"]["row-index"])
         ),
-        col_index=selections.ColIndex(
+        col_index=sel_types.ColIndex(
             int(session["focused-cell-position"]["col-index"])
         ),
     )
@@ -40,9 +40,9 @@ def is_focused(session, cell_position):
 
 
 def get_upperleft(session):
-    return selections.CellPosition(
-        row_index=selections.RowIndex(int(session["upper-left"]["row-index"])),
-        col_index=selections.ColIndex(int(session["upper-left"]["col-index"])),
+    return sel_types.CellPosition(
+        row_index=sel_types.RowIndex(int(session["upper-left"]["row-index"])),
+        col_index=sel_types.ColIndex(int(session["upper-left"]["col-index"])),
     )
 
 
@@ -70,9 +70,9 @@ def set_center(session, form):
     row_start = max(0, row_end - nrows)
     col_start = max(0, col_end - ncols)
 
-    upperleft = selections.CellPosition(
-        row_index=selections.RowIndex(row_start),
-        col_index=selections.RowIndex(col_start),
+    upperleft = sel_types.CellPosition(
+        row_index=sel_types.RowIndex(row_start),
+        col_index=sel_types.RowIndex(col_start),
     )
     set_upperleft(session, upperleft)
 
@@ -83,9 +83,9 @@ def move_upperleft(session, method):
     mcols = current_settings.mcols
 
     if method == 'home':
-        moved = selections.CellPosition(
-            row_index=selections.RowIndex(0),
-            col_index=selections.ColIndex(0),
+        moved = sel_types.CellPosition(
+            row_index=sel_types.RowIndex(0),
+            col_index=sel_types.ColIndex(0),
         )
     else:
         delta_row = 0
@@ -117,29 +117,29 @@ def move_upperleft(session, method):
         if potential_col < bounds.col.value:
             col = potential_col
 
-        moved = selections.CellPosition(
-            row_index=selections.RowIndex(row),
-            col_index=selections.ColIndex(col),
+        moved = sel_types.CellPosition(
+            row_index=sel_types.RowIndex(row),
+            col_index=sel_types.ColIndex(col),
         )
 
     set_upperleft(session, moved)
 
 
 def init(session):
-    upperleft = selections.CellPosition(
-        row_index=selections.RowIndex(0),
-        col_index=selections.ColIndex(0),
+    upperleft = sel_types.CellPosition(
+        row_index=sel_types.RowIndex(0),
+        col_index=sel_types.ColIndex(0),
     )
     set_upperleft(session, upperleft)
-    focused_cell_position = selections.CellPosition(
-        row_index=selections.RowIndex(0),
-        col_index=selections.ColIndex(0),
+    focused_cell_position = sel_types.CellPosition(
+        row_index=sel_types.RowIndex(0),
+        col_index=sel_types.ColIndex(0),
     )
     set_focused_cell_position(session, focused_cell_position)
 
 
 def render_cell(session, cell_position, highlight=False):
-    selections.check_cell_position(cell_position)
+    sel_types.check_cell_position(cell_position)
 
     show_highlight = highlight and is_focused(session, cell_position)
 
@@ -188,9 +188,9 @@ def render_row(session, leftmost, ncols, bounds):
     ):
         cell = render_cell(
             session,
-            selections.CellPosition(
+            sel_types.CellPosition(
                 row_index=leftmost.row_index,
-                col_index=selections.ColIndex(col),
+                col_index=sel_types.ColIndex(col),
             ),
         )
         cells.append(cell)
@@ -210,7 +210,7 @@ def render_table_header(session, upperleft, ncols, bounds):
         upperleft.col_index.value,
         min(upperleft.col_index.value+ncols, bounds.col.value)
     ):
-        h = render_col_header(session, col_index=selections.ColIndex(col))
+        h = render_col_header(session, col_index=sel_types.ColIndex(col))
         header.append(h)
 
     return render_template(
@@ -230,8 +230,8 @@ def render_table(session, upperleft, nrows, ncols, bounds):
     ):
         tablerow = render_row(
             session,
-            selections.CellPosition(
-                row_index=selections.RowIndex(row),
+            sel_types.CellPosition(
+                row_index=sel_types.RowIndex(row),
                 col_index=upperleft.col_index,
             ),
             ncols,

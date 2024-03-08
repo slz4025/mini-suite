@@ -1,0 +1,28 @@
+<fieldset id="selection-inputs">
+  <legend>Input</legend>
+
+  {% if show_help %}
+  <p>
+    If a constraint is left blank, it will default to the corresponding
+    bound of the sheet.
+  </p>
+  {% endif %}
+
+  <label for="selection-row-start">Start</label>
+  <input
+    type="number"
+    pattern="[0-9]*"
+    id="selection-row-start"
+    name="row-start"
+    style="width: 50px;"
+  >
+
+  <label for="selection-row-end">End</label>
+  <input
+    type="number"
+    pattern="[0-9]*"
+    id="selection-row-end"
+    name="row-end"
+    style="width: 50px;"
+  >
+</fieldset>

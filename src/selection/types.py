@@ -47,38 +47,24 @@ Selection = Union[
 ]
 
 
-def check_row_index(row_index, end_inclusive=False):
+def check_row_index(row_index):
     bounds = sheet.get_bounds()
 
-    if end_inclusive:
-        if row_index.value < 0 or row_index.value > bounds.row.value:
-            raise errors.OutOfBoundsError(
-                f"Row index, {row_index.value}, "
-                f"is out of bounds [{0}:{bounds.row.value}]."
-            )
-    else:
-        if row_index.value < 0 or row_index.value >= bounds.row.value:
-            raise errors.OutOfBoundsError(
-                f"Row index, {row_index.value}, "
-                f"is out of bounds [{0}:{bounds.row.value})."
-            )
+    if row_index.value < 0 or row_index.value > bounds.row.value:
+        raise errors.OutOfBoundsError(
+            f"Row index, {row_index.value}, "
+            f"is out of bounds [{0}:{bounds.row.value}]."
+        )
 
 
-def check_col_index(col_index, end_inclusive=False):
+def check_col_index(col_index):
     bounds = sheet.get_bounds()
 
-    if end_inclusive:
-        if col_index.value < 0 or col_index.value > bounds.col.value:
-            raise errors.OutOfBoundsError(
-                f"Column index, {col_index.value}, "
-                f"is out of bounds [{0}:{bounds.col.value}]."
-            )
-    else:
-        if col_index.value < 0 or col_index.value >= bounds.col.value:
-            raise errors.OutOfBoundsError(
-                f"Column index, {col_index.value}, "
-                f"is out of bounds [{0}:{bounds.col.value})."
-            )
+    if col_index.value < 0 or col_index.value > bounds.col.value:
+        raise errors.OutOfBoundsError(
+            f"Column index, {col_index.value}, "
+            f"is out of bounds [{0}:{bounds.col.value}]."
+        )
 
 
 def check_cell_position(cell_position):

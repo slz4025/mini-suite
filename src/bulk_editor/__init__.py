@@ -1,31 +1,31 @@
 from flask import render_template
 
 import src.modes as modes
-import src.form_helpers as form_helpers
 
-import src.data.operations as ops
 import src.bulk_editor.operations as operations
+import src.data.operations as ops
 
 
 def render(session):
     bulk_editor_state = modes.check(session, "Bulk-Editor")
-    operation_form = operations.render(session, operations.default)
+
+    default = None
+    operation_form = ""
+
+    options = operations.get_allowed_options(session)
+    if len(options) > 0:
+        default = options[0]
+        operation_form = operations.render(session, default)
 
     return render_template(
             "partials/bulk_editor.html",
             show_bulk_editor=bulk_editor_state,
-            operation=operations.default,
-            operation_options=operations.options,
+            operation=default,
+            operation_options=options,
             operation_form=operation_form,
     )
 
 
 def attempt_apply(session, form):
-    op = form_helpers.extract(form, "operation")
-    operation_form = operations.get(op)
-    operation_input = operation_form.validate_and_parse(form)
-    modification = ops.Modification(operation=op, input=operation_input)
+    modification = operations.validate_and_parse(session, form)
     ops.apply_modification(modification)
-
-    if operation_form.name == "COPY":
-        operations.save_copy_selection_mode(session, operation_input)

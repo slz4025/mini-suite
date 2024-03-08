@@ -18,6 +18,15 @@
 >
 </button>
 <button
+    id="selection-toggler"
+    hx-put="/selection/toggle"
+    hx-trigger="click"
+    hx-target="#selection"
+    hx-swap="outerHTML"
+    style="display: none"
+>
+</button>
+<button
     id="bulk-editor-toggler"
     hx-put="/bulk-editor/toggle"
     hx-trigger="click"
@@ -49,12 +58,14 @@
   <div class="left">
     <div class="inner">
       <div class="justify"><span>Editor</span><span>[Ctrl+1]</span></div>
-      <div class="justify"><span>Bulk-Editor</span><span>[Ctrl+2]</span></div>
-      <div class="justify"><span>Navigator</span><span>[Ctrl+3]</span></div>
-      <div class="justify"><span>[⚙] Settings</span><span>[Ctrl+4]</span></div>
+      <div class="justify"><span>Selection</span><span>[Ctrl+2]</span></div>
+      <div class="justify"><span>Bulk-Editor</span><span>[Ctrl+3]</span></div>
+      <div class="justify"><span>Navigator</span><span>[Ctrl+4]</span></div>
+      <div class="justify"><span>[⚙] Settings</span><span>[Ctrl+5]</span></div>
       <div class="justify"><span>[?] Help</span><span>[Ctrl+0]</span></div>
     </div>
     {{ editor|safe }}
+    {{ selection|safe }}
     {{ bulk_editor|safe }}
     {{ navigator|safe }}
     {{ settings|safe }}

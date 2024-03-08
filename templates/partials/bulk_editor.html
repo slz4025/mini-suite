@@ -1,5 +1,11 @@
 {% if show_bulk_editor %}
-<div id="bulk-editor">
+<div
+  id="bulk-editor"
+  hx-put="/bulk-editor"
+  hx-trigger="bulk-editor from:body"
+  hx-target="this"
+  hx-swap="outerHTML"
+>
   <h2>BULK EDITOR</h2>
 
   <form
@@ -13,7 +19,7 @@
       <select
         id="bulk-editor-operation"
         name="operation"
-        hx-get="/bulk-editor/operation-form"
+        hx-get="/bulk-editor/operation"
         hx-target="#bulk-editor-operation-form"
         hx-swap="outerHTML"
         style="width: auto;"

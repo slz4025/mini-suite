@@ -40,12 +40,15 @@ def handler(func):
         except Exception as e:
             error = e
 
-        if resp is None:
-            assert error is not None
-
+        if error is not None:
             stack_trace = "".join(traceback.format_tb(error.__traceback__))
             error_message = f"ERROR: {error}\n{stack_trace}"
             set_message(session, error_message)
+
+            # Print error in case can't redirect to page.
+            # Seems like this usually happens when an unexpected bug
+            # is encountered.
+            print(error_message)
 
             resp = make_response()
             resp.headers["HX-Redirect"] = url_for("unexpected_error")

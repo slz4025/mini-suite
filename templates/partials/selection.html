@@ -1,0 +1,46 @@
+{% if show_selection %}
+<div id="selection">
+  <h2>SELECTION</h2>
+
+  <form
+    hx-post="/selection"
+    hx-target="#selection"
+    hx-swap="outerHTML"
+    enctype="multipart/form-data"
+  >
+    <fieldset>
+      <legend>Mode</legend>
+
+      {% if show_help %}
+      <p>
+        Indices start from 0. Ranges are start-inclusive, end-exclusive.
+      </p>
+      {% endif %}
+
+      <label for="selection-mode" hidden>Mode</label>
+      <select
+        id="selection-mode"
+        name="mode"
+        hx-get="/selection/inputs"
+        hx-target="#selection-inputs"
+        hx-swap="outerHTML"
+        style="width: auto;"
+      >
+        {% for mode_option in mode_options %}
+        {% if mode_option == mode or (not mode and loop.index == 0) %}
+        <option value="{{ mode_option }}" selected>{{ mode_option }}</option>
+        {% else %}
+        <option value="{{ mode_option }}">{{ mode_option }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </fieldset>
+
+    {{ input|safe }}
+
+    <input type="submit" value="↵" id="selection-submit"/>
+  </form>
+</div>
+{% else %}
+ <div id="selection" style="display: none;"></div>
+{% endif %}

@@ -12,43 +12,51 @@ class Mode:
 
 
 def check_help(session):
-    return session["help"] == "True"
+    return session["help-state"] == "True"
 
 
 def set_help(session, state):
-    session["help"] = str(state)
+    session["help-state"] = str(state)
 
 
 def check_editor(session):
-    return session["editor"] == "True"
+    return session["editor-state"] == "True"
 
 
 def set_editor(session, state):
-    session["editor"] = str(state)
+    session["editor-state"] = str(state)
+
+
+def check_selection(session):
+    return session["selection-state"] == "True"
+
+
+def set_selection(session, state):
+    session["selection-state"] = str(state)
 
 
 def check_bulk_editor(session):
-    return session["bulk-editor"] == "True"
+    return session["bulk-editor-state"] == "True"
 
 
 def set_bulk_editor(session, state):
-    session["bulk-editor"] = str(state)
+    session["bulk-editor-state"] = str(state)
 
 
 def check_navigator(session):
-    return session["navigator"] == "True"
+    return session["navigator-state"] == "True"
 
 
 def set_navigator(session, state):
-    session["navigator"] = str(state)
+    session["navigator-state"] = str(state)
 
 
 def check_settings(session):
-    return session["settings"] == "True"
+    return session["settings-state"] == "True"
 
 
 def set_settings(session, state):
-    session["settings"] = str(state)
+    session["settings-state"] = str(state)
 
 
 modes = {
@@ -61,6 +69,11 @@ modes = {
             name="Editor",
             check_on=check_editor,
             set=set_editor,
+        ),
+        "Selection": Mode(
+            name="Selection",
+            check_on=check_selection,
+            set=set_selection,
         ),
         "Bulk-Editor": Mode(
             name="Bulk-Editor",

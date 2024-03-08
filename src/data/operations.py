@@ -7,7 +7,7 @@ from typing import Callable, Union
 import src.errors as errors
 
 import src.data.sheet as sheet
-import src.data.selections as selections
+import src.selection.types as sel_types
 
 
 class Axis(Enum):
@@ -17,32 +17,28 @@ class Axis(Enum):
 
 @dataclass
 class InsertInput:
-    selection: selections.RowIndex | selections.ColIndex
+    selection: sel_types.RowIndex | sel_types.ColIndex
     number: int
 
 
 @dataclass
 class ValueInput:
-    selection: selections.RowIndex \
-        | selections.ColIndex \
-        | selections.CellPosition \
-        | selections.RowRange \
-        | selections.ColRange \
-        | selections.Box
+    selection: sel_types.RowRange \
+        | sel_types.ColRange \
+        | sel_types.Box
     value: object
 
 
-Input = Union[InsertInput, ValueInput, selections.Selection]
+Input = Union[InsertInput, ValueInput, sel_types.Selection]
 
 
 def get_cell(cell_position):
-    selections.check_cell_position(cell_position)
     ptr = sheet.get()
     return ptr[cell_position.row_index.value, cell_position.col_index.value]
 
 
 def update_cell(cell_position, value):
-    selections.check_cell_position(cell_position)
+    sel_types.check_cell_position(cell_position)
     ptr = sheet.get()
     ptr[cell_position.row_index.value, cell_position.col_index.value] = value
 
@@ -52,23 +48,19 @@ def apply_delete(sel):
     end = None
     axis = None
 
-    if isinstance(sel, selections.RowIndex):
-        selections.check_row_index(sel)
+    if isinstance(sel, sel_types.RowIndex):
         start = sel.value
         end = start+1
         axis = Axis.ROW
-    elif isinstance(sel, selections.ColIndex):
-        selections.check_col_index(sel)
+    elif isinstance(sel, sel_types.ColIndex):
         start = sel.value
         end = start+1
         axis = Axis.COLUMN
-    elif isinstance(sel, selections.RowRange):
-        sel = selections.check_and_set_row_range(sel)
+    elif isinstance(sel, sel_types.RowRange):
         start = sel.start.value
         end = sel.end.value
         axis = Axis.ROW
-    elif isinstance(sel, selections.ColRange):
-        sel = selections.check_and_set_col_range(sel)
+    elif isinstance(sel, sel_types.ColRange):
         start = sel.start.value
         end = sel.end.value
         axis = Axis.COLUMN
@@ -91,12 +83,10 @@ def apply_insert(inp):
     axis = None
 
     sel = inp.selection
-    if isinstance(sel, selections.RowIndex):
-        selections.check_row_index(sel, end_inclusive=True)
+    if isinstance(sel, sel_types.RowIndex):
         index = sel.value
         axis = Axis.ROW
-    elif isinstance(sel, selections.ColIndex):
-        selections.check_col_index(sel, end_inclusive=True)
+    elif isinstance(sel, sel_types.ColIndex):
         index = sel.value
         axis = Axis.COLUMN
     else:
@@ -119,46 +109,27 @@ def apply_insert(inp):
 
 
 def get_bounds_from_selection(sel):
-    row_range = selections.check_and_set_row_range(
-        selections.RowRange(start=None, end=None),
+    row_range = sel_types.check_and_set_row_range(
+        sel_types.RowRange(start=None, end=None),
     )
     row_start = row_range.start.value
     row_end = row_range.end.value
 
-    col_range = selections.check_and_set_col_range(
-        selections.ColRange(start=None, end=None),
+    col_range = sel_types.check_and_set_col_range(
+        sel_types.ColRange(start=None, end=None),
     )
     col_start = col_range.start.value
     col_end = col_range.end.value
 
-    if isinstance(sel, selections.RowIndex):
-        selections.check_row_index(sel)
-        row_start = sel.value
-        row_end = row_start + 1
-    elif isinstance(sel, selections.ColIndex):
-        selections.check_col_index(sel)
-        col_start = sel.value
-        col_end = col_start + 1
-    elif isinstance(sel, selections.CellPosition):
-        selections.check_row_index(sel.row_index)
-        row_start = sel.row_index.value
-        row_end = row_start + 1
-        selections.check_col_index(sel.col_index)
-        col_start = sel.col_index.value
-        col_end = col_start + 1
-    elif isinstance(sel, selections.RowRange):
-        row_range = selections.check_and_set_row_range(sel)
-        row_start = row_range.start.value
-        row_end = row_range.end.value
-    elif isinstance(sel, selections.ColRange):
-        col_range = selections.check_and_set_col_range(sel)
-        col_start = col_range.start.value
-        col_end = col_range.end.value
-    elif isinstance(sel, selections.Box):
-        row_range = selections.check_and_set_row_range(sel.row_range)
+    if isinstance(sel, sel_types.RowRange):
+        row_start = sel.start.value
+        row_end = sel.end.value
+    elif isinstance(sel, sel_types.ColRange):
+        col_start = sel.start.value
+        col_end = sel.end.value
+    elif isinstance(sel, sel_types.Box):
         row_start = sel.row_range.start.value
         row_end = sel.row_range.end.value
-        col_range = selections.check_and_set_col_range(sel.col_range)
         col_start = sel.col_range.start.value
         col_end = sel.col_range.end.value
     else:
@@ -200,10 +171,10 @@ def maybe_insert_at_end(axis, needed):
     match axis:
         case Axis.ROW:
             bound = bounds.row.value
-            selection = selections.RowIndex(bound)
+            selection = sel_types.RowIndex(bound)
         case Axis.COLUMN:
             bound = bounds.col.value
-            selection = selections.ColIndex(bound)
+            selection = sel_types.ColIndex(bound)
 
     number = needed - bound
     if number > 0:
@@ -220,9 +191,27 @@ def apply_paste(sel):
     # Copy objects, e.g. strings, within the array.
     copied_buffer = copy.deepcopy(buffer)
 
-    row_start, row_end, col_start, col_end = get_bounds_from_selection(sel)
-    row_end = row_start + copied_buffer.shape[0]
-    col_end = col_start + copied_buffer.shape[1]
+    if isinstance(sel, sel_types.RowIndex):
+        row_start = sel.value
+        row_end = row_start + copied_buffer.shape[0]
+        col_start = 0
+        col_end = copied_buffer.shape[1]
+        assert col_end == sheet.get_bounds().col.value
+    elif isinstance(sel, sel_types.ColIndex):
+        row_start = 0
+        row_end = copied_buffer.shape[0]
+        assert row_end == sheet.get_bounds().row.value
+        col_start = sel.value
+        col_end = col_start + copied_buffer.shape[1]
+    elif isinstance(sel, sel_types.CellPosition):
+        row_start = sel.row_index.value
+        row_end = row_start + copied_buffer.shape[0]
+        col_start = sel.col_index.value
+        col_end = col_start + copied_buffer.shape[1]
+    else:
+        raise errors.UnknownOptionError(
+            f"Option, {type(sel)}, is not valid."
+        )
 
     maybe_insert_at_end(Axis.ROW, row_end)
     maybe_insert_at_end(Axis.COLUMN, col_end)

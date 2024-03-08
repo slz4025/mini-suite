@@ -9,12 +9,15 @@ window.addEventListener('keyup', function(event) {
         document.getElementById("editor-toggler").click();
         break;
       case '2':
-        document.getElementById("bulk-editor-toggler").click();
+        document.getElementById("selection-toggler").click();
         break;
       case '3':
-        document.getElementById("navigator-toggler").click();
+        document.getElementById("bulk-editor-toggler").click();
         break;
       case '4':
+        document.getElementById("navigator-toggler").click();
+        break;
+      case '5':
         document.getElementById("settings-toggler").click();
         break;
 

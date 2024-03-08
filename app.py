@@ -13,10 +13,10 @@ import src.errors as errors
 import src.modes as modes
 import src.notifications as notifications
 import src.port as port
+import src.selection as selection
 import src.settings as settings
 
 import src.data.sheet as sheet
-import src.data.selections as selections
 import src.data.operations as operations
 
 app = Flask(__name__)
@@ -79,6 +79,7 @@ def render_body(session):
     port_html = port.render(session)
     navigator = render_navigator(session)
     editor = render_editor(session)
+    selection_html = selection.render(session)
     bulk_editor_html = bulk_editor.render(session)
     settings_html = settings.render(session)
     body = render_template(
@@ -87,6 +88,7 @@ def render_body(session):
             notification_banner=notification_banner,
             data=port_html,
             editor=editor,
+            selection=selection_html,
             bulk_editor=bulk_editor_html,
             navigator=navigator,
             settings=settings_html,
@@ -161,9 +163,9 @@ def update_port():
 def cell_highlight(row, col, state):
     assert htmx is not None
 
-    cell_position = selections.CellPosition(
-        row_index=selections.RowIndex(int(row)),
-        col_index=selections.ColIndex(int(col)),
+    cell_position = selection.types.CellPosition(
+        row_index=selection.types.RowIndex(int(row)),
+        col_index=selection.types.ColIndex(int(col)),
     )
     highlight = state == "on"
 
@@ -178,9 +180,9 @@ def cell_rerender(row, col):
     # May come from:
     # 1. A submission by the editor.
 
-    cell_position = selections.CellPosition(
-        row_index=selections.RowIndex(int(row)),
-        col_index=selections.ColIndex(int(col)),
+    cell_position = selection.types.CellPosition(
+        row_index=selection.types.RowIndex(int(row)),
+        col_index=selection.types.ColIndex(int(col)),
     )
 
     key = f"input-cell-{row}-{col}"
@@ -202,9 +204,9 @@ def cell_sync(row, col):
     # 2. An update on the cell value.
 
     # Update cell.
-    cell_position = selections.CellPosition(
-        row_index=selections.RowIndex(int(row)),
-        col_index=selections.ColIndex(int(col)),
+    cell_position = selection.types.CellPosition(
+        row_index=selection.types.RowIndex(int(row)),
+        col_index=selection.types.ColIndex(int(col)),
     )
     key = f"input-cell-{row}-{col}"
     if key in request.form:
@@ -240,6 +242,69 @@ def editor():
     return resp
 
 
+@app.route("/selection/toggle", methods=['PUT'])
+@errors.handler
+def selection_toggler():
+    assert htmx is not None
+
+    selection_state = modes.check(session, "Selection")
+    modes.set(session, "Selection", not selection_state)
+
+    html = selection.render(session)
+    resp = Response(html)
+    resp.headers['HX-Trigger'] = "modes"
+    return resp
+
+
+# Though this updates the shown selection form,
+# we use 'GET' in order to retrieve the request argument.
+@app.route("/selection/inputs", methods=['GET'])
+@errors.handler
+def selection_inputs():
+    assert htmx is not None
+
+    mode = request.args["mode"]
+    return selection.render_inputs(session, mode)
+
+
+@app.route("/selection", methods=['POST'])
+@errors.handler
+def selection_endpoint():
+    assert htmx is not None
+
+    resp = Response()
+
+    match request.method:
+        case 'POST':
+            resp.headers['HX-Trigger'] = "notification"
+
+            success = False
+            try:
+                selection.save(session, request.form)
+                success = True
+            except (errors.UserError, errors.OutOfBoundsError) as e:
+                notifications.set(session, notifications.Notification(
+                    message=str(e),
+                    mode=notifications.Mode.ERROR,
+                ))
+
+            if success:
+                notifications.set(session, notifications.Notification(
+                    message="Selection registered.",
+                    mode=notifications.Mode.INFO,
+                ))
+
+                # Rerender what operations are allowed based on selection.
+                resp.headers['HX-Trigger'] += ",bulk-editor"
+
+                # TODO: Update port with selected cells.
+                # resp.headers['HX-Trigger'] += ",update-port"
+
+    html = selection.render(session)
+    resp.response = html
+    return resp
+
+
 @app.route("/bulk-editor/toggle", methods=['PUT'])
 @errors.handler
 def bulk_editor_toggler():
@@ -254,16 +319,28 @@ def bulk_editor_toggler():
     return resp
 
 
-@app.route("/bulk-editor", methods=['POST'])
+# Though this updates the shown operation form,
+# we use 'GET' in order to retrieve the request argument.
+@app.route("/bulk-editor/operation", methods=['GET'])
 @errors.handler
-def open_bulk_editor():
+def bulk_editor_operation():
+    assert htmx is not None
+
+    operation = request.args["operation"]
+    return bulk_editor.operations.render(session, operation)
+
+
+@app.route("/bulk-editor", methods=['PUT', 'POST'])
+@errors.handler
+def bulk_editor_endpoint():
     assert htmx is not None
 
     resp = Response()
-    resp.headers['HX-Trigger'] = "modes"
 
     match request.method:
         case 'POST':
+            resp.headers['HX-Trigger'] = "notification"
+
             success = False
             try:
                 bulk_editor.attempt_apply(session, request.form)
@@ -273,37 +350,18 @@ def open_bulk_editor():
                     message=str(e),
                     mode=notifications.Mode.ERROR,
                 ))
-                resp.headers['HX-Trigger'] += ",notification"
 
             if success:
                 notifications.set(session, notifications.Notification(
                     message="Bulk operation complete.",
                     mode=notifications.Mode.INFO,
                 ))
-                resp.headers['HX-Trigger'] += ",notification"
+
                 resp.headers['HX-Trigger'] += ",update-port"
 
     html = bulk_editor.render(session)
     resp.response = html
     return resp
-
-
-@app.route("/bulk-editor/operation-form", methods=['GET'])
-@errors.handler
-def bulk_editor_operation_form():
-    assert htmx is not None
-
-    operation = request.args["operation"]
-    return bulk_editor.operations.render(session, operation)
-
-
-@app.route("/bulk-editor/selection-inputs", methods=['GET'])
-@errors.handler
-def bulk_editor_selection_inputs():
-    assert htmx is not None
-
-    mode = request.args["selection-mode"]
-    return bulk_editor.selection.render_inputs(session, mode)
 
 
 @app.route("/navigator/toggle", methods=['PUT'])

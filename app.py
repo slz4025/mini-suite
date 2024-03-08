@@ -128,9 +128,9 @@ def data():
     return dump
 
 
-@app.route("/help", methods=['PUT'])
+@app.route("/help/toggle", methods=['PUT'])
 @errors.handler
-def toggle_help():
+def help_toggler():
     assert htmx is not None
 
     help_state = modes.check(session, "Help")
@@ -216,25 +216,45 @@ def cell_sync(row, col):
     return render_editor(session)
 
 
-@app.route("/editor", methods=['GET', 'PUT'])
+@app.route("/editor/toggle", methods=['PUT'])
+@errors.handler
+def editor_toggler():
+    assert htmx is not None
+
+    editor_state = modes.check(session, "Editor")
+    modes.set(session, "Editor", not editor_state)
+
+    html = render_editor(session)
+    resp = Response(html)
+    resp.headers['HX-Trigger'] = "modes"
+    return resp
+
+
+@app.route("/editor", methods=['PUT'])
 @errors.handler
 def editor():
     assert htmx is not None
 
-    resp = Response()
-    match request.method:
-        case 'PUT':
-            # toggle mode
-            editor_state = modes.check(session, "Editor")
-            modes.set(session, "Editor", not editor_state)
-            resp.headers['HX-Trigger'] = "modes"
-
     html = render_editor(session)
-    resp.response = html
+    resp = Response(html)
     return resp
 
 
-@app.route("/bulk-editor", methods=['PUT', 'POST'])
+@app.route("/bulk-editor/toggle", methods=['PUT'])
+@errors.handler
+def bulk_editor_toggler():
+    assert htmx is not None
+
+    bulk_editor_state = modes.check(session, "Bulk-Editor")
+    modes.set(session, "Bulk-Editor", not bulk_editor_state)
+
+    html = bulk_editor.render(session)
+    resp = Response(html)
+    resp.headers['HX-Trigger'] = "modes"
+    return resp
+
+
+@app.route("/bulk-editor", methods=['POST'])
 @errors.handler
 def open_bulk_editor():
     assert htmx is not None
@@ -243,10 +263,6 @@ def open_bulk_editor():
     resp.headers['HX-Trigger'] = "modes"
 
     match request.method:
-        case 'PUT':
-            # toggle mode
-            bulk_editor_state = modes.check(session, "Bulk-Editor")
-            modes.set(session, "Bulk-Editor", not bulk_editor_state)
         case 'POST':
             success = False
             try:
@@ -290,22 +306,17 @@ def bulk_editor_selection_inputs():
     return bulk_editor.selection.render_inputs(session, mode)
 
 
-@app.route("/navigator", methods=['PUT', 'POST'])
+@app.route("/navigator/toggle", methods=['PUT'])
 @errors.handler
-def navigator():
+def navigator_toggler():
     assert htmx is not None
 
-    resp = Response()
-    resp.headers['HX-Trigger'] = "modes"
-
-    match request.method:
-        case 'PUT':
-            # toggle mode
-            navigator_state = modes.check(session, "Navigator")
-            modes.set(session, "Navigator", not navigator_state)
+    navigator_state = modes.check(session, "Navigator")
+    modes.set(session, "Navigator", not navigator_state)
 
     html = render_navigator(session)
-    resp.response = html
+    resp = Response(html)
+    resp.headers['HX-Trigger'] = "modes"
     return resp
 
 
@@ -360,22 +371,17 @@ def move(method):
     return port.render(session)
 
 
-@app.route("/settings", methods=['PUT'])
+@app.route("/settings/toggle", methods=['PUT'])
 @errors.handler
-def toggle_settings():
+def settings_toggler():
     assert htmx is not None
 
-    resp = Response()
-    resp.headers['HX-Trigger'] = "modes"
-
-    match request.method:
-        case 'PUT':
-            # toggle mode
-            settings_state = modes.check(session, "Settings")
-            modes.set(session, "Settings", not settings_state)
+    settings_state = modes.check(session, "Settings")
+    modes.set(session, "Settings", not settings_state)
 
     html = settings.render(session)
-    resp.response = html
+    resp = Response(html)
+    resp.headers['HX-Trigger'] = "modes"
     return resp
 
 

@@ -1,7 +1,7 @@
 {{notification_banner|safe }}
 <button
     id="help-toggler"
-    hx-put="/help"
+    hx-put="/help/toggle"
     hx-trigger="click"
     hx-target="body"
     hx-swap="innerHTML"
@@ -10,7 +10,7 @@
 </button>
 <button
     id="editor-toggler"
-    hx-put="/editor"
+    hx-put="/editor/toggle"
     hx-trigger="click"
     hx-target="#editor"
     hx-swap="outerHTML"
@@ -19,7 +19,7 @@
 </button>
 <button
     id="bulk-editor-toggler"
-    hx-put="/bulk-editor"
+    hx-put="/bulk-editor/toggle"
     hx-trigger="click"
     hx-target="#bulk-editor"
     hx-swap="outerHTML"
@@ -28,7 +28,7 @@
 </button>
 <button
     id="navigator-toggler"
-    hx-put="/navigator"
+    hx-put="/navigator/toggle"
     hx-trigger="click"
     hx-target="#navigator"
     hx-swap="outerHTML"
@@ -37,7 +37,7 @@
 </button>
 <button
     id="settings-toggler"
-    hx-put="/settings"
+    hx-put="/settings/toggle"
     hx-trigger="click"
     hx-target="#settings"
     hx-swap="outerHTML"

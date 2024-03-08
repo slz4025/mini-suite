@@ -1,13 +1,3 @@
-<!--
-  When the editor is focused on or its contents submitted,
-  1. the contents are stored in the sheet,
-  2. the cell the editor is synced to is rerendered.
-
-  No entities but the editor-toggler (Ctrl+1) or focused cell
-  owns the rerendering of the editor.
-  Since these entities can only be interacted with one at a time,
-  we expect no races on the editor's rerendering.
--->
 <div
   id="editor"
   hx-put="/editor"
@@ -16,6 +6,16 @@
   hx-swap="outerHTML"
   style="display: {{ 'none' if not show_editor else 'inherit' }};"
 >
+  <!--
+    When the editor is focused on or its contents submitted,
+    1. the contents are stored in the sheet,
+    2. the cell the editor is synced to is rerendered.
+
+    No entities but the editor-toggler (Ctrl+1) or focused cell
+    owns the rerendering of the editor.
+    Since these entities can only be interacted with one at a time,
+    we expect no races on the editor's rerendering.
+  -->
   <h2>EDITOR</h2>
 
   <form

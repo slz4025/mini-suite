@@ -7,9 +7,16 @@ from typing import Optional
 sheet = None
 
 
-@dataclass
 class Index:
-    value: int
+    def __init__(self, value):
+        self.value = value
+
+    def equals(self, other):
+        return self.value == other.value
+
+    # end-exclusive
+    def in_bounds(self, start, end):
+        return self.value >= start and self.value < end
 
 
 @dataclass

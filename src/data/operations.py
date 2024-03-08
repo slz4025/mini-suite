@@ -108,41 +108,10 @@ def apply_insert(inp):
     ))
 
 
-def get_bounds_from_selection(sel):
-    row_range = sel_types.check_and_set_row_range(
-        sel_types.RowRange(start=None, end=None),
-    )
-    row_start = row_range.start.value
-    row_end = row_range.end.value
-
-    col_range = sel_types.check_and_set_col_range(
-        sel_types.ColRange(start=None, end=None),
-    )
-    col_start = col_range.start.value
-    col_end = col_range.end.value
-
-    if isinstance(sel, sel_types.RowRange):
-        row_start = sel.start.value
-        row_end = sel.end.value
-    elif isinstance(sel, sel_types.ColRange):
-        col_start = sel.start.value
-        col_end = sel.end.value
-    elif isinstance(sel, sel_types.Box):
-        row_start = sel.row_range.start.value
-        row_end = sel.row_range.end.value
-        col_start = sel.col_range.start.value
-        col_end = sel.col_range.end.value
-    else:
-        raise errors.UnknownOptionError(
-            f"Option, {type(sel)}, is not valid."
-        )
-
-    return row_start, row_end, col_start, col_end
-
-
 def apply_value(inp):
     sel = inp.selection
-    row_start, row_end, col_start, col_end = get_bounds_from_selection(sel)
+    row_start, row_end, col_start, col_end = \
+        sel_types.get_bounds_from_selection(sel)
 
     value = inp.value
     ptr = sheet.get()
@@ -155,7 +124,8 @@ buffer = None
 def apply_copy(sel):
     global buffer
 
-    row_start, row_end, col_start, col_end = get_bounds_from_selection(sel)
+    row_start, row_end, col_start, col_end = \
+        sel_types.get_bounds_from_selection(sel)
 
     ptr = sheet.get()
     buffer = copy.deepcopy(ptr[row_start:row_end, col_start:col_end])

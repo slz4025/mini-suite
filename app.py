@@ -169,7 +169,7 @@ def cell_highlight(row, col, state):
     )
     highlight = state == "on"
 
-    return port.render_cell(session, cell_position, highlight=highlight)
+    return port.render_cell(session, cell_position, editing=highlight)
 
 
 @app.route("/cell/<row>/<col>/update", methods=['PUT'])
@@ -296,9 +296,8 @@ def selection_endpoint():
 
                 # Rerender what operations are allowed based on selection.
                 resp.headers['HX-Trigger'] += ",bulk-editor"
-
-                # TODO: Update port with selected cells.
-                # resp.headers['HX-Trigger'] += ",update-port"
+                # Show selection in port.
+                resp.headers['HX-Trigger'] += ",update-port"
 
     html = selection.render(session)
     resp.response = html

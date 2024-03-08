@@ -5,15 +5,9 @@ import src.form_helpers as form_helpers
 import src.settings as settings
 
 import src.data.operations as operations
+import src.selection.state as sel_state
 import src.selection.types as sel_types
 import src.data.sheet as sheet
-
-
-def cell_position_eq(cell_position, other_cell_position):
-    return cell_position.row_index.value \
-        == other_cell_position.row_index.value \
-        and cell_position.col_index.value \
-        == other_cell_position.col_index.value
 
 
 def get_focused_cell_position(session):
@@ -34,9 +28,54 @@ def set_focused_cell_position(session, focused_cell_position):
     }
 
 
-def is_focused(session, cell_position):
+def is_editing(session, cell_position):
     focused_cell_position = get_focused_cell_position(session)
-    return cell_position_eq(focused_cell_position, cell_position)
+    return focused_cell_position.equals(cell_position)
+
+
+def make_render_selected(session):
+    sel = sel_state.get_selection(session)
+
+    if isinstance(sel, sel_types.RowIndex):
+        row_index = sel_types.RowIndex(sel.value - 1)
+
+        def render_selected(cp): return "selected-next-row" \
+            if row_index.equals(cp.row_index) else ""
+    elif isinstance(sel, sel_types.ColIndex):
+        col_index = sel_types.ColIndex(sel.value - 1)
+
+        def render_selected(cp): return "selected-next-col" \
+            if col_index.equals(cp.col_index) else ""
+    elif isinstance(sel, sel_types.CellPosition):
+        cell_position = sel_types.CellPosition(
+            row_index=sel_types.RowIndex(sel.row_index.value - 1),
+            col_index=sel_types.ColIndex(sel.col_index.value - 1),
+        )
+
+        def render_selected(cp): return "selected-bottomright" \
+            if cell_position.equals(cp) else ""
+    elif isinstance(sel, sel_types.RowRange):
+        start_row, end_row, start_col, end_col = \
+            sel_types.get_bounds_from_selection(sel)
+
+        def render_selected(cp): return "selected-current" \
+            if cp.in_bounds(start_row, end_row, start_col, end_col) else ""
+    elif isinstance(sel, sel_types.ColRange):
+        start_row, end_row, start_col, end_col = \
+            sel_types.get_bounds_from_selection(sel)
+
+        def render_selected(cp): return "selected-current" \
+            if cp.in_bounds(start_row, end_row, start_col, end_col) else ""
+    elif isinstance(sel, sel_types.Box):
+        start_row, end_row, start_col, end_col = \
+            sel_types.get_bounds_from_selection(sel)
+
+        def render_selected(cp): return "selected-current" \
+            if cp.in_bounds(start_row, end_row, start_col, end_col) else ""
+    else:
+        def render_selected(cp): return ""
+
+    return render_selected
 
 
 def get_upperleft(session):
@@ -138,48 +177,96 @@ def init(session):
     set_focused_cell_position(session, focused_cell_position)
 
 
-def render_cell(session, cell_position, highlight=False):
+def render_cell(session, cell_position, editing=False, render_selected=None):
     sel_types.check_cell_position(cell_position)
 
-    show_highlight = highlight and is_focused(session, cell_position)
+    renders = []
+    if render_selected is None:
+        render_selected = make_render_selected(session)
+    render_selected_state = render_selected(cell_position)
+    renders.append(render_selected_state)
+    # Apply later so takes precendence.
+    if editing and is_editing(session, cell_position):
+        renders.append("editing-current")
 
     value = operations.get_cell(cell_position)
     if value is None:
         value = ""
+
     return render_template(
             "partials/port/cell.html",
             row=cell_position.row_index.value,
             col=cell_position.col_index.value,
             data=value,
-            show_highlight=show_highlight,
+            renders=renders,
     )
 
 
-def render_corner_header(session):
+def render_corner_header(session, render_selected=None):
+    cell_position = sel_types.CellPosition(
+        row_index=sel_types.RowIndex(-1),
+        col_index=sel_types.ColIndex(-1),
+    )
+
+    renders = []
+    if render_selected is None:
+        render_selected = make_render_selected(session)
+    render_selected_state = render_selected(cell_position)
+    renders.append(render_selected_state)
+
     return render_template(
         "partials/port/corner_header.html",
         data="",
+        renders=renders,
     )
 
 
-def render_row_header(session, row_index):
+def render_row_header(session, row_index, render_selected=None):
+    cell_position = sel_types.CellPosition(
+        row_index=row_index,
+        col_index=sel_types.ColIndex(-1),
+    )
+
+    renders = []
+    if render_selected is None:
+        render_selected = make_render_selected(session)
+    render_selected_state = render_selected(cell_position)
+    renders.append(render_selected_state)
+
     return render_template(
         "partials/port/row_header.html",
         index=row_index.value,
         data=row_index.value,
+        renders=renders,
     )
 
 
-def render_col_header(session, col_index):
+def render_col_header(session, col_index, render_selected=None):
+    cell_position = sel_types.CellPosition(
+        row_index=sel_types.RowIndex(-1),
+        col_index=col_index,
+    )
+
+    renders = []
+    if render_selected is None:
+        render_selected = make_render_selected(session)
+    render_selected_state = render_selected(cell_position)
+    renders.append(render_selected_state)
+
     return render_template(
         "partials/port/col_header.html",
         index=col_index.value,
         data=col_index.value,
+        renders=renders,
     )
 
 
-def render_row(session, leftmost, ncols, bounds):
-    header = render_row_header(session, row_index=leftmost.row_index)
+def render_row(session, leftmost, ncols, bounds, render_selected):
+    header = render_row_header(
+        session,
+        leftmost.row_index,
+        render_selected=render_selected,
+    )
 
     cells = []
     for col in range(
@@ -192,6 +279,7 @@ def render_row(session, leftmost, ncols, bounds):
                 row_index=leftmost.row_index,
                 col_index=sel_types.ColIndex(col),
             ),
+            render_selected=render_selected,
         )
         cells.append(cell)
 
@@ -202,15 +290,25 @@ def render_row(session, leftmost, ncols, bounds):
     )
 
 
-def render_table_header(session, upperleft, ncols, bounds):
-    corner = render_corner_header(session)
+def render_table_header(
+    session,
+    upperleft,
+    ncols,
+    bounds,
+    render_selected,
+):
+    corner = render_corner_header(session, render_selected=render_selected)
 
     header = []
     for col in range(
         upperleft.col_index.value,
         min(upperleft.col_index.value+ncols, bounds.col.value)
     ):
-        h = render_col_header(session, col_index=sel_types.ColIndex(col))
+        h = render_col_header(
+            session,
+            sel_types.ColIndex(col),
+            render_selected=render_selected,
+        )
         header.append(h)
 
     return render_template(
@@ -220,8 +318,22 @@ def render_table_header(session, upperleft, ncols, bounds):
     )
 
 
-def render_table(session, upperleft, nrows, ncols, bounds):
-    header = render_table_header(session, upperleft, ncols, bounds)
+def render_table(
+    session,
+    upperleft,
+    nrows,
+    ncols,
+    bounds,
+):
+    render_selected = make_render_selected(session)
+
+    header = render_table_header(
+        session,
+        upperleft,
+        ncols,
+        bounds,
+        render_selected,
+    )
 
     tablerows = []
     for row in range(
@@ -236,6 +348,7 @@ def render_table(session, upperleft, nrows, ncols, bounds):
             ),
             ncols,
             bounds,
+            render_selected,
         )
         tablerows.append(tablerow)
 

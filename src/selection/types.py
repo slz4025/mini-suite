@@ -15,10 +15,18 @@ class ColIndex(sheet.Index):
         super().__init__(value)
 
 
-@dataclass
 class CellPosition:
-    row_index: RowIndex
-    col_index: ColIndex
+    def __init__(self, row_index: RowIndex, col_index: ColIndex):
+        self.row_index = row_index
+        self.col_index = col_index
+
+    def equals(self, other):
+        return self.row_index.equals(other.row_index) \
+            and self.col_index.equals(other.col_index)
+
+    def in_bounds(self, start_row, end_row, start_col, end_col):
+        return self.row_index.in_bounds(start_row, end_row) \
+            and self.col_index.in_bounds(start_col, end_col)
 
 
 class RowRange(sheet.Range):
@@ -136,3 +144,35 @@ def check_and_set_box(box):
     box.col_range = col_range
 
     return box
+
+
+def get_bounds_from_selection(sel):
+    row_range = check_and_set_row_range(
+        RowRange(start=None, end=None),
+    )
+    row_start = row_range.start.value
+    row_end = row_range.end.value
+
+    col_range = check_and_set_col_range(
+        ColRange(start=None, end=None),
+    )
+    col_start = col_range.start.value
+    col_end = col_range.end.value
+
+    if isinstance(sel, RowRange):
+        row_start = sel.start.value
+        row_end = sel.end.value
+    elif isinstance(sel, ColRange):
+        col_start = sel.start.value
+        col_end = sel.end.value
+    elif isinstance(sel, Box):
+        row_start = sel.row_range.start.value
+        row_end = sel.row_range.end.value
+        col_start = sel.col_range.start.value
+        col_end = sel.col_range.end.value
+    else:
+        raise errors.UnknownOptionError(
+            f"Option, {type(sel)}, is not valid."
+        )
+
+    return row_start, row_end, col_start, col_end

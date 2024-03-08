@@ -1,23 +1,27 @@
-<!--
-  When a cell is focused on or edited,
-  its contents are:
-  1. stored in the sheet,
-  2. synced to the editor.
-
-  The editor, bulk-editor, settings, and navigator all may
-  rerender the cell.
-  Because these entities can only be interacted with one at a time,
-  we expect no races on the cell's rerendering.
--->
-
 <td
   id="cell-{{ row }}-{{ col }}"
+  class="{{ ' '.join(renders) }}"
   style="width: 100%;"
 >
+  <!--
+    When a cell is focused on or edited,
+    its contents are:
+    1. stored in the sheet,
+    2. synced to the editor.
+
+    The editor, bulk-editor, settings, and navigator all may
+    rerender the cell.
+    Because these entities can only be interacted with one at a time,
+    we expect no races on the cell's rerendering.
+  -->
+  <div
+    class="selected-pointer"
+    style="display: {{ 'inherit' if 'selected-bottomright' in renders else 'none' }};">
+  </div>
   <label for="input-cell-{{ row }}-{{ col }}" hidden></label>
   <input
     type="text"
-    class="cell{{ ' highlight' if show_highlight else '' }}"
+    class="cell"
     hx-put="/cell/{{ row }}/{{ col }}/edit"
     hx-target="#editor"
     hx-trigger="keyup changed"

@@ -1,6 +1,10 @@
 <th
   id="header-row-{{ index }}"
-  class="row"
+  class="row {{ ' '.join(renders) }}"
 >
+  <div
+    class="selected-pointer"
+    style="display: {{ 'inherit' if 'selected-bottomright' in renders else 'none' }};">
+  </div>
   {{ data|safe }}
 </th>

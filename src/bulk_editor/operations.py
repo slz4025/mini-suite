@@ -12,8 +12,17 @@ import src.data.operations as operations
 class OperationForm:
     name: str
     allow_selection: Callable[[object, str], bool]
-    validate_and_parse: Callable[[object, object], operations.Input]
+    apply: Callable[[object, object], None]
     render: Callable[[object], str]
+
+
+def allow_cut_selection(session, mode):
+    selection_mode_options = [
+        "Rows",
+        "Columns",
+        "Box",
+    ]
+    return mode in selection_mode_options
 
 
 def allow_copy_selection(session, mode):
@@ -80,37 +89,81 @@ def allow_value_selection(session, mode):
     return mode in selection_mode_options
 
 
-def retrieve_selection(session, form):
+def apply_cut(session, form):
     sel = sel_state.get_selection(session)
-    return sel
+    sel_state.set_buffer_mode(session, sel)
+
+    modification = operations.Modification(operation="COPY", input=sel)
+    operations.apply_modification(modification)
+
+    inp = operations.ValueInput(selection=sel, value=None)
+    modification = operations.Modification(operation="VALUE", input=inp)
+    operations.apply_modification(modification)
 
 
-def validate_and_parse_insert(session, form):
+def apply_copy(session, form):
+    sel = sel_state.get_selection(session)
+    sel_state.set_buffer_mode(session, sel)
+
+    modification = operations.Modification(operation="COPY", input=sel)
+    operations.apply_modification(modification)
+
+
+def apply_paste(session, form):
+    sel = sel_state.get_selection(session)
+    modification = operations.Modification(operation="PASTE", input=sel)
+    operations.apply_modification(modification)
+
+
+def apply_delete(session, form):
+    sel = sel_state.get_selection(session)
+    modification = operations.Modification(operation="DELETE", input=sel)
+    operations.apply_modification(modification)
+
+
+def apply_insert(session, form):
     sel = sel_state.get_selection(session)
 
     number = form_helpers.extract(form, "insert-number", name="number")
     form_helpers.validate_nonempty(number, name="number")
     number = form_helpers.parse_int(number, name="number")
 
-    return operations.InsertInput(
+    inp = operations.InsertInput(
         selection=sel,
         number=number,
     )
+    modification = operations.Modification(operation="INSERT", input=inp)
+    operations.apply_modification(modification)
 
 
-def validate_and_parse_value(session, form):
+def apply_erase(session, form):
+    sel = sel_state.get_selection(session)
+    inp = operations.ValueInput(selection=sel, value=None)
+    modification = operations.Modification(operation="VALUE", input=inp)
+    operations.apply_modification(modification)
+
+
+def apply_value(session, form):
     sel = sel_state.get_selection(session)
 
     value = form_helpers.extract(form, "value", name="value")
     if value == "":
         raise errors.UserError("Field 'value' was not given.")
 
-    return operations.ValueInput(selection=sel, value=value)
+    inp = operations.ValueInput(selection=sel, value=value)
+    modification = operations.Modification(operation="Value", input=inp)
+    operations.apply_modification(modification)
 
 
 def render_copy_inputs(session):
     return render_template(
             "partials/bulk_editor/copy.html",
+    )
+
+
+def render_cut_inputs(session):
+    return render_template(
+            "partials/bulk_editor/cut.html",
     )
 
 
@@ -146,40 +199,46 @@ def render_value_inputs(session):
 
 
 operation_forms = {
+    "CUT": OperationForm(
+        name="CUT",
+        allow_selection=allow_cut_selection,
+        apply=apply_cut,
+        render=render_cut_inputs,
+    ),
     "COPY": OperationForm(
         name="COPY",
         allow_selection=allow_copy_selection,
-        validate_and_parse=retrieve_selection,
+        apply=apply_copy,
         render=render_copy_inputs,
     ),
     "PASTE": OperationForm(
         name="PASTE",
         allow_selection=allow_paste_selection,
-        validate_and_parse=retrieve_selection,
+        apply=apply_paste,
         render=render_paste_inputs,
     ),
     "DELETE": OperationForm(
         name="DELETE",
         allow_selection=allow_delete_selection,
-        validate_and_parse=retrieve_selection,
+        apply=apply_delete,
         render=render_delete_inputs,
     ),
     "INSERT": OperationForm(
         name="INSERT",
         allow_selection=allow_insert_selection,
-        validate_and_parse=validate_and_parse_insert,
+        apply=apply_insert,
         render=render_insert_inputs,
     ),
     "ERASE": OperationForm(
         name="ERASE",
         allow_selection=allow_erase_selection,
-        validate_and_parse=retrieve_selection,
+        apply=apply_erase,
         render=render_erase_inputs,
     ),
     "VALUE": OperationForm(
         name="VALUE",
         allow_selection=allow_value_selection,
-        validate_and_parse=validate_and_parse_value,
+        apply=apply_value,
         render=render_value_inputs,
     ),
 }
@@ -208,17 +267,10 @@ def get_allowed_options(session):
     return allowed_options
 
 
-def validate_and_parse(session, form):
+def apply(session, form):
     op = form_helpers.extract(form, "operation")
     operation_form = get(op)
-    input = operation_form.validate_and_parse(session, form)
-
-    if operation_form.name == "COPY":
-        selection = input
-        sel_state.set_buffer_mode(session, selection)
-
-    modification = operations.Modification(operation=op, input=input)
-    return modification
+    operation_form.apply(session, form)
 
 
 def render(session, operation):

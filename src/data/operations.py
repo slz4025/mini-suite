@@ -149,11 +149,6 @@ def apply_value(inp):
     ptr[row_start:row_end, col_start:col_end] = value
 
 
-def apply_erase(sel):
-    inp = ValueInput(selection=sel, value=None)
-    apply_value(inp)
-
-
 buffer = None
 
 
@@ -229,7 +224,6 @@ class Operation:
 operations = {
     "DELETE": Operation(name="DELETE", apply=apply_delete),
     "INSERT": Operation(name="INSERT", apply=apply_insert),
-    "ERASE": Operation(name="ERASE", apply=apply_erase),
     "VALUE": Operation(name="VALUE", apply=apply_value),
     "COPY": Operation(name="COPY", apply=apply_copy),
     "PASTE": Operation(name="PASTE", apply=apply_paste),

@@ -3,7 +3,6 @@ from flask import render_template
 import src.modes as modes
 
 import src.bulk_editor.operations as operations
-import src.data.operations as ops
 
 
 def render(session):
@@ -27,5 +26,4 @@ def render(session):
 
 
 def attempt_apply(session, form):
-    modification = operations.validate_and_parse(session, form)
-    ops.apply_modification(modification)
+    operations.apply(session, form)

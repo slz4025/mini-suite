@@ -1,5 +1,4 @@
-{% if show_selection %}
-<div id="selection">
+<div id="selection" style="display: {{ 'inherit' if show_selection else 'none' }};">
   <h2>SELECTION</h2>
 
   <form
@@ -41,6 +40,3 @@
     <input type="submit" value="↵" id="selection-submit"/>
   </form>
 </div>
-{% else %}
- <div id="selection" style="display: none;"></div>
-{% endif %}

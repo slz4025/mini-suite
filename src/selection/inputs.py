@@ -126,6 +126,26 @@ forms = {
 options = list(forms.keys())
 
 
+def mode_from_selection(sel):
+    if isinstance(sel, types.RowIndex):
+        return "Row"
+    elif isinstance(sel, types.ColIndex):
+        return "Column"
+    elif isinstance(sel, types.CellPosition):
+        return "Cell Position"
+    elif isinstance(sel, types.RowRange):
+        return "Rows"
+    elif isinstance(sel, types.ColRange):
+        return "Columns"
+    elif isinstance(sel, types.Box):
+        return "Box"
+    else:
+        sel_type = type(sel)
+        raise errors.UnknownOptionError(
+            f"Unknown selection type: {sel_type}."
+        )
+
+
 def get_form(mode):
     if mode in forms:
         return forms[mode]

@@ -21,6 +21,26 @@ window.addEventListener('keyup', function(event) {
         document.getElementById("settings-toggler").click();
         break;
 
+      // bulk edit
+      case 'x':
+        htmx.ajax('POST', `/bulk-editor/apply/CUT`, {
+          target: `#bulk-editor`,
+          swap: "outerHTML",
+        });
+        break;
+      case 'c':
+        htmx.ajax('POST', `/bulk-editor/apply/COPY`, {
+          target: `#bulk-editor`,
+          swap: "outerHTML",
+        });
+        break;
+      case 'v':
+        htmx.ajax('POST', `/bulk-editor/apply/PASTE`, {
+          target: `#bulk-editor`,
+          swap: "outerHTML",
+        });
+        break;
+
       // view
       case 'h':
         document.getElementById("home-button").click();
@@ -67,6 +87,15 @@ window.addEventListener('keyup', function(event) {
       const element = document.getElementById(nextId)
       if (element) {
         element.focus();
+      }
+    } else {
+      switch (event.key) {
+        case 'Delete':
+          htmx.ajax('POST', `/bulk-editor/apply/DELETE`, {
+            target: `#bulk-editor`,
+            swap: "outerHTML",
+          });
+          break;
       }
     }
   }

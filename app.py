@@ -367,34 +367,71 @@ def bulk_editor_operation():
     return bulk_editor.operations.render(session, operation)
 
 
+def apply_operation(op, modifications, error):
+    resp = Response()
+
+    if error is None:
+        try:
+            bulk_editor.apply(session, op, modifications)
+        except (errors.UserError, errors.OutOfBoundsError) as e:
+            error = e
+
+    resp.headers['HX-Trigger'] = "notification"
+    if error is not None:
+        notifications.set(session, notifications.Notification(
+            message=str(error),
+            mode=notifications.Mode.ERROR,
+        ))
+    else:
+        notifications.set(session, notifications.Notification(
+            message="Bulk operation complete.",
+            mode=notifications.Mode.INFO,
+        ))
+
+        resp.headers['HX-Trigger'] += ",update-port"
+
+    return resp
+
+
+@app.route("/bulk-editor/apply/<op>", methods=['POST'])
+@errors.handler
+def bulk_editor_apply(op):
+    assert htmx is not None
+
+    error = None
+    modifications = None
+    try:
+        modifications = bulk_editor.get_modifications(session, op)
+    except (errors.UnknownOptionError) as e:
+        error = e
+
+    resp = apply_operation(op, modifications, error)
+    html = bulk_editor.render(session)
+    resp.response = html
+    return resp
+
+
 @app.route("/bulk-editor", methods=['PUT', 'POST'])
 @errors.handler
 def bulk_editor_endpoint():
     assert htmx is not None
 
-    resp = Response()
-
     match request.method:
+        case 'PUT':
+            resp = Response()
         case 'POST':
-            resp.headers['HX-Trigger'] = "notification"
-
-            success = False
+            error = None
+            op = None
+            modifications = None
             try:
-                bulk_editor.attempt_apply(session, request.form)
-                success = True
+                op, modifications = bulk_editor.validate_and_parse(
+                    session,
+                    request.form,
+                )
             except (errors.UserError, errors.OutOfBoundsError) as e:
-                notifications.set(session, notifications.Notification(
-                    message=str(e),
-                    mode=notifications.Mode.ERROR,
-                ))
+                error = e
 
-            if success:
-                notifications.set(session, notifications.Notification(
-                    message="Bulk operation complete.",
-                    mode=notifications.Mode.INFO,
-                ))
-
-                resp.headers['HX-Trigger'] += ",update-port"
+            resp = apply_operation(op, modifications, error)
 
     html = bulk_editor.render(session)
     resp.response = html

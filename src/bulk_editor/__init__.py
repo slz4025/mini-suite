@@ -25,5 +25,13 @@ def render(session):
     )
 
 
-def attempt_apply(session, form):
-    operations.apply(session, form)
+def get_modifications(session, op):
+    return operations.get_modifications(session, op)
+
+
+def validate_and_parse(session, form):
+    return operations.validate_and_parse(session, form)
+
+
+def apply(session, op, modifications):
+    operations.apply(session, op, modifications)

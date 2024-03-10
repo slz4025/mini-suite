@@ -267,38 +267,76 @@ def selection_inputs():
     return selection.render_inputs(session, mode)
 
 
+def update_selection(mode, sel, error):
+    resp = Response()
+    resp.headers['HX-Trigger'] = "notification"
+
+    if error is not None:
+        notifications.set(session, notifications.Notification(
+            message=str(error),
+            mode=notifications.Mode.ERROR,
+        ))
+    else:
+        selection.save(session, mode, sel)
+
+        notifications.set(session, notifications.Notification(
+            message="Selection registered.",
+            mode=notifications.Mode.INFO,
+        ))
+
+        # Rerender what operations are allowed based on selection.
+        resp.headers['HX-Trigger'] += ",bulk-editor"
+        # Show selection in port.
+        resp.headers['HX-Trigger'] += ",update-port"
+
+    return resp
+
+
+@app.route(
+    "/selection/start/<start_row>/<start_col>/end/<end_row>/<end_col>",
+    methods=['PUT'],
+)
+@errors.handler
+def selection_end(start_row, start_col, end_row, end_col):
+    assert htmx is not None
+
+    start = selection.types.CellPosition(
+        row_index=selection.types.RowIndex(int(start_row)),
+        col_index=selection.types.ColIndex(int(start_col)),
+    )
+    end = selection.types.CellPosition(
+        row_index=selection.types.RowIndex(int(end_row)),
+        col_index=selection.types.ColIndex(int(end_col)),
+    )
+
+    mode = None
+    sel = None
+    error = None
+    try:
+        mode, sel = selection.compute_from_endpoints(start, end)
+    except (errors.UnknownOptionError, errors.DoesNotExistError) as e:
+        error = e
+
+    resp = update_selection(mode, sel, error)
+    html = selection.render(session)
+    resp.response = html
+    return resp
+
+
 @app.route("/selection", methods=['POST'])
 @errors.handler
 def selection_endpoint():
     assert htmx is not None
 
-    resp = Response()
+    mode = None
+    sel = None
+    error = None
+    try:
+        mode, sel = selection.validate_and_parse(session, request.form)
+    except (errors.UserError, errors.OutOfBoundsError) as e:
+        error = e
 
-    match request.method:
-        case 'POST':
-            resp.headers['HX-Trigger'] = "notification"
-
-            success = False
-            try:
-                selection.save(session, request.form)
-                success = True
-            except (errors.UserError, errors.OutOfBoundsError) as e:
-                notifications.set(session, notifications.Notification(
-                    message=str(e),
-                    mode=notifications.Mode.ERROR,
-                ))
-
-            if success:
-                notifications.set(session, notifications.Notification(
-                    message="Selection registered.",
-                    mode=notifications.Mode.INFO,
-                ))
-
-                # Rerender what operations are allowed based on selection.
-                resp.headers['HX-Trigger'] += ",bulk-editor"
-                # Show selection in port.
-                resp.headers['HX-Trigger'] += ",update-port"
-
+    resp = update_selection(mode, sel, error)
     html = selection.render(session)
     resp.response = html
     return resp

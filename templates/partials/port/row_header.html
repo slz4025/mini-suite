@@ -7,4 +7,33 @@
     style="display: {{ 'inherit' if 'selected-bottomright' in renders else 'none' }};">
   </div>
   {{ data|safe }}
+  <script>
+    // Make variable use `var` instead of `const`.
+    // Upon rerenders, will redefine value.
+    var headerElement = document.querySelector(
+      `#header-row-${ {{ index }} }`
+    );
+    headerElement.addEventListener("mousedown", (event) => {
+      const row = "{{ index }}";
+      const col = "-1";
+
+      localStorage.setItem("selection-start-row", row);
+      localStorage.setItem("selection-start-col", col);
+    });
+    headerElement.addEventListener("mouseup", (event) => {
+      const start_row = localStorage.getItem("selection-start-row");
+      const start_col = localStorage.getItem("selection-start-col");
+      const end_row = "{{ index }}";
+      const end_col = "-1";
+
+      htmx.ajax(
+        'PUT',
+        `/selection/start/${start_row}/${start_col}/end/${end_row}/${end_col}`,
+        {
+          target: "#selection",
+          swap: "outerHTML",
+        }
+      );
+    });
+  </script>
 </th>

@@ -34,10 +34,49 @@
   <script>
     // Make variable use `var` instead of `const`.
     // Upon rerenders, will redefine value.
+    var cellElement = document.querySelector(
+      `#cell-${ {{ row }} }-${ {{ col }} }`
+    );
+    cellElement.addEventListener("mousedown", (event) => {
+      // Don't allow focus into input with just a mousedown.
+      //event.preventDefault();
+
+      const row = "{{ row }}";
+      const col = "{{ col }}";
+
+      localStorage.setItem("selection-start-row", row);
+      localStorage.setItem("selection-start-col", col);
+    });
+    cellElement.addEventListener("mouseup", (event) => {
+      const start_row = localStorage.getItem("selection-start-row");
+      const start_col = localStorage.getItem("selection-start-col");
+      const end_row = "{{ row }}";
+      const end_col = "{{ col }}";
+
+      htmx.ajax(
+        'PUT',
+        `/selection/start/${start_row}/${start_col}/end/${end_row}/${end_col}`,
+        {
+          target: "#selection",
+          swap: "outerHTML",
+        }
+      );
+    });
+
+    // Make variable use `var` instead of `const`.
+    // Upon rerenders, will redefine value.
     var cellInputElement = document.querySelector(
       `#input-cell-${ {{ row }} }-${ {{ col }} }`
     );
-
+    // Focus on input only when double-clicking.
+    cellInputElement.addEventListener("mousedown", (event) => {
+      event.preventDefault();
+    });
+    cellInputElement.addEventListener("dblclick", (event) => {
+      document.querySelector(
+        `#input-cell-${ {{ row }} }-${ {{ col }} }`
+      ).focus();
+    });
     cellInputElement.addEventListener("focusin", (event) => {
       const row = "{{ row }}";
       const col = "{{ col }}";

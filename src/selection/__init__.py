@@ -4,15 +4,23 @@ import os
 import src.form_helpers as form_helpers
 import src.modes as modes
 
+import src.selection.helpers as helpers
 import src.selection.inputs as inputs
 import src.selection.state as state
 
 
-def save(session, inp):
-    sel = inputs.validate_and_parse(inp)
-    state.set_selection(session, sel)
+def compute_from_endpoints(start, end):
+    return helpers.compute_from_endpoints(start, end)
 
+
+def validate_and_parse(session, inp):
     mode = form_helpers.extract(inp, "mode", name="selection mode")
+    sel = inputs.validate_and_parse(inp)
+    return mode, sel
+
+
+def save(session, mode, sel):
+    state.set_selection(session, sel)
     state.set_mode(session, mode)
 
 

@@ -19,6 +19,10 @@ class UnknownOptionError(Exception):
     pass
 
 
+class DoesNotExistError(Exception):
+    pass
+
+
 def get_message(session):
     if "error-message" not in session:
         return None

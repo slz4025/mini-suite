@@ -8,19 +8,18 @@
   </div>
   {{ data|safe }}
   <script>
-    // Make variable use `var` instead of `const`.
-    // Upon rerenders, will redefine value.
-    var headerElement = document.querySelector(
+    document.querySelector(
       `#header-row-${ {{ index }} }`
-    );
-    headerElement.addEventListener("mousedown", (event) => {
+    ).addEventListener("mousedown", (event) => {
       const row = "{{ index }}";
       const col = "-1";
 
       localStorage.setItem("selection-start-row", row);
       localStorage.setItem("selection-start-col", col);
     });
-    headerElement.addEventListener("mouseup", (event) => {
+    document.querySelector(
+      `#header-row-${ {{ index }} }`
+    ).addEventListener("mouseup", (event) => {
       const start_row = localStorage.getItem("selection-start-row");
       const start_col = localStorage.getItem("selection-start-col");
       const end_row = "{{ index }}";

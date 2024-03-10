@@ -32,12 +32,9 @@
     style="width: 100%;"
   >
   <script>
-    // Make variable use `var` instead of `const`.
-    // Upon rerenders, will redefine value.
-    var cellElement = document.querySelector(
+    document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
-    );
-    cellElement.addEventListener("mousedown", (event) => {
+    ).addEventListener("mousedown", (event) => {
       // Don't allow focus into input with just a mousedown.
       //event.preventDefault();
 
@@ -47,7 +44,9 @@
       localStorage.setItem("selection-start-row", row);
       localStorage.setItem("selection-start-col", col);
     });
-    cellElement.addEventListener("mouseup", (event) => {
+    document.querySelector(
+      `#cell-${ {{ row }} }-${ {{ col }} }`
+    ).addEventListener("mouseup", (event) => {
       const start_row = localStorage.getItem("selection-start-row");
       const start_col = localStorage.getItem("selection-start-col");
       const end_row = "{{ row }}";
@@ -63,21 +62,22 @@
       );
     });
 
-    // Make variable use `var` instead of `const`.
-    // Upon rerenders, will redefine value.
-    var cellInputElement = document.querySelector(
-      `#input-cell-${ {{ row }} }-${ {{ col }} }`
-    );
     // Focus on input only when double-clicking.
-    cellInputElement.addEventListener("mousedown", (event) => {
+    document.querySelector(
+      `#input-cell-${ {{ row }} }-${ {{ col }} }`
+    ).addEventListener("mousedown", (event) => {
       event.preventDefault();
     });
-    cellInputElement.addEventListener("dblclick", (event) => {
+    document.querySelector(
+      `#input-cell-${ {{ row }} }-${ {{ col }} }`
+    ).addEventListener("dblclick", (event) => {
       document.querySelector(
         `#input-cell-${ {{ row }} }-${ {{ col }} }`
       ).focus();
     });
-    cellInputElement.addEventListener("focusin", (event) => {
+    document.querySelector(
+      `#input-cell-${ {{ row }} }-${ {{ col }} }`
+    ).addEventListener("focusin", (event) => {
       const row = "{{ row }}";
       const col = "{{ col }}";
 

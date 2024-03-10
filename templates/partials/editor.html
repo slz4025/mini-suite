@@ -37,11 +37,8 @@
     />
   </form>
   <script>
-    // Make variable use `var` instead of `const`.
-    // Upon rerenders, will redefine value.
-    var editorContentsElement = document.querySelector("#editor-contents");
-
-    editorContentsElement.addEventListener("focusin", (event) => {
+    document.querySelector("#editor-contents")
+      .addEventListener("focusin", (event) => {
       const row = "{{ row }}";
       const col = "{{ col }}";
       htmx.ajax('PUT', `/cell/${row}/${col}/highlight/on`, {
@@ -49,7 +46,8 @@
         swap: "outerHTML",
       });
     });
-    editorContentsElement.addEventListener("focusout", (event) => {
+    document.querySelector("#editor-contents")
+      .addEventListener("focusout", (event) => {
       const row = "{{ row }}";
       const col = "{{ col }}";
       htmx.ajax('PUT', `/cell/${row}/${col}/highlight/off`, {

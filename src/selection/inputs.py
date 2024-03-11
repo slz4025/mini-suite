@@ -3,7 +3,7 @@ from typing import Callable
 
 import src.form_helpers as form_helpers
 
-import src.errors as errors
+import src.selection.modes as modes
 import src.selection.types as types
 import src.data.sheet as sheet
 
@@ -86,39 +86,39 @@ def get_box(inp):
 
 @dataclass
 class Form:
-    name: str
+    mode: modes.Mode
     template: str
     validate_and_parse: Callable[[object], types.Selection]
 
 
 forms = {
-    "Rows": Form(
-        name="Rows",
+    modes.Mode.ROWS: Form(
+        mode=modes.Mode.ROWS,
         template="row_range.html",
         validate_and_parse=get_row_range,
     ),
-    "Columns": Form(
-        name="Columns",
+    modes.Mode.COLUMNS: Form(
+        mode=modes.Mode.COLUMNS,
         template="col_range.html",
         validate_and_parse=get_col_range,
     ),
-    "Box": Form(
-        name="Box",
+    modes.Mode.BOX: Form(
+        mode=modes.Mode.BOX,
         template="box.html",
         validate_and_parse=get_box,
     ),
-    "Row": Form(
-        name="Row",
+    modes.Mode.ROW: Form(
+        mode=modes.Mode.ROW,
         template="row_index.html",
         validate_and_parse=get_row_index,
     ),
-    "Column": Form(
-        name="Column",
+    modes.Mode.COLUMN: Form(
+        mode=modes.Mode.COLUMN,
         template="col_index.html",
         validate_and_parse=get_col_index,
     ),
-    "Cell Position": Form(
-        name="Cell Position",
+    modes.Mode.CELL_POSITION: Form(
+        mode=modes.Mode.CELL_POSITION,
         template="cell_position.html",
         validate_and_parse=get_cell_position,
     ),
@@ -126,37 +126,9 @@ forms = {
 options = list(forms.keys())
 
 
-def mode_from_selection(sel):
-    if isinstance(sel, types.RowIndex):
-        return "Row"
-    elif isinstance(sel, types.ColIndex):
-        return "Column"
-    elif isinstance(sel, types.CellPosition):
-        return "Cell Position"
-    elif isinstance(sel, types.RowRange):
-        return "Rows"
-    elif isinstance(sel, types.ColRange):
-        return "Columns"
-    elif isinstance(sel, types.Box):
-        return "Box"
-    else:
-        sel_type = type(sel)
-        raise errors.UnknownOptionError(
-            f"Unknown selection type: {sel_type}."
-        )
-
-
-def get_form(mode):
-    if mode in forms:
-        return forms[mode]
-    else:
-        raise errors.UnknownOptionError(
-            f"Unknown selection mode: {mode}."
-        )
-
-
 def validate_and_parse(inp):
-    mode = form_helpers.extract(inp, "mode", name="selection mode")
-    form = get_form(mode)
+    mode_str = form_helpers.extract(inp, "mode", name="selection mode")
+    mode = modes.from_input(mode_str)
+    form = forms[mode]
     selection = form.validate_and_parse(inp)
     return selection

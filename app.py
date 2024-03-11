@@ -263,7 +263,8 @@ def selection_toggler():
 def selection_inputs():
     assert htmx is not None
 
-    mode = request.args["mode"]
+    mode_str = request.args["mode"]
+    mode = selection.modes.from_input(mode_str)
     return selection.render_inputs(session, mode)
 
 

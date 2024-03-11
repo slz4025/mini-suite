@@ -1,23 +1,25 @@
 from flask import render_template
 import os
 
-import src.form_helpers as form_helpers
-import src.modes as modes
+import src.modes as use_modes
 import src.errors as errors
 
 import src.selection.helpers as helpers
 import src.selection.inputs as inputs
+import src.selection.modes as modes
 import src.selection.state as state
 import src.selection.types as types
 
 
 def compute_from_endpoints(start, end):
-    return helpers.compute_from_endpoints(start, end)
+    sel = helpers.compute_from_endpoints(start, end)
+    mode = modes.from_selection(sel)
+    return mode, sel
 
 
 def validate_and_parse(session, inp):
-    mode = form_helpers.extract(inp, "mode", name="selection mode")
     sel = inputs.validate_and_parse(inp)
+    mode = modes.from_selection(sel)
     return mode, sel
 
 
@@ -27,7 +29,7 @@ def save(session, mode, sel):
 
 
 def render_inputs(session, mode, sel=None):
-    help_state = modes.check(session, "Help")
+    help_state = use_modes.check(session, "Help")
 
     row_index = ""
     col_index = ""
@@ -61,7 +63,7 @@ def render_inputs(session, mode, sel=None):
                 f"Unknown selection type: {sel_type}."
             )
 
-    form = inputs.get_form(mode)
+    form = inputs.forms[mode]
     template_path = os.path.join(
         "partials/selection",
         form.template,
@@ -80,8 +82,8 @@ def render_inputs(session, mode, sel=None):
 
 
 def render(session):
-    help_state = modes.check(session, "Help")
-    selection_state = modes.check(session, "Selection")
+    help_state = use_modes.check(session, "Help")
+    selection_state = use_modes.check(session, "Selection")
 
     mode_options = inputs.options
 
@@ -98,7 +100,7 @@ def render(session):
             "partials/selection.html",
             show_help=help_state,
             show_selection=selection_state,
-            mode_options=mode_options,
-            mode=mode,
+            mode_options=[mo.value for mo in mode_options],
+            mode=mode.value,
             input=inp,
     )

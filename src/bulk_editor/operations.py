@@ -4,7 +4,7 @@ from typing import Callable, List
 
 import src.errors as errors
 import src.form_helpers as form_helpers
-import src.selection.inputs as sel_inputs
+import src.selection.modes as sel_modes
 import src.selection.state as sel_state
 import src.selection.types as sel_types
 import src.data.operations as operations
@@ -24,27 +24,27 @@ class OperationForm:
 
 def allow_cut_with_selection(session, mode):
     selection_mode_options = [
-        "Rows",
-        "Columns",
-        "Box",
+        sel_modes.Mode.ROWS,
+        sel_modes.Mode.COLUMNS,
+        sel_modes.Mode.BOX,
     ]
     return mode in selection_mode_options
 
 
 def allow_copy_with_selection(session, mode):
     selection_mode_options = [
-        "Rows",
-        "Columns",
-        "Box",
+        sel_modes.Mode.ROWS,
+        sel_modes.Mode.COLUMNS,
+        sel_modes.Mode.BOX,
     ]
     return mode in selection_mode_options
 
 
 def allow_paste_with_selection(session, mode):
     copy_to_paste = {
-        "Rows": "Row",
-        "Columns": "Column",
-        "Box": "Cell Position",
+        sel_modes.Mode.ROWS: sel_modes.Mode.ROW,
+        sel_modes.Mode.COLUMNS: sel_modes.Mode.COLUMN,
+        sel_modes.Mode.BOX: sel_modes.Mode.CELL_POSITION,
     }
     copy_selection_mode = sel_state.get_buffer_mode(session)
 
@@ -63,34 +63,34 @@ def allow_paste_with_selection(session, mode):
 
 def allow_delete_with_selection(session, mode):
     selection_mode_options = [
-        "Rows",
-        "Columns",
+        sel_modes.Mode.ROWS,
+        sel_modes.Mode.COLUMNS,
     ]
     return mode in selection_mode_options
 
 
 def allow_insert_with_selection(session, mode):
     selection_mode_options = [
-        "Row",
-        "Column",
+        sel_modes.Mode.ROW,
+        sel_modes.Mode.COLUMN,
     ]
     return mode in selection_mode_options
 
 
 def allow_erase_with_selection(session, mode):
     selection_mode_options = [
-        "Rows",
-        "Columns",
-        "Box",
+        sel_modes.Mode.ROWS,
+        sel_modes.Mode.COLUMNS,
+        sel_modes.Mode.BOX,
     ]
     return mode in selection_mode_options
 
 
 def allow_value_with_selection(session, mode):
     selection_mode_options = [
-        "Rows",
-        "Columns",
-        "Box",
+        sel_modes.Mode.ROWS,
+        sel_modes.Mode.COLUMNS,
+        sel_modes.Mode.BOX,
     ]
     return mode in selection_mode_options
 
@@ -98,7 +98,7 @@ def allow_value_with_selection(session, mode):
 def validate_and_parse_cut(session, form):
     sel = sel_state.get_selection(session)
 
-    sel_mode = sel_inputs.mode_from_selection(sel)
+    sel_mode = sel_modes.from_selection(sel)
     if not allow_cut_with_selection(session, sel_mode):
         raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
@@ -120,7 +120,7 @@ def validate_and_parse_cut(session, form):
 def validate_and_parse_copy(session, form):
     sel = sel_state.get_selection(session)
 
-    sel_mode = sel_inputs.mode_from_selection(sel)
+    sel_mode = sel_modes.from_selection(sel)
     if not allow_copy_with_selection(session, sel_mode):
         raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
@@ -138,7 +138,7 @@ def validate_and_parse_paste(session, form):
     # for the start value(s) to be greater than the end value(s).
     # In single-element selections, the end value(s) is always
     # greater than the start value(s).
-    sel_mode = sel_inputs.mode_from_selection(sel)
+    sel_mode = sel_modes.from_selection(sel)
     if isinstance(sel, sel_types.RowRange):
         if sel.end.value - sel.start.value == 1:
             pass
@@ -172,7 +172,7 @@ def validate_and_parse_paste(session, form):
                 "Select a single cell instead."
             )
 
-    sel_mode = sel_inputs.mode_from_selection(sel)
+    sel_mode = sel_modes.from_selection(sel)
     if not allow_paste_with_selection(session, sel_mode):
         raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
@@ -186,7 +186,7 @@ def validate_and_parse_paste(session, form):
 def validate_and_parse_delete(session, form):
     sel = sel_state.get_selection(session)
 
-    sel_mode = sel_inputs.mode_from_selection(sel)
+    sel_mode = sel_modes.from_selection(sel)
     if not allow_delete_with_selection(session, sel_mode):
         raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
@@ -200,7 +200,7 @@ def validate_and_parse_delete(session, form):
 def validate_and_parse_insert(session, form):
     sel = sel_state.get_selection(session)
 
-    sel_mode = sel_inputs.mode_from_selection(sel)
+    sel_mode = sel_modes.from_selection(sel)
     if not allow_insert_with_selection(session, sel_mode):
         raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
@@ -222,7 +222,7 @@ def validate_and_parse_insert(session, form):
 def validate_and_parse_erase(session, form):
     sel = sel_state.get_selection(session)
 
-    sel_mode = sel_inputs.mode_from_selection(sel)
+    sel_mode = sel_modes.from_selection(sel)
     if not allow_erase_with_selection(session, sel_mode):
         raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
@@ -237,7 +237,7 @@ def validate_and_parse_erase(session, form):
 def validate_and_parse_value(session, form):
     sel = sel_state.get_selection(session)
 
-    sel_mode = sel_inputs.mode_from_selection(sel)
+    sel_mode = sel_modes.from_selection(sel)
     if not allow_value_with_selection(session, sel_mode):
         raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "

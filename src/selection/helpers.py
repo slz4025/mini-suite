@@ -1,4 +1,5 @@
 import src.errors as errors
+import src.selection.modes as modes
 import src.selection.types as types
 import src.data.sheet as sheet
 
@@ -25,9 +26,10 @@ def compute_from_endpoints(start, end):
         max(start.col_index.value, end.col_index.value) + 1
     )
 
+    sel = None
     if is_row_header(start):
         if is_row_header(end):
-            return "Rows", types.RowRange(
+            sel = types.RowRange(
                 start=actual_row_start,
                 end=actual_row_end,
             )
@@ -48,7 +50,7 @@ def compute_from_endpoints(start, end):
                 "but selection end is row header."
             )
         elif is_col_header(end):
-            return "Columns", types.ColRange(
+            sel = types.ColRange(
                 start=actual_col_start,
                 end=actual_col_end,
             )
@@ -69,7 +71,7 @@ def compute_from_endpoints(start, end):
                 "but selection end is col header."
             )
         else:
-            return "Box", types.Box(
+            sel = types.Box(
                 row_range=types.RowRange(
                     start=actual_row_start,
                     end=actual_row_end,
@@ -79,3 +81,5 @@ def compute_from_endpoints(start, end):
                     end=actual_col_end,
                 ),
             )
+
+    return sel

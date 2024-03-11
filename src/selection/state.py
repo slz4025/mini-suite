@@ -1,47 +1,31 @@
 import jsonpickle
 
-import src.errors as errors
-import src.selection.types as types
+import src.selection.modes as modes
 
 
 def get_mode(session):
     if "selection-mode" not in session:
         return None
-    return session["selection-mode"]
+    mode_str = session["selection-mode"]
+    mode = modes.from_input(mode_str)
+    return mode
 
 
 def set_mode(session, mode):
-    session["selection-mode"] = mode
+    session["selection-mode"] = mode.value
 
 
 def get_buffer_mode(session):
     if "buffer-selection-mode" not in session:
         return None
-    return session["buffer-selection-mode"]
+    mode_str = session["buffer-selection-mode"]
+    mode = modes.from_input(mode_str)
+    return mode
 
 
 def set_buffer_mode(session, sel):
-    mode = None
-    if isinstance(sel, types.RowIndex):
-        mode = "Row"
-    elif isinstance(sel, types.ColIndex):
-        mode = "Column"
-    elif isinstance(sel, types.CellPosition):
-        mode = "Cell Position"
-    elif isinstance(sel, types.RowRange):
-        mode = "Rows"
-    elif isinstance(sel, types.ColRange):
-        mode = "Columns"
-    elif isinstance(sel, types.Box):
-        mode = "Box"
-    else:
-        input_type = type(sel)
-        raise errors.NotSupportedError(
-            f"Input type {input_type} is not valid copy input."
-        )
-
-    assert mode is not None
-    session["buffer-selection-mode"] = mode
+    mode = modes.from_selection(sel)
+    session["buffer-selection-mode"] = mode.value
 
 
 def get_selection(session):

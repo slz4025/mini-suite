@@ -6,12 +6,20 @@ from flask import (
 import traceback
 
 
-# Errors that arise due to bad user input/action.
+# Errors that arise due to general bad user input/action.
 class UserError(Exception):
     pass
 
 
+class InputError(Exception):
+    pass
+
+
 class OutOfBoundsError(Exception):
+    pass
+
+
+class NotSupportedError(Exception):
     pass
 
 

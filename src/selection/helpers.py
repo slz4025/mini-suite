@@ -32,18 +32,18 @@ def compute_from_endpoints(start, end):
                 end=actual_row_end,
             )
         elif is_col_header(end):
-            raise errors.UnknownOptionError(
+            raise errors.NotSupportedError(
                 "Selection start is row header "
                 "but selection end is col header."
             )
         else:
-            raise errors.UnknownOptionError(
+            raise errors.NotSupportedError(
                 "Selection start is row header "
                 "but selection end is cell."
             )
     elif is_col_header(start):
         if is_row_header(end):
-            raise errors.UnknownOptionError(
+            raise errors.NotSupportedError(
                 "Selection start is col header "
                 "but selection end is row header."
             )
@@ -53,18 +53,18 @@ def compute_from_endpoints(start, end):
                 end=actual_col_end,
             )
         else:
-            raise errors.UnknownOptionError(
+            raise errors.NotSupportedError(
                 "Selection start is col header "
                 "but selection end is cell."
             )
     else:
         if is_row_header(end):
-            raise errors.UnknownOptionError(
+            raise errors.NotSupportedError(
                 "Selection start is cell "
                 "but selection end is row header."
             )
         elif is_col_header(end):
-            raise errors.UnknownOptionError(
+            raise errors.NotSupportedError(
                 "Selection start is cell "
                 "but selection end is col header."
             )

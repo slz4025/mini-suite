@@ -36,8 +36,8 @@ def set_buffer_mode(session, sel):
         mode = "Box"
     else:
         input_type = type(sel)
-        raise errors.UnknownOptionError(
-            f"Unexpected type {input_type} is not valid copy input."
+        raise errors.NotSupportedError(
+            f"Input type {input_type} is not valid copy input."
         )
 
     assert mode is not None

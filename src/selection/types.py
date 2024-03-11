@@ -171,8 +171,8 @@ def get_bounds_from_selection(sel):
         col_start = sel.col_range.start.value
         col_end = sel.col_range.end.value
     else:
-        raise errors.UnknownOptionError(
-            f"Option, {type(sel)}, is not valid."
+        raise errors.NotSupportedError(
+            f"Option, {type(sel)}, does not have bounds."
         )
 
     return row_start, row_end, col_start, col_end

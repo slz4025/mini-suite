@@ -52,7 +52,7 @@ def allow_paste_with_selection(session, mode):
     if copy_selection_mode is None:
         pass
     elif copy_selection_mode not in copy_to_paste:
-        raise errors.UnknownOptionError(
+        raise errors.NotSupportedError(
             f"Unexpected copy type {copy_selection_mode} "
             "is not supported by paste."
         )
@@ -100,7 +100,7 @@ def validate_and_parse_cut(session, form):
 
     sel_mode = sel_inputs.mode_from_selection(sel)
     if not allow_cut_with_selection(session, sel_mode):
-        raise errors.UnknownOptionError(
+        raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with cut operation."
         )
@@ -122,7 +122,7 @@ def validate_and_parse_copy(session, form):
 
     sel_mode = sel_inputs.mode_from_selection(sel)
     if not allow_copy_with_selection(session, sel_mode):
-        raise errors.UnknownOptionError(
+        raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with copy operation."
         )
@@ -144,7 +144,7 @@ def validate_and_parse_paste(session, form):
             pass
             sel = sel_types.RowIndex(sel.start.value)
         else:
-            raise errors.UnknownOptionError(
+            raise errors.NotSupportedError(
                 f"Selection mode {sel_mode} "
                 "is not supported with paste operation. "
                 "Select a single row instead."
@@ -153,7 +153,7 @@ def validate_and_parse_paste(session, form):
         if sel.end.value - sel.start.value == 1:
             sel = sel_types.ColIndex(sel.start.value)
         else:
-            raise errors.UnknownOptionError(
+            raise errors.NotSupportedError(
                 f"Selection mode {sel_mode} "
                 "is not supported with paste operation. "
                 "Select a single column instead."
@@ -166,7 +166,7 @@ def validate_and_parse_paste(session, form):
                 col_index=sel_types.ColIndex(sel.col_range.start.value),
             )
         else:
-            raise errors.UnknownOptionError(
+            raise errors.NotSupportedError(
                 f"Selection mode {sel_mode} "
                 "is not supported with paste operation. "
                 "Select a single cell instead."
@@ -174,7 +174,7 @@ def validate_and_parse_paste(session, form):
 
     sel_mode = sel_inputs.mode_from_selection(sel)
     if not allow_paste_with_selection(session, sel_mode):
-        raise errors.UnknownOptionError(
+        raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with paste operation."
         )
@@ -188,7 +188,7 @@ def validate_and_parse_delete(session, form):
 
     sel_mode = sel_inputs.mode_from_selection(sel)
     if not allow_delete_with_selection(session, sel_mode):
-        raise errors.UnknownOptionError(
+        raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with delete operation."
         )
@@ -202,7 +202,7 @@ def validate_and_parse_insert(session, form):
 
     sel_mode = sel_inputs.mode_from_selection(sel)
     if not allow_insert_with_selection(session, sel_mode):
-        raise errors.UnknownOptionError(
+        raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with insert operation."
         )
@@ -224,7 +224,7 @@ def validate_and_parse_erase(session, form):
 
     sel_mode = sel_inputs.mode_from_selection(sel)
     if not allow_erase_with_selection(session, sel_mode):
-        raise errors.UnknownOptionError(
+        raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with erase operation."
         )
@@ -239,14 +239,14 @@ def validate_and_parse_value(session, form):
 
     sel_mode = sel_inputs.mode_from_selection(sel)
     if not allow_value_with_selection(session, sel_mode):
-        raise errors.UnknownOptionError(
+        raise errors.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with value operation."
         )
 
     value = form_helpers.extract(form, "value", name="value")
     if value == "":
-        raise errors.UserError("Field 'value' was not given.")
+        raise errors.InputError("Field 'value' was not given.")
 
     inp = operations.ValueInput(selection=sel, value=value)
     modification = operations.Modification(operation="Value", input=inp)
@@ -428,7 +428,7 @@ def get_modifications(session, op):
             operation_form = get(op)
             modifications = operation_form.validate_and_parse(session, None)
         case _:
-            raise errors.UnknownOptionError(
+            raise errors.NotSupportedError(
                 "Cannot get modifications for operation {op} "
                 "without additional inputs."
             )

@@ -23,19 +23,19 @@ window.addEventListener('keyup', function(event) {
 
       // bulk edit
       case 'x':
-        htmx.ajax('POST', `/bulk-editor/apply/CUT`, {
+        htmx.ajax('POST', `/bulk-editor/apply/Cut`, {
           target: `#bulk-editor`,
           swap: "outerHTML",
         });
         break;
       case 'c':
-        htmx.ajax('POST', `/bulk-editor/apply/COPY`, {
+        htmx.ajax('POST', `/bulk-editor/apply/Copy`, {
           target: `#bulk-editor`,
           swap: "outerHTML",
         });
         break;
       case 'v':
-        htmx.ajax('POST', `/bulk-editor/apply/PASTE`, {
+        htmx.ajax('POST', `/bulk-editor/apply/Paste`, {
           target: `#bulk-editor`,
           swap: "outerHTML",
         });
@@ -91,7 +91,7 @@ window.addEventListener('keyup', function(event) {
     } else {
       switch (event.key) {
         case 'Delete':
-          htmx.ajax('POST', `/bulk-editor/apply/DELETE`, {
+          htmx.ajax('POST', `/bulk-editor/apply/Delete`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
           });

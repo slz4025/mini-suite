@@ -9,29 +9,31 @@ def render(session):
     bulk_editor_state = modes.check(session, "Bulk-Editor")
 
     default = None
-    operation_form = ""
+    operation_html = None
 
     options = operations.get_allowed_options(session)
     if len(options) > 0:
         default = options[0]
-        operation_form = operations.render(session, default)
+        operation_html = operations.render(session, default.value)
 
     return render_template(
             "partials/bulk_editor.html",
             show_bulk_editor=bulk_editor_state,
-            operation=default,
-            operation_options=options,
-            operation_form=operation_form,
+            operation=default.value if default else '',
+            operation_options={
+                o.value: operations.render_option(session, o) for o in options
+            },
+            operation_html=operation_html,
     )
 
 
-def get_modifications(session, op):
-    return operations.get_modifications(session, op)
+def get_modifications(session, name):
+    return operations.get_modifications(session, name)
 
 
 def validate_and_parse(session, form):
     return operations.validate_and_parse(session, form)
 
 
-def apply(session, op, modifications):
-    operations.apply(session, op, modifications)
+def apply(session, name, modifications):
+    operations.apply(session, name, modifications)

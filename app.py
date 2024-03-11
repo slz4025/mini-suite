@@ -364,16 +364,16 @@ def bulk_editor_toggler():
 def bulk_editor_operation():
     assert htmx is not None
 
-    operation = request.args["operation"]
-    return bulk_editor.operations.render(session, operation)
+    name_str = request.args["operation"]
+    return bulk_editor.operations.render(session, name_str)
 
 
-def apply_operation(op, modifications, error):
+def apply_operation(name, modifications, error):
     resp = Response()
 
     if error is None:
         try:
-            bulk_editor.apply(session, op, modifications)
+            bulk_editor.apply(session, name, modifications)
         except (errors.UserError, errors.OutOfBoundsError) as e:
             error = e
 
@@ -394,19 +394,21 @@ def apply_operation(op, modifications, error):
     return resp
 
 
-@app.route("/bulk-editor/apply/<op>", methods=['POST'])
+@app.route("/bulk-editor/apply/<name_str>", methods=['POST'])
 @errors.handler
-def bulk_editor_apply(op):
+def bulk_editor_apply(name_str):
     assert htmx is not None
 
     error = None
+    name = None
     modifications = None
     try:
-        modifications = bulk_editor.get_modifications(session, op)
+        name = bulk_editor.operations.from_input(name_str)
+        modifications = bulk_editor.get_modifications(session, name)
     except (errors.UnknownOptionError) as e:
         error = e
 
-    resp = apply_operation(op, modifications, error)
+    resp = apply_operation(name, modifications, error)
     html = bulk_editor.render(session)
     resp.response = html
     return resp
@@ -422,17 +424,17 @@ def bulk_editor_endpoint():
             resp = Response()
         case 'POST':
             error = None
-            op = None
+            name = None
             modifications = None
             try:
-                op, modifications = bulk_editor.validate_and_parse(
+                name, modifications = bulk_editor.validate_and_parse(
                     session,
                     request.form,
                 )
             except (errors.UserError, errors.OutOfBoundsError) as e:
                 error = e
 
-            resp = apply_operation(op, modifications, error)
+            resp = apply_operation(name, modifications, error)
 
     html = bulk_editor.render(session)
     resp.response = html

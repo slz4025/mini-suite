@@ -1,18 +1,52 @@
 from dataclasses import dataclass
+from enum import Enum
 from flask import render_template
 from typing import Callable, List
 
 import src.errors as errors
 import src.form_helpers as form_helpers
+import src.modes as modes
 import src.selection.modes as sel_modes
 import src.selection.state as sel_state
 import src.selection.types as sel_types
 import src.data.operations as operations
 
 
+class Name(Enum):
+    CUT = 'Cut'
+    COPY = 'Copy'
+    PASTE = 'Paste'
+    DELETE = 'Delete'
+    INSERT = 'Insert'
+    ERASE = 'Erase'
+    VALUE = 'Value'
+
+
+def from_input(name_str):
+    match name_str:
+        case "Cut":
+            return Name.CUT
+        case "Copy":
+            return Name.COPY
+        case "Paste":
+            return Name.PASTE
+        case "Delete":
+            return Name.DELETE
+        case "Insert":
+            return Name.INSERT
+        case "Erase":
+            return Name.ERASE
+        case "Value":
+            return Name.VALUE
+        case _:
+            raise errors.UnknownOptionError(
+                f"Unknown operation: {name_str}."
+            )
+
+
 @dataclass
-class OperationForm:
-    name: str
+class Operation:
+    name: Name
     allow_with_selection: Callable[[object, str], bool]
     validate_and_parse: Callable[
         [object, object],
@@ -292,15 +326,15 @@ def apply_value(session, modifications):
         operations.apply_modification(modification)
 
 
-def render_copy_inputs(session):
-    return render_template(
-            "partials/bulk_editor/copy.html",
-    )
-
-
 def render_cut_inputs(session):
     return render_template(
             "partials/bulk_editor/cut.html",
+    )
+
+
+def render_copy_inputs(session):
+    return render_template(
+            "partials/bulk_editor/copy.html",
     )
 
 
@@ -335,51 +369,51 @@ def render_value_inputs(session):
     )
 
 
-operation_forms = {
-    "CUT": OperationForm(
-        name="CUT",
+all_operations = {
+    Name.CUT: Operation(
+        name=Name.CUT,
         allow_with_selection=allow_cut_with_selection,
         validate_and_parse=validate_and_parse_cut,
         apply=apply_cut,
         render=render_cut_inputs,
     ),
-    "COPY": OperationForm(
-        name="COPY",
+    Name.COPY: Operation(
+        name=Name.COPY,
         allow_with_selection=allow_copy_with_selection,
         validate_and_parse=validate_and_parse_copy,
         apply=apply_copy,
         render=render_copy_inputs,
     ),
-    "PASTE": OperationForm(
-        name="PASTE",
+    Name.PASTE: Operation(
+        name=Name.PASTE,
         allow_with_selection=allow_paste_with_selection,
         validate_and_parse=validate_and_parse_paste,
         apply=apply_paste,
         render=render_paste_inputs,
     ),
-    "DELETE": OperationForm(
-        name="DELETE",
+    Name.DELETE: Operation(
+        name=Name.DELETE,
         allow_with_selection=allow_delete_with_selection,
         validate_and_parse=validate_and_parse_delete,
         apply=apply_delete,
         render=render_delete_inputs,
     ),
-    "INSERT": OperationForm(
-        name="INSERT",
+    Name.INSERT: Operation(
+        name=Name.INSERT,
         allow_with_selection=allow_insert_with_selection,
         validate_and_parse=validate_and_parse_insert,
         apply=apply_insert,
         render=render_insert_inputs,
     ),
-    "ERASE": OperationForm(
-        name="ERASE",
+    Name.ERASE: Operation(
+        name=Name.ERASE,
         allow_with_selection=allow_erase_with_selection,
         validate_and_parse=validate_and_parse_erase,
         apply=apply_erase,
         render=render_erase_inputs,
     ),
-    "VALUE": OperationForm(
-        name="VALUE",
+    Name.VALUE: Operation(
+        name=Name.VALUE,
         allow_with_selection=allow_value_with_selection,
         validate_and_parse=validate_and_parse_value,
         apply=apply_value,
@@ -388,14 +422,14 @@ operation_forms = {
 }
 
 
-options = list(operation_forms.keys())
+options = list(all_operations.keys())
 
 
 def get(name):
-    if name not in operation_forms:
-        raise errors.UnknownOptionError(f"Unknown operation type: {name}.")
-    operation_form = operation_forms[name]
-    return operation_form
+    if name not in all_operations:
+        raise errors.UnknownOptionError(f"Unknown operation: {name.value}.")
+    operation = all_operations[name]
+    return operation
 
 
 def get_allowed_options(session):
@@ -404,32 +438,51 @@ def get_allowed_options(session):
     selection_mode = sel_state.get_mode(session)
     if selection_mode is not None:
         for o in options:
-            operation_form = get(o)
-            if operation_form.allow_with_selection(session, selection_mode):
+            operation = get(o)
+            if operation.allow_with_selection(session, selection_mode):
                 allowed_options.append(o)
 
     return allowed_options
 
 
-def get_modifications(session, op):
+def render_option(session, option):
+    help_state = modes.check(session, "Help")
+
+    if not help_state:
+        return option.value
+    else:
+        match option:
+            case Name.CUT:
+                return "{} [Ctrl+X]".format(option.value)
+            case Name.COPY:
+                return "{} [Ctrl+C]".format(option.value)
+            case Name.PASTE:
+                return "{} [Ctrl+V]".format(option.value)
+            case Name.DELETE:
+                return "{} [Delete]".format(option.value)
+            case _:
+                return option.value
+
+
+def get_modifications(session, name):
     modifications = None
 
-    match op:
-        case "CUT":
-            operation_form = get(op)
-            modifications = operation_form.validate_and_parse(session, None)
-        case "COPY":
-            operation_form = get(op)
-            modifications = operation_form.validate_and_parse(session, None)
-        case "PASTE":
-            operation_form = get(op)
-            modifications = operation_form.validate_and_parse(session, None)
-        case "DELETE":
-            operation_form = get(op)
-            modifications = operation_form.validate_and_parse(session, None)
+    match name:
+        case Name.CUT:
+            operation = get(name)
+            modifications = operation.validate_and_parse(session, None)
+        case Name.COPY:
+            operation = get(name)
+            modifications = operation.validate_and_parse(session, None)
+        case Name.PASTE:
+            operation = get(name)
+            modifications = operation.validate_and_parse(session, None)
+        case Name.DELETE:
+            operation = get(name)
+            modifications = operation.validate_and_parse(session, None)
         case _:
             raise errors.NotSupportedError(
-                "Cannot get modifications for operation {op} "
+                f"Cannot get modifications for operation {name.value} "
                 "without additional inputs."
             )
 
@@ -438,17 +491,19 @@ def get_modifications(session, op):
 
 
 def validate_and_parse(session, form):
-    op = form_helpers.extract(form, "operation")
-    operation_form = get(op)
-    modifications = operation_form.validate_and_parse(session, form)
-    return op, modifications
+    name_str = form_helpers.extract(form, "operation")
+    name = from_input(name_str)
+    operation = get(name)
+    modifications = operation.validate_and_parse(session, form)
+    return name, modifications
 
 
-def apply(session, op, modifications):
-    operation_form = get(op)
-    operation_form.apply(session, modifications)
+def apply(session, name, modifications):
+    operation = get(name)
+    operation.apply(session, modifications)
 
 
-def render(session, operation):
-    operation_form = get(operation)
-    return operation_form.render(session)
+def render(session, name_str):
+    name = from_input(name_str)
+    operation = get(name)
+    return operation.render(session)

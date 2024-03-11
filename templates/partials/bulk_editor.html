@@ -24,17 +24,17 @@
         hx-swap="outerHTML"
         style="width: auto;"
       >
-        {% for operation_option in operation_options %}
+        {% for operation_option, operation_name in operation_options.items() %}
         {% if operation_option == operation or (not operation and loop.index == 0) %}
-        <option value="{{ operation_option }}" selected>{{ operation_option }}</option>
+        <option value="{{ operation_option }}" selected>{{ operation_name }}</option>
         {% else %}
-        <option value="{{ operation_option }}">{{ operation_option }}</option>
+        <option value="{{ operation_option }}">{{ operation_name }}</option>
         {% endif %}
         {% endfor %}
       </select>
     </fieldset>
 
-    {{ operation_form|safe }}
+    {{ operation_html|safe }}
 
     <input type="submit" value="↵" id="bulk-editor-submit"/>
   </form>

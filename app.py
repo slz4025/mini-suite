@@ -431,7 +431,7 @@ def bulk_editor_endpoint():
                     session,
                     request.form,
                 )
-            except (errors.UserError, errors.OutOfBoundsError) as e:
+            except (errors.UserError) as e:
                 error = e
 
             resp = apply_operation(name, modifications, error)

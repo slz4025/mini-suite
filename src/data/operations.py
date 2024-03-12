@@ -186,17 +186,26 @@ def apply_paste(sel):
 
 
 @dataclass
+class Type:
+    DELETE = 'DELETE'
+    INSERT = 'INSERT'
+    VALUE = 'VALUE'
+    COPY = 'COPY'
+    PASTE = 'PASTE'
+
+
+@dataclass
 class Operation:
     name: str
     apply: Callable[[Input], None]
 
 
 operations = {
-    "DELETE": Operation(name="DELETE", apply=apply_delete),
-    "INSERT": Operation(name="INSERT", apply=apply_insert),
-    "VALUE": Operation(name="VALUE", apply=apply_value),
-    "COPY": Operation(name="COPY", apply=apply_copy),
-    "PASTE": Operation(name="PASTE", apply=apply_paste),
+    Type.DELETE: Operation(name=Type.DELETE, apply=apply_delete),
+    Type.INSERT: Operation(name=Type.INSERT, apply=apply_insert),
+    Type.VALUE: Operation(name=Type.VALUE, apply=apply_value),
+    Type.COPY: Operation(name=Type.COPY, apply=apply_copy),
+    Type.PASTE: Operation(name=Type.PASTE, apply=apply_paste),
 }
 
 

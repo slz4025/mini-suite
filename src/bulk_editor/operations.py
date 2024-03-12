@@ -141,11 +141,17 @@ def validate_and_parse_cut(session, form):
 
     modifications = []
 
-    modification = operations.Modification(operation="COPY", input=sel)
+    modification = operations.Modification(
+        operation=operations.Type.COPY,
+        input=sel,
+    )
     modifications.append(modification)
 
     inp = operations.ValueInput(selection=sel, value=None)
-    modification = operations.Modification(operation="VALUE", input=inp)
+    modification = operations.Modification(
+        operation=operations.Type.VALUE,
+        input=inp,
+    )
     modifications.append(modification)
 
     return modifications
@@ -161,7 +167,10 @@ def validate_and_parse_copy(session, form):
             "is not supported with copy operation."
         )
 
-    modification = operations.Modification(operation="COPY", input=sel)
+    modification = operations.Modification(
+        operation=operations.Type.COPY,
+        input=sel,
+    )
     return [modification]
 
 
@@ -213,7 +222,10 @@ def validate_and_parse_paste(session, form):
             "is not supported with paste operation."
         )
 
-    modification = operations.Modification(operation="PASTE", input=sel)
+    modification = operations.Modification(
+        operation=operations.Type.PASTE,
+        input=sel,
+    )
     return [modification]
 
 
@@ -227,7 +239,10 @@ def validate_and_parse_delete(session, form):
             "is not supported with delete operation."
         )
 
-    modification = operations.Modification(operation="DELETE", input=sel)
+    modification = operations.Modification(
+        operation=operations.Type.DELETE,
+        input=sel,
+    )
     return [modification]
 
 
@@ -249,7 +264,10 @@ def validate_and_parse_insert(session, form):
         selection=sel,
         number=number,
     )
-    modification = operations.Modification(operation="INSERT", input=inp)
+    modification = operations.Modification(
+        operation=operations.Type.INSERT,
+        input=inp,
+    )
     return [modification]
 
 
@@ -264,7 +282,10 @@ def validate_and_parse_erase(session, form):
         )
 
     inp = operations.ValueInput(selection=sel, value=None)
-    modification = operations.Modification(operation="VALUE", input=inp)
+    modification = operations.Modification(
+        operation=operations.Type.VALUE,
+        input=inp,
+    )
     return [modification]
 
 
@@ -283,7 +304,10 @@ def validate_and_parse_value(session, form):
         raise errors.InputError("Field 'value' was not given.")
 
     inp = operations.ValueInput(selection=sel, value=value)
-    modification = operations.Modification(operation="Value", input=inp)
+    modification = operations.Modification(
+        operation=operations.Type.Value,
+        input=inp,
+    )
     return [modification]
 
 

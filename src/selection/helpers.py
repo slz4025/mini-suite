@@ -1,5 +1,4 @@
 import src.errors as errors
-import src.selection.modes as modes
 import src.selection.types as types
 import src.data.sheet as sheet
 

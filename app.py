@@ -315,7 +315,7 @@ def selection_end(start_row, start_col, end_row, end_col):
     error = None
     try:
         mode, sel = selection.compute_from_endpoints(start, end)
-    except (errors.UnknownOptionError, errors.DoesNotExistError) as e:
+    except (errors.NotSupportedError) as e:
         error = e
 
     resp = update_selection(mode, sel, error)
@@ -372,10 +372,7 @@ def apply_operation(name, modifications, error):
     resp = Response()
 
     if error is None:
-        try:
-            bulk_editor.apply(session, name, modifications)
-        except (errors.UserError, errors.OutOfBoundsError) as e:
-            error = e
+        bulk_editor.apply(session, name, modifications)
 
     resp.headers['HX-Trigger'] = "notification"
     if error is not None:
@@ -405,7 +402,7 @@ def bulk_editor_apply(name_str):
     try:
         name = bulk_editor.operations.from_input(name_str)
         modifications = bulk_editor.get_modifications(session, name)
-    except (errors.UnknownOptionError) as e:
+    except (errors.NotSupportedError, errors.DoesNotExistError) as e:
         error = e
 
     resp = apply_operation(name, modifications, error)

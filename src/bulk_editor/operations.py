@@ -131,6 +131,8 @@ def allow_value_with_selection(session, mode):
 
 def validate_and_parse_cut(session, form):
     sel = sel_state.get_selection(session)
+    if sel is None:
+        raise errors.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_cut_with_selection(session, sel_mode):
@@ -159,6 +161,8 @@ def validate_and_parse_cut(session, form):
 
 def validate_and_parse_copy(session, form):
     sel = sel_state.get_selection(session)
+    if sel is None:
+        raise errors.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_copy_with_selection(session, sel_mode):
@@ -176,6 +180,8 @@ def validate_and_parse_copy(session, form):
 
 def validate_and_parse_paste(session, form):
     sel = sel_state.get_selection(session)
+    if sel is None:
+        raise errors.DoesNotExistError("Selection does not exist.")
 
     # In multi-element selections, it is possible
     # for the start value(s) to be greater than the end value(s).
@@ -231,6 +237,8 @@ def validate_and_parse_paste(session, form):
 
 def validate_and_parse_delete(session, form):
     sel = sel_state.get_selection(session)
+    if sel is None:
+        raise errors.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_delete_with_selection(session, sel_mode):
@@ -248,6 +256,8 @@ def validate_and_parse_delete(session, form):
 
 def validate_and_parse_insert(session, form):
     sel = sel_state.get_selection(session)
+    if sel is None:
+        raise errors.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_insert_with_selection(session, sel_mode):
@@ -273,6 +283,8 @@ def validate_and_parse_insert(session, form):
 
 def validate_and_parse_erase(session, form):
     sel = sel_state.get_selection(session)
+    if sel is None:
+        raise errors.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_erase_with_selection(session, sel_mode):
@@ -291,6 +303,8 @@ def validate_and_parse_erase(session, form):
 
 def validate_and_parse_value(session, form):
     sel = sel_state.get_selection(session)
+    if sel is None:
+        raise errors.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_value_with_selection(session, sel_mode):
@@ -312,14 +326,22 @@ def validate_and_parse_value(session, form):
 
 
 def apply_cut(session, modifications):
-    sel = sel_state.get_selection(session)
+    assert len(modifications) == 2
+    copy_mod = modifications[0]
+    assert copy_mod.operation.name == operations.type.COPY
+    sel = copy_mod.input
+
     sel_state.set_buffer_mode(session, sel)
     for modification in modifications:
         operations.apply_modification(modification)
 
 
 def apply_copy(session, modifications):
-    sel = sel_state.get_selection(session)
+    assert len(modifications) == 1
+    copy_mod = modifications[0]
+    assert copy_mod.operation.name == operations.type.COPY
+    sel = copy_mod.input
+
     sel_state.set_buffer_mode(session, sel)
     for modification in modifications:
         operations.apply_modification(modification)

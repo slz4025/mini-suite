@@ -19,6 +19,18 @@
     });
     document.querySelector(
       `#header-col-${ {{ index }} }`
+    ).addEventListener("mousemove", (event) => {
+      const start_row = localStorage.getItem("selection-start-row");
+      const start_col = localStorage.getItem("selection-start-col");
+      const end_row = "-1";
+      const end_col = "{{ index }}";
+
+      if (start_row && start_col) {
+        drawBorder(start_row, start_col, end_row, end_col);
+      }
+    })
+    document.querySelector(
+      `#header-col-${ {{ index }} }`
     ).addEventListener("mouseup", (event) => {
       const start_row = localStorage.getItem("selection-start-row");
       const start_col = localStorage.getItem("selection-start-col");
@@ -33,6 +45,9 @@
           swap: "outerHTML",
         }
       );
+
+      localStorage.removeItem("selection-start-row")
+      localStorage.removeItem("selection-start-col")
     });
   </script>
 </th>

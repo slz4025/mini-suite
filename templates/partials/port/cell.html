@@ -46,6 +46,18 @@
     });
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
+    ).addEventListener("mousemove", (event) => {
+      const start_row = localStorage.getItem("selection-start-row");
+      const start_col = localStorage.getItem("selection-start-col");
+      const end_row = "{{ row }}";
+      const end_col = "{{ col }}";
+
+      if (start_row && start_col) {
+        drawBorder(start_row, start_col, end_row, end_col);
+      }
+    })
+    document.querySelector(
+      `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("mouseup", (event) => {
       const start_row = localStorage.getItem("selection-start-row");
       const start_col = localStorage.getItem("selection-start-col");
@@ -60,6 +72,9 @@
           swap: "outerHTML",
         }
       );
+
+      localStorage.removeItem("selection-start-row")
+      localStorage.removeItem("selection-start-col")
     });
 
     // Focus on input only when double-clicking.

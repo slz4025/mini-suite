@@ -180,10 +180,10 @@ th.col {
 }
 
 th.selected-next-row {
-  border-bottom: 0.25rem solid var(--selected-background-color);
+  border-bottom: 0.25rem solid var(--selected-pointer-color);
 }
 th.selected-next-col {
-  border-right: 0.25rem solid var(--selected-background-color);
+  border-right: 0.25rem solid var(--selected-pointer-color);
 }
 
 td {
@@ -197,10 +197,10 @@ td.selected-current {
   background-color: var(--selected-background-color);
 }
 td.selected-next-row {
-  border-bottom: 0.25rem solid var(--selected-background-color);
+  border-bottom: 0.25rem solid var(--selected-pointer-color);
 }
 td.selected-next-col {
-  border-right: 0.25rem solid var(--selected-background-color);
+  border-right: 0.25rem solid var(--selected-pointer-color);
 }
 /* define last so takes precendence */
 td.editing-current {

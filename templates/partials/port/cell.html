@@ -41,26 +41,19 @@
       const row = "{{ row }}";
       const col = "{{ col }}";
 
-      localStorage.setItem("selection-start-row", row);
-      localStorage.setItem("selection-start-col", col);
+      set_selection_start(row, col);
     });
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("mousemove", (event) => {
-      const start_row = localStorage.getItem("selection-start-row");
-      const start_col = localStorage.getItem("selection-start-col");
-      const end_row = "{{ row }}";
-      const end_col = "{{ col }}";
-
-      if (start_row && start_col) {
-        drawBorder(start_row, start_col, end_row, end_col);
-      }
+      const row = "{{ row }}";
+      const col = "{{ col }}";
+      request_change_selection(row, col);
     })
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("mouseup", (event) => {
-      const start_row = localStorage.getItem("selection-start-row");
-      const start_col = localStorage.getItem("selection-start-col");
+      const [start_row, start_col] = get_selection_start();
       const end_row = "{{ row }}";
       const end_col = "{{ col }}";
 
@@ -73,8 +66,7 @@
         }
       );
 
-      localStorage.removeItem("selection-start-row")
-      localStorage.removeItem("selection-start-col")
+      reset_selection_start();
     });
 
     // Focus on input only when double-clicking.

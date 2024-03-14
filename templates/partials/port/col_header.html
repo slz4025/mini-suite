@@ -14,26 +14,19 @@
       const row = "-1";
       const col = "{{ index }}";
 
-      localStorage.setItem("selection-start-row", row);
-      localStorage.setItem("selection-start-col", col);
+      set_selection_start(row, col);
     });
     document.querySelector(
       `#header-col-${ {{ index }} }`
     ).addEventListener("mousemove", (event) => {
-      const start_row = localStorage.getItem("selection-start-row");
-      const start_col = localStorage.getItem("selection-start-col");
-      const end_row = "-1";
-      const end_col = "{{ index }}";
-
-      if (start_row && start_col) {
-        drawBorder(start_row, start_col, end_row, end_col);
-      }
+      const row = "-1";
+      const col = "{{ index }}";
+      request_change_selection(row, col);
     })
     document.querySelector(
       `#header-col-${ {{ index }} }`
     ).addEventListener("mouseup", (event) => {
-      const start_row = localStorage.getItem("selection-start-row");
-      const start_col = localStorage.getItem("selection-start-col");
+      const [start_row, start_col] = get_selection_start();
       const end_row = "-1";
       const end_col = "{{ index }}";
 
@@ -46,8 +39,7 @@
         }
       );
 
-      localStorage.removeItem("selection-start-row")
-      localStorage.removeItem("selection-start-col")
+      reset_selection_start();
     });
   </script>
 </th>

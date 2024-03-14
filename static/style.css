@@ -7,7 +7,7 @@
 :root {
   --background-color: #F0F0F0;
   --main-color: #111111;
-  --secondary-color: #B0B0B0;
+  --secondary-color: #B8B8B8;
   --shade-color: #D8D8D8;
 
   --info-color: #0F0F0F;
@@ -122,8 +122,15 @@ input.cell {
   padding: 0.25rem;
   border: 0;
 
+  /* when not focused, use same cursor as parent */
+  cursor: crosshair;
+}
+input.cell:focus {
   /* allow text selection; parent cell disables it */
   user-select: all;
+
+  /* when focused, indicate editing */
+  cursor: text;
 }
 select {
   background-color: transparent;
@@ -154,7 +161,7 @@ table {
   width: 100%;
   table-layout: fixed;
   border-spacing: 0;
-  border: 0.5px solid var(--secondary-color);
+  border: 1px solid var(--secondary-color);
   margin: 0;
 }
 tr:nth-child(even) {
@@ -167,6 +174,7 @@ th {
   /* prevent text selection, which interferes with cell selection */
   user-select: none;
 
+  border: 1px solid var(--secondary-color);
   padding: 0.25rem;
 }
 th.corner {
@@ -176,20 +184,26 @@ th.row {
   width: 50%;
   border-right: 1px solid var(--main-color);
 
+  /* indicate selection is the main action */
+  cursor: crosshair;
+
   text-align: right;
 }
 th.col {
   width: 100%;
   border-bottom: 1px solid var(--main-color);
 
+  /* indicate selection is the main action */
+  cursor: crosshair;
+
   text-align: center;
 }
 
 th.selected-next-row {
-  border-bottom: 0.25rem solid var(--selected-pointer-color);
+  border-bottom: 1px solid var(--selected-pointer-color);
 }
 th.selected-next-col {
-  border-right: 0.25rem solid var(--selected-pointer-color);
+  border-right: 1px solid var(--selected-pointer-color);
 }
 
 td {
@@ -199,17 +213,20 @@ td {
   /* prevent text selection, which interferes with cell selection */
   user-select: none;
 
+  /* indicate selection is the main action */
+  cursor: crosshair;
+
   padding: 0;
-  border: 0.5px solid var(--secondary-color);
+  border: 1px solid var(--secondary-color);
 }
 td.selected-current {
   background-color: var(--selected-background-color);
 }
 td.selected-next-row {
-  border-bottom: 0.25rem solid var(--selected-pointer-color);
+  border-bottom: 1px solid var(--selected-pointer-color);
 }
 td.selected-next-col {
-  border-right: 0.25rem solid var(--selected-pointer-color);
+  border-right: 1px solid var(--selected-pointer-color);
 }
 /* define last so takes precendence */
 td.editing-current {

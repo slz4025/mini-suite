@@ -121,6 +121,9 @@ input {
 input.cell {
   padding: 0.25rem;
   border: 0;
+
+  /* allow text selection; parent cell disables it */
+  user-select: all;
 }
 select {
   background-color: transparent;
@@ -161,6 +164,9 @@ th {
   /* let selected-bottomright pointer be position absolute to parent (this) */
   position: relative;
 
+  /* prevent text selection, which interferes with cell selection */
+  user-select: none;
+
   padding: 0.25rem;
 }
 th.corner {
@@ -189,6 +195,9 @@ th.selected-next-col {
 td {
   /* let selected-bottomright pointer be position absolute to parent (this) */
   position: relative;
+
+  /* prevent text selection, which interferes with cell selection */
+  user-select: none;
 
   padding: 0;
   border: 0.5px solid var(--secondary-color);

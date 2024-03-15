@@ -11,6 +11,7 @@ from waitress import serve
 import src.bulk_editor as bulk_editor
 import src.errors as errors
 import src.modes as modes
+import src.navigator as navigator
 import src.notifications as notifications
 import src.port as port
 import src.selection as selection
@@ -63,21 +64,11 @@ def render_editor(session):
     )
 
 
-def render_navigator(session):
-    help_state = modes.check(session, "Help")
-    navigator_state = modes.check(session, "Navigator")
-    return render_template(
-            "partials/navigator.html",
-            show_help=help_state,
-            show_navigator=navigator_state,
-    )
-
-
 def render_body(session):
     help_state = modes.check(session, "Help")
     notification_banner = notifications.render(session, False)
     port_html = port.render(session)
-    navigator = render_navigator(session)
+    navigator_html = navigator.render(session)
     editor = render_editor(session)
     selection_html = selection.render(session)
     bulk_editor_html = bulk_editor.render(session)
@@ -90,7 +81,7 @@ def render_body(session):
             editor=editor,
             selection=selection_html,
             bulk_editor=bulk_editor_html,
-            navigator=navigator,
+            navigator=navigator_html,
             settings=settings_html,
             )
     return body
@@ -294,6 +285,8 @@ def update_selection(mode, sel, error, reset=False):
         resp.headers['HX-Trigger'] += ",bulk-editor"
         # Show selection in port.
         resp.headers['HX-Trigger'] += ",update-port"
+        # Update showing navigator center feature.
+        resp.headers['HX-Trigger'] += ",navigator-center"
 
     return resp
 
@@ -456,7 +449,7 @@ def navigator_toggler():
     navigator_state = modes.check(session, "Navigator")
     modes.set(session, "Navigator", not navigator_state)
 
-    html = render_navigator(session)
+    html = navigator.render(session)
     resp = Response(html)
     resp.headers['HX-Trigger'] = "modes"
     return resp
@@ -476,26 +469,26 @@ def notification(show):
     return notifications.render(session, show_notifications)
 
 
+@app.route("/navigator/center", methods=['PUT'])
+@errors.handler
+def navigator_center():
+    assert htmx is not None
+
+    center = navigator.render_center(session)
+
+    return center
+
+
 @app.route("/move/center", methods=['PUT'])
 @errors.handler
 def center():
     assert htmx is not None
 
-    success = False
-    try:
-        port.set_center(session, request.form)
-        success = True
-    except (errors.UserError, errors.OutOfBoundsError) as e:
-        notifications.set(session, notifications.Notification(
-            message=str(e),
-            mode=notifications.Mode.ERROR,
-        ))
-
-    if success:
-        notifications.set(session, notifications.Notification(
-            message="Updated centered cell.",
-            mode=notifications.Mode.INFO,
-        ))
+    port.set_center(session)
+    notifications.set(session, notifications.Notification(
+        message="Updated centered cell.",
+        mode=notifications.Mode.INFO,
+    ))
 
     port_html = port.render(session)
     resp = Response(port_html)

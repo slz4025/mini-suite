@@ -1,7 +1,6 @@
 from flask import render_template
 
 import src.errors as errors
-import src.form_helpers as form_helpers
 import src.settings as settings
 
 import src.data.operations as operations
@@ -92,16 +91,21 @@ def set_upperleft(session, upperleft):
     }
 
 
-def set_center(session, form):
+def set_center(session):
     current_settings = settings.get(session)
     nrows = current_settings.nrows
     ncols = current_settings.ncols
 
-    row = form_helpers.extract(form, "center-cell-row-index", name="row index")
-    row = form_helpers.parse_int(row, name="row index")
+    selection_mode = sel_state.get_mode(session)
+    selection = sel_state.get_selection(session)
+    if not isinstance(selection, sel_types.CellPosition):
+        raise errors.NotSupportedError(
+            "Centering requires a cell position selection. "
+            f"Got selection mode {selection_mode.value} instead."
+        )
 
-    col = form_helpers.extract(form, "center-cell-col-index", name="col index")
-    col = form_helpers.parse_int(col, name="column index")
+    row = selection.row_index.value
+    col = selection.col_index.value
 
     bounds = sheet.get_bounds()
     row_end = min(row + (nrows) // 2 + 1, bounds.row.value)

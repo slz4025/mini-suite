@@ -83,31 +83,5 @@
     </button>
   </div>
 
-  <form
-    hx-put="/move/center"
-    hx-target="#port"
-    hx-swap="innerHTML"
-    hx-indicator="#loader"
-    enctype="multipart/form-data"
-  >
-    <legend>Center Cell</legend>
-    <label for="center-cell-row">Row</label>
-    <input
-        id="center-cell-row-index"
-        name="center-cell-row-index"
-        type="number"
-        pattern="[0-9]*"
-        style="width: 50px;"
-    >
-
-    <label for="center-cell-col">Column</label>
-    <input
-        id="center-cell-col-index"
-        name="center-cell-col-index"
-        type="number"
-        pattern="[0-9]*"
-        style="width: 50px;"
-    >
-    <input type="submit" class="icon" value="↵" id="center-cell-submit"/>
-  </form>
+  {{ center|safe }}
 </div>

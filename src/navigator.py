@@ -22,14 +22,31 @@ def set_upperleft(session, upperleft):
     }
 
 
+def get_selection_for_target(session):
+    sel = sel_state.get_selection(session)
+    if isinstance(sel, sel_types.CellPosition):
+        return sel
+    elif isinstance(sel, sel_types.Box):
+        if sel.row_range.end.value - sel.row_range.start.value == 1 \
+                and sel.col_range.end.value - sel.col_range.start.value == 1:
+            sel = sel_types.CellPosition(
+                row_index=sel_types.RowIndex(sel.row_range.start.value),
+                col_index=sel_types.ColIndex(sel.col_range.start.value),
+            )
+            return sel
+        return None
+    else:
+        return None
+
+
 def set_target(session):
     current_settings = settings.get(session)
     nrows = current_settings.nrows
     ncols = current_settings.ncols
 
     selection_mode = sel_state.get_mode(session)
-    selection = sel_state.get_selection(session)
-    if not isinstance(selection, sel_types.CellPosition):
+    selection = get_selection_for_target(session)
+    if selection is None:
         raise errors.NotSupportedError(
             "Centering requires a cell position selection. "
             f"Got selection mode {selection_mode.value} instead."
@@ -100,8 +117,7 @@ def move_upperleft(session, method):
 
 
 def render_target(session):
-    selection = sel_state.get_selection(session)
-    show_target = isinstance(selection, sel_types.CellPosition)
+    show_target = get_selection_for_target(session) is not None
 
     return render_template(
             "partials/navigator/target.html",

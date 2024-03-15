@@ -15,10 +15,10 @@
     <button
       id="home-button"
       class="icon"
-      hx-put="/move/home"
+      hx-put="/navigator/move/home"
       hx-trigger="click"
-      hx-target="#port"
-      hx-swap="innerHTML"
+      hx-target="#navigator"
+      hx-swap="outerHTML"
     >
       🏠
       {% if show_help %}
@@ -29,10 +29,10 @@
     <button
       id="up-button"
       class="icon"
-      hx-put="/move/up"
+      hx-put="/navigator/move/up"
       hx-trigger="click"
-      hx-target="#port"
-      hx-swap="innerHTML"
+      hx-target="#navigator"
+      hx-swap="outerHTML"
     >
       ⮝
       {% if show_help %}
@@ -43,10 +43,10 @@
     <button
       id="down-button"
       class="icon"
-      hx-put="/move/down"
+      hx-put="/navigator/move/down"
       hx-trigger="click"
-      hx-target="#port"
-      hx-swap="innerHTML"
+      hx-target="#navigator"
+      hx-swap="outerHTML"
     >
       ⮟
       {% if show_help %}
@@ -57,10 +57,10 @@
     <button
       id="left-button"
       class="icon"
-      hx-put="/move/left"
+      hx-put="/navigator/move/left"
       hx-trigger="click"
-      hx-target="#port"
-      hx-swap="innerHTML"
+      hx-target="#navigator"
+      hx-swap="outerHTML"
     >
       ⮜
       {% if show_help %}
@@ -71,10 +71,10 @@
     <button
       id="right-button"
       class="icon"
-      hx-put="/move/right"
+      hx-put="/navigator/move/right"
       hx-trigger="click"
-      hx-target="#port"
-      hx-swap="innerHTML"
+      hx-target="#navigator"
+      hx-swap="outerHTML"
     >
       ⮞
       {% if show_help %}

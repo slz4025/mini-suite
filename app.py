@@ -95,6 +95,7 @@ def root():
     # TODO: This should eventually be done for the user for the sheet.
     modes.init(session)
     notifications.init(session)
+    navigator.init(session)
     port.init(session)
 
     # TODO: This should eventually be done for the user
@@ -441,20 +442,6 @@ def bulk_editor_endpoint():
     return resp
 
 
-@app.route("/navigator/toggle", methods=['PUT'])
-@errors.handler
-def navigator_toggler():
-    assert htmx is not None
-
-    navigator_state = modes.check(session, "Navigator")
-    modes.set(session, "Navigator", not navigator_state)
-
-    html = navigator.render(session)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "modes"
-    return resp
-
-
 # TODO: Later, consider supporting an array of notifications
 # with timeouts we maintain server-side.
 @app.route("/notification/<show>", methods=['PUT'])
@@ -469,41 +456,57 @@ def notification(show):
     return notifications.render(session, show_notifications)
 
 
-@app.route("/navigator/center", methods=['PUT'])
+@app.route("/navigator/toggle", methods=['PUT'])
+@errors.handler
+def navigator_toggler():
+    assert htmx is not None
+
+    navigator_state = modes.check(session, "Navigator")
+    modes.set(session, "Navigator", not navigator_state)
+
+    html = navigator.render(session)
+    resp = Response(html)
+    resp.headers['HX-Trigger'] = "modes"
+    return resp
+
+
+@app.route("/navigator/center", methods=['PUT', 'POST'])
 @errors.handler
 def navigator_center():
     assert htmx is not None
 
-    center = navigator.render_center(session)
+    resp = Response()
+    resp.headers['HX-Trigger'] = "update-port"
+    match request.method:
+        case 'POST':
+            navigator.set_center(session)
+            notifications.set(session, notifications.Notification(
+                message="Centered port on cell position.",
+                mode=notifications.Mode.INFO,
+            ))
+            resp.headers['HX-Trigger'] += ",notification"
 
-    return center
-
-
-@app.route("/move/center", methods=['PUT'])
-@errors.handler
-def center():
-    assert htmx is not None
-
-    port.set_center(session)
-    notifications.set(session, notifications.Notification(
-        message="Updated centered cell.",
-        mode=notifications.Mode.INFO,
-    ))
-
-    port_html = port.render(session)
-    resp = Response(port_html)
-    resp.headers['HX-Trigger'] = "notification"
+    navigator_html = navigator.render(session)
+    resp.response = navigator_html
     return resp
 
 
-@app.route("/move/<method>", methods=['PUT'])
+@app.route("/navigator/move/<method>", methods=['PUT'])
 @errors.handler
-def move(method):
+def navigator_move(method):
     assert htmx is not None
 
-    port.move_upperleft(session, method)
+    navigator.move_upperleft(session, method)
 
-    return port.render(session)
+    notifications.set(session, notifications.Notification(
+        message="Moved port.",
+        mode=notifications.Mode.INFO,
+    ))
+
+    navigator_html = navigator.render(session)
+    resp = Response(navigator_html)
+    resp.headers['HX-Trigger'] = "update-port,notification"
+    return resp
 
 
 @app.route("/settings/toggle", methods=['PUT'])

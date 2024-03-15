@@ -2,7 +2,7 @@
   id="navigator-center"
   hx-put="/navigator/center"
   hx-trigger="navigator-center from:body"
-  hx-target="this"
+  hx-target="#navigator"
   hx-swap="outerHTML"
   class="inner"
   style="display: {{ 'inherit' if show_center else 'none' }};"
@@ -11,9 +11,9 @@
     <p>Center to selected cell position.</p>
   {% endif %}
   <button 
-    hx-put="/move/center"
-    hx-target="#port"
-    hx-swap="innerHTML"
+    hx-post="/navigator/center"
+    hx-target="#navigator"
+    hx-swap="outerHTML"
   >
     Center
   </button>

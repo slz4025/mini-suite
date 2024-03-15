@@ -1,85 +1,27 @@
 {{notification_banner|safe }}
-<button
-    id="help-toggler"
-    hx-put="/help/toggle"
-    hx-trigger="click"
-    hx-target="body"
-    hx-swap="innerHTML"
-    style="display: none"
->
-</button>
-<button
-    id="editor-toggler"
-    hx-put="/editor/toggle"
-    hx-trigger="click"
-    hx-target="#editor"
-    hx-swap="outerHTML"
-    style="display: none"
->
-</button>
-<button
-    id="selection-toggler"
-    hx-put="/selection/toggle"
-    hx-trigger="click"
-    hx-target="#selection"
-    hx-swap="outerHTML"
-    style="display: none"
->
-</button>
-<button
-    id="bulk-editor-toggler"
-    hx-put="/bulk-editor/toggle"
-    hx-trigger="click"
-    hx-target="#bulk-editor"
-    hx-swap="outerHTML"
-    style="display: none"
->
-</button>
-<button
-    id="navigator-toggler"
-    hx-put="/navigator/toggle"
-    hx-trigger="click"
-    hx-target="#navigator"
-    hx-swap="outerHTML"
-    style="display: none"
->
-</button>
-<button
-    id="settings-toggler"
-    hx-put="/settings/toggle"
-    hx-trigger="click"
-    hx-target="#settings"
-    hx-swap="outerHTML"
-    style="display: none"
->
-</button>
-
 <div class="wrapper">
-  <div class="left">
-    <div class="inner">
-      <div class="justify"><span>Editor</span><span>[Ctrl+1]</span></div>
-      <div class="justify"><span>Selection</span><span>[Ctrl+2]</span></div>
-      <div class="justify"><span>Bulk-Editor</span><span>[Ctrl+3]</span></div>
-      <div class="justify"><span>Navigator</span><span>[Ctrl+4]</span></div>
-      <div class="justify"><span>[⚙] Settings</span><span>[Ctrl+5]</span></div>
-      <div class="justify"><span>[?] Help</span><span>[Ctrl+0]</span></div>
-    </div>
-    {{ editor|safe }}
-    {{ selection|safe }}
-    {{ bulk_editor|safe }}
-    {{ navigator|safe }}
-    {{ settings|safe }}
-  </div>
-    <div class="right">
-    <div
-      id="port"
-      class="inner"
-      hx-put="/port"
-      hx-trigger="update-port from:body"
-      hx-target="this"
-      hx-swap="innerHTML"
-    >
-      {{ data|safe }}
-    </div>
+  {{ command_palette|safe }}
+  <button
+      id="command-palette-toggle"
+      hx-put="/command-palette/toggle"
+      hx-trigger="click"
+      hx-target="body"
+      hx-swap="outerHTML"
+  >
+    <p style="writing-mode: vertical-rl; text-orientation: mixed;">
+      {{ 'Collapse' if show_command_palette else 'Expand' }}
+    </p>
+  </button>
+
+  <div
+    id="port"
+    class="inner"
+    hx-put="/port"
+    hx-trigger="update-port from:body"
+    hx-target="this"
+    hx-swap="innerHTML"
+    style="width: {{ '77.5%' if show_command_palette else '97.5%' }};"
+  >
+    {{ data|safe }}
   </div>
 </div>

@@ -50,16 +50,17 @@ div.wrapper {
 
   color: var(--main-color); 
 }
-div.left {
+div#command-palette {
   float: left;
   width: 20%;
+  height: 100vh;
 
   margin: 0;
   border: 0;
 }
-div.right {
+div#port {
   float: left;
-  width: 80%;
+  height: 100vh;
 
   margin: 0;
   border: 0;
@@ -149,11 +150,14 @@ select {
   border: 0.1rem solid var(--secondary-color);
   width: 100%;
 
+  font-family: var(--main-ff);
   color: var(--main-color);
 }
 option {
   background-color: var(--background-color);
   border: 0.1rem solid var(--secondary-color);
+
+  font-family: var(--main-ff);
   color: var(--main-color);
 }
 
@@ -162,11 +166,23 @@ button {
   background-color: transparent;
   border: 0.1rem solid var(--secondary-color);
 
+  font-family: var(--main-ff);
   color: var(--main-color);
 }
 button.icon {
   display: inline;
   height: 30px;
+}
+button#command-palette-toggle {
+  float: left;
+  width: 2.5%;
+  height: 100vh;
+
+  margin: 0;
+  border: 0;
+
+  background-color: var(--shade-color);
+  cursor: pointer;
 }
 
 table {

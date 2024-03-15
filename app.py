@@ -9,6 +9,7 @@ from flask_htmx import HTMX
 from waitress import serve
 
 import src.bulk_editor as bulk_editor
+import src.command_palette as command_palette
 import src.editor as editor
 import src.errors as errors
 import src.modes as modes
@@ -50,22 +51,16 @@ def unexpected_error():
 def render_body(session):
     help_state = modes.check(session, "Help")
     notification_banner = notifications.render(session, False)
+    show_command_palette = command_palette.get_show(session)
+    command_palette_html = command_palette.render(session)
     port_html = port.render(session)
-    navigator_html = navigator.render(session)
-    editor_html = editor.render(session)
-    selection_html = selection.render(session)
-    bulk_editor_html = bulk_editor.render(session)
-    settings_html = settings.render(session)
     body = render_template(
             "partials/body.html",
             show_help=help_state,
             notification_banner=notification_banner,
+            command_palette=command_palette_html,
             data=port_html,
-            editor=editor_html,
-            selection=selection_html,
-            bulk_editor=bulk_editor_html,
-            navigator=navigator_html,
-            settings=settings_html,
+            show_command_palette=show_command_palette,
             )
     return body
 
@@ -77,6 +72,7 @@ def root():
 
     # TODO: This should eventually be done for the user for the sheet.
     modes.init(session)
+    command_palette.init(session)
     notifications.init(session)
     navigator.init(session)
 
@@ -102,6 +98,17 @@ def data():
     dump = sheet.get_dump()
 
     return dump
+
+
+@app.route("/command-palette/toggle", methods=['PUT'])
+@errors.handler
+def command_palette_toggle():
+    assert htmx is not None
+
+    show_command_palette = command_palette.get_show(session)
+    command_palette.set_show(session, not show_command_palette)
+
+    return render_body(session)
 
 
 @app.route("/help/toggle", methods=['PUT'])

@@ -9,6 +9,7 @@ from flask_htmx import HTMX
 from waitress import serve
 
 import src.bulk_editor as bulk_editor
+import src.editor as editor
 import src.errors as errors
 import src.modes as modes
 import src.navigator as navigator
@@ -46,30 +47,12 @@ def unexpected_error():
     return user_error_msg
 
 
-def render_editor(session):
-    editor_state = modes.check(session, "Editor")
-    focused_cell = port.get_focused_cell_position(session)
-    row = focused_cell.row_index.value
-    col = focused_cell.col_index.value
-
-    data = operations.get_cell(focused_cell)
-    if data is None:
-        data = ""
-    return render_template(
-        "partials/editor.html",
-        show_editor=editor_state,
-        row=row,
-        col=col,
-        data=data,
-    )
-
-
 def render_body(session):
     help_state = modes.check(session, "Help")
     notification_banner = notifications.render(session, False)
     port_html = port.render(session)
     navigator_html = navigator.render(session)
-    editor = render_editor(session)
+    editor_html = editor.render(session)
     selection_html = selection.render(session)
     bulk_editor_html = bulk_editor.render(session)
     settings_html = settings.render(session)
@@ -78,7 +61,7 @@ def render_body(session):
             show_help=help_state,
             notification_banner=notification_banner,
             data=port_html,
-            editor=editor,
+            editor=editor_html,
             selection=selection_html,
             bulk_editor=bulk_editor_html,
             navigator=navigator_html,
@@ -95,8 +78,8 @@ def root():
     # TODO: This should eventually be done for the user for the sheet.
     modes.init(session)
     notifications.init(session)
+    editor.init(session)
     navigator.init(session)
-    port.init(session)
 
     # TODO: This should eventually be done for the user
     # or for the user for the sheet.
@@ -206,8 +189,8 @@ def cell_sync(row, col):
         operations.update_cell(cell_position, value)
 
     # Sync with editor.
-    port.set_focused_cell_position(session, cell_position)
-    return render_editor(session)
+    editor.set_focused_cell_position(session, cell_position)
+    return editor.render(session)
 
 
 @app.route("/editor/toggle", methods=['PUT'])
@@ -218,7 +201,7 @@ def editor_toggler():
     editor_state = modes.check(session, "Editor")
     modes.set(session, "Editor", not editor_state)
 
-    html = render_editor(session)
+    html = editor.render(session)
     resp = Response(html)
     resp.headers['HX-Trigger'] = "modes"
     return resp
@@ -226,10 +209,10 @@ def editor_toggler():
 
 @app.route("/editor", methods=['PUT'])
 @errors.handler
-def editor():
+def editor_endpoint():
     assert htmx is not None
 
-    html = render_editor(session)
+    html = editor.render(session)
     resp = Response(html)
     return resp
 

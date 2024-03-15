@@ -3,33 +3,11 @@ from flask import render_template
 import src.settings as settings
 
 import src.data.operations as operations
+import src.editor as editor
 import src.navigator as navigator
 import src.selection.state as sel_state
 import src.selection.types as sel_types
 import src.data.sheet as sheet
-
-
-def get_focused_cell_position(session):
-    return sel_types.CellPosition(
-        row_index=sel_types.RowIndex(
-            int(session["focused-cell-position"]["row-index"])
-        ),
-        col_index=sel_types.ColIndex(
-            int(session["focused-cell-position"]["col-index"])
-        ),
-    )
-
-
-def set_focused_cell_position(session, focused_cell_position):
-    session["focused-cell-position"] = {
-        "row-index": str(focused_cell_position.row_index.value),
-        "col-index": str(focused_cell_position.col_index.value),
-    }
-
-
-def is_editing(session, cell_position):
-    focused_cell_position = get_focused_cell_position(session)
-    return focused_cell_position.equals(cell_position)
 
 
 def make_render_selected(session):
@@ -77,14 +55,6 @@ def make_render_selected(session):
     return render_selected
 
 
-def init(session):
-    focused_cell_position = sel_types.CellPosition(
-        row_index=sel_types.RowIndex(0),
-        col_index=sel_types.ColIndex(0),
-    )
-    set_focused_cell_position(session, focused_cell_position)
-
-
 def render_cell(session, cell_position, editing=False, render_selected=None):
     sel_types.check_cell_position(cell_position)
 
@@ -97,7 +67,7 @@ def render_cell(session, cell_position, editing=False, render_selected=None):
         input_render = "selected"
     renders.append(render_selected_state)
     # Apply later so takes precendence.
-    if editing and is_editing(session, cell_position):
+    if editing and editor.is_editing(session, cell_position):
         renders.append("editing-current")
         input_render = "editing"
 

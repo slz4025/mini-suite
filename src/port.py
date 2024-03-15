@@ -181,13 +181,17 @@ def render_cell(session, cell_position, editing=False, render_selected=None):
     sel_types.check_cell_position(cell_position)
 
     renders = []
+    input_render = None
     if render_selected is None:
         render_selected = make_render_selected(session)
     render_selected_state = render_selected(cell_position)
+    if "selected-current" in render_selected_state:
+        input_render = "selected"
     renders.append(render_selected_state)
     # Apply later so takes precendence.
     if editing and is_editing(session, cell_position):
         renders.append("editing-current")
+        input_render = "editing"
 
     value = operations.get_cell(cell_position)
     if value is None:
@@ -199,6 +203,7 @@ def render_cell(session, cell_position, editing=False, render_selected=None):
             col=cell_position.col_index.value,
             data=value,
             renders=renders,
+            input_render=input_render if input_render is not None else '',
     )
 
 

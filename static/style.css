@@ -16,7 +16,9 @@
   --error-background-color: #8B0000;
 
   --editing-background-color: #00FF00;
+  --editing-color: #111111;
   --selected-background-color: #FFFF00;
+  --selected-color: #111111;
   --selected-pointer-color: #FF00FF;
 
   --main-ff: monospace;
@@ -124,6 +126,12 @@ input.cell {
 
   /* when not focused, use same cursor as parent */
   cursor: crosshair;
+}
+input.editing {
+  color: var(--editing-color);
+}
+input.selected {
+  color: var(--selected-color);
 }
 input.cell:focus {
   /* allow text selection; parent cell disables it */

@@ -21,7 +21,7 @@
   <label for="input-cell-{{ row }}-{{ col }}" hidden></label>
   <input
     type="text"
-    class="cell"
+    class="cell {{ input_render }}"
     hx-put="/cell/{{ row }}/{{ col }}/edit"
     hx-target="#editor"
     hx-trigger="keyup changed"

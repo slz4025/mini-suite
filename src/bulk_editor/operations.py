@@ -47,6 +47,7 @@ def from_input(name_str):
 @dataclass
 class Operation:
     name: Name
+    icon: str
     allow_with_selection: Callable[[object, str], bool]
     validate_and_parse: Callable[
         [object, object],
@@ -418,6 +419,7 @@ def render_value_inputs(session):
 all_operations = {
     Name.CUT: Operation(
         name=Name.CUT,
+        icon="✂",
         allow_with_selection=allow_cut_with_selection,
         validate_and_parse=validate_and_parse_cut,
         apply=apply_cut,
@@ -425,6 +427,7 @@ all_operations = {
     ),
     Name.COPY: Operation(
         name=Name.COPY,
+        icon="⎘",
         allow_with_selection=allow_copy_with_selection,
         validate_and_parse=validate_and_parse_copy,
         apply=apply_copy,
@@ -432,6 +435,7 @@ all_operations = {
     ),
     Name.PASTE: Operation(
         name=Name.PASTE,
+        icon="📋",
         allow_with_selection=allow_paste_with_selection,
         validate_and_parse=validate_and_parse_paste,
         apply=apply_paste,
@@ -439,6 +443,7 @@ all_operations = {
     ),
     Name.DELETE: Operation(
         name=Name.DELETE,
+        icon="❌",
         allow_with_selection=allow_delete_with_selection,
         validate_and_parse=validate_and_parse_delete,
         apply=apply_delete,
@@ -446,6 +451,7 @@ all_operations = {
     ),
     Name.INSERT: Operation(
         name=Name.INSERT,
+        icon="➕",
         allow_with_selection=allow_insert_with_selection,
         validate_and_parse=validate_and_parse_insert,
         apply=apply_insert,
@@ -453,6 +459,7 @@ all_operations = {
     ),
     Name.ERASE: Operation(
         name=Name.ERASE,
+        icon="🗑",
         allow_with_selection=allow_erase_with_selection,
         validate_and_parse=validate_and_parse_erase,
         apply=apply_erase,
@@ -460,6 +467,7 @@ all_operations = {
     ),
     Name.VALUE: Operation(
         name=Name.VALUE,
+        icon="½",
         allow_with_selection=allow_value_with_selection,
         validate_and_parse=validate_and_parse_value,
         apply=apply_value,

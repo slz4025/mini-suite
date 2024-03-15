@@ -196,7 +196,7 @@ class Type:
 
 @dataclass
 class Operation:
-    name: str
+    name: Type
     apply: Callable[[Input], None]
 
 
@@ -211,7 +211,7 @@ operations = {
 
 @dataclass
 class Modification:
-    operation: Operation
+    operation: Type
     input: Input
 
 

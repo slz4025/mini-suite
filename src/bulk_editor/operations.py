@@ -328,7 +328,7 @@ def validate_and_parse_value(session, form):
 def apply_cut(session, modifications):
     assert len(modifications) == 2
     copy_mod = modifications[0]
-    assert copy_mod.operation.name == operations.type.COPY
+    assert copy_mod.operation == operations.Type.COPY
     sel = copy_mod.input
 
     sel_state.set_buffer_mode(session, sel)
@@ -339,7 +339,7 @@ def apply_cut(session, modifications):
 def apply_copy(session, modifications):
     assert len(modifications) == 1
     copy_mod = modifications[0]
-    assert copy_mod.operation.name == operations.type.COPY
+    assert copy_mod.operation == operations.Type.COPY
     sel = copy_mod.input
 
     sel_state.set_buffer_mode(session, sel)

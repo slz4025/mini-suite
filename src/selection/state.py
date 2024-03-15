@@ -15,6 +15,10 @@ def set_mode(session, mode):
     session["selection-mode"] = mode.value
 
 
+def reset_mode(session):
+    del session["selection-mode"]
+
+
 def get_buffer_mode(session):
     if "buffer-selection-mode" not in session:
         return None
@@ -39,3 +43,7 @@ def get_selection(session):
 def set_selection(session, sel):
     pickled = jsonpickle.encode(sel)
     session["selection"] = pickled
+
+
+def reset_selection(session):
+    del session["selection"]

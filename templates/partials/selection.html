@@ -37,6 +37,22 @@
 
     {{ input|safe }}
 
-    <input type="submit" class="icon" value="↵" id="selection-submit"/>
+    <div class="inner" style="margin-bottom: 0;">
+      <input
+        type="submit"
+        class="icon"
+        value="↵"
+        id="selection-submit"
+      />
+      <button
+          id="selection-clear"
+          class="icon"
+          hx-delete="/selection"
+          hx-trigger="click"
+          hx-target="#selection"
+          hx-swap="outerHTML"
+          style="font-size: 0.8rem;"
+      >🗑</button>
+    </div>
   </form>
 </div>

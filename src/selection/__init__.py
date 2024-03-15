@@ -28,6 +28,11 @@ def save(session, mode, sel):
     state.set_mode(session, mode)
 
 
+def reset(session):
+    state.reset_selection(session)
+    state.reset_mode(session)
+
+
 def render_inputs(session, mode, sel=None):
     help_state = use_modes.check(session, "Help")
 
@@ -90,7 +95,8 @@ def render(session):
     mode = mode_options[0]
     selection = None
     saved_mode = state.get_mode(session)
-    if saved_mode is not None:
+    has_selection = saved_mode is not None
+    if has_selection:
         mode = saved_mode
         selection = state.get_selection(session)
 
@@ -103,4 +109,5 @@ def render(session):
             mode_options=[mo.value for mo in mode_options],
             mode=mode.value,
             input=inp,
+            show_clear=has_selection,
     )

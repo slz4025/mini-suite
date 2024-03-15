@@ -268,7 +268,7 @@ def selection_inputs():
     return selection.render_inputs(session, mode)
 
 
-def update_selection(mode, sel, error):
+def update_selection(mode, sel, error, reset=False):
     resp = Response()
     resp.headers['HX-Trigger'] = "notification"
 
@@ -278,10 +278,15 @@ def update_selection(mode, sel, error):
             mode=notifications.Mode.ERROR,
         ))
     else:
-        selection.save(session, mode, sel)
+        if reset:
+            selection.reset(session)
+        else:
+            selection.save(session, mode, sel)
 
         notifications.set(session, notifications.Notification(
-            message="Selection registered.",
+            message="Selection {}.".format(
+                "cleared" if reset else "registered"
+            ),
             mode=notifications.Mode.INFO,
         ))
 
@@ -324,7 +329,7 @@ def selection_end(start_row, start_col, end_row, end_col):
     return resp
 
 
-@app.route("/selection", methods=['POST'])
+@app.route("/selection", methods=['POST', 'DELETE'])
 @errors.handler
 def selection_endpoint():
     assert htmx is not None
@@ -332,12 +337,17 @@ def selection_endpoint():
     mode = None
     sel = None
     error = None
-    try:
-        mode, sel = selection.validate_and_parse(session, request.form)
-    except (errors.UserError, errors.OutOfBoundsError) as e:
-        error = e
+    match request.method:
+        case 'POST':
+            reset = False
+            try:
+                mode, sel = selection.validate_and_parse(session, request.form)
+            except (errors.UserError, errors.OutOfBoundsError) as e:
+                error = e
+        case 'DELETE':
+            reset = True
 
-    resp = update_selection(mode, sel, error)
+    resp = update_selection(mode, sel, error, reset=reset)
     html = selection.render(session)
     resp.response = html
     return resp

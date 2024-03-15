@@ -78,7 +78,6 @@ def root():
     # TODO: This should eventually be done for the user for the sheet.
     modes.init(session)
     notifications.init(session)
-    editor.init(session)
     navigator.init(session)
 
     # TODO: This should eventually be done for the user
@@ -130,7 +129,10 @@ def get_modes_string():
 def update_port():
     assert htmx is not None
 
-    return port.render(session)
+    port_html = port.render(session)
+    resp = Response(port_html)
+    resp.headers['HX-Trigger'] = "editor"
+    return resp
 
 
 @app.route("/cell/<row>/<col>/highlight/<state>", methods=['PUT'])

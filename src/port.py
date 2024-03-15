@@ -1,12 +1,11 @@
 from flask import render_template
 
-import src.settings as settings
-
 import src.data.operations as operations
 import src.editor as editor
 import src.navigator as navigator
 import src.selection.state as sel_state
 import src.selection.types as sel_types
+import src.settings as settings
 import src.data.sheet as sheet
 
 

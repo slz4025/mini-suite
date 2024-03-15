@@ -11,13 +11,14 @@
     1. the contents are stored in the sheet,
     2. the cell the editor is synced to is rerendered.
 
-    No entities but the editor-toggler (Ctrl+1) or focused cell
+    No entities but the editor-toggler (Ctrl+1), focused cell, or port
     owns the rerendering of the editor.
     Since these entities can only be interacted with one at a time,
     we expect no races on the editor's rerendering.
   -->
   <h2>EDITOR</h2>
 
+  {% if editing %}
   <form
     hx-put="/cell/{{ row }}/{{ col }}/update"
     hx-target="#cell-{{ row }}-{{ col }}"
@@ -42,6 +43,7 @@
       .addEventListener("focusin", (event) => {
       const row = "{{ row }}";
       const col = "{{ col }}";
+      const cell = document.getElementById("cell-${row}-${col}");
       htmx.ajax('PUT', `/cell/${row}/${col}/highlight/on`, {
         target: `#cell-${row}-${col}`,
         swap: "outerHTML",
@@ -51,10 +53,12 @@
       .addEventListener("focusout", (event) => {
       const row = "{{ row }}";
       const col = "{{ col }}";
+      const cell = document.getElementById("cell-${row}-${col}");
       htmx.ajax('PUT', `/cell/${row}/${col}/highlight/off`, {
         target: `#cell-${row}-${col}`,
         swap: "outerHTML",
       });
     });
   </script>
+  {% endif %}
 </div>

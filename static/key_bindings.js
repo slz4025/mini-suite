@@ -57,6 +57,9 @@ window.addEventListener('keyup', function(event) {
       case 'ArrowRight':
         document.getElementById("right-button").click();
         break;
+      case 't':
+        document.getElementById("navigator-target-button").click();
+        break;
     }
   } else {
     const activeId = document.activeElement.id;

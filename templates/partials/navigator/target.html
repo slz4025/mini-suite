@@ -8,10 +8,14 @@
   style="display: {{ 'inherit' if show_target else 'none' }};"
 >
   <button 
+    id="navigator-target-button"
     hx-post="/navigator/target"
     hx-target="#navigator-target"
     hx-swap="outerHTML"
   >
     Target Cell Position
+    {% if show_help %}
+      <span>[Ctrl+t]</span>
+    {% endif %}
   </button>
 </div>

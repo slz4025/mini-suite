@@ -462,11 +462,22 @@ def navigator_target():
     resp.headers['HX-Trigger'] = "update-port"
     match request.method:
         case 'POST':
-            navigator.set_target(session)
-            notifications.set(session, notifications.Notification(
-                message="Targeting cell position in port.",
-                mode=notifications.Mode.INFO,
-            ))
+            error = None
+            try:
+                navigator.set_target(session)
+            except errors.NotSupportedError as e:
+                error = e
+
+            if error is not None:
+                notifications.set(session, notifications.Notification(
+                    message=str(error),
+                    mode=notifications.Mode.ERROR,
+                ))
+            else:
+                notifications.set(session, notifications.Notification(
+                    message="Targeting cell position in port.",
+                    mode=notifications.Mode.INFO,
+                ))
             resp.headers['HX-Trigger'] += ",notification"
 
     navigator_target_html = navigator.render_target(session)

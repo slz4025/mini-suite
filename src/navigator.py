@@ -117,10 +117,12 @@ def move_upperleft(session, method):
 
 
 def render_target(session):
+    help_state = modes.check(session, "Help")
     show_target = get_selection_for_target(session) is not None
 
     return render_template(
             "partials/navigator/target.html",
+            show_help=help_state,
             show_target=show_target,
     )
 

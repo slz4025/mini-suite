@@ -22,7 +22,7 @@ def set_upperleft(session, upperleft):
     }
 
 
-def set_center(session):
+def set_target(session):
     current_settings = settings.get(session)
     nrows = current_settings.nrows
     ncols = current_settings.ncols
@@ -99,28 +99,25 @@ def move_upperleft(session, method):
     set_upperleft(session, moved)
 
 
-def render_center(session):
-    help_state = modes.check(session, "Help")
-
+def render_target(session):
     selection = sel_state.get_selection(session)
-    show_center = isinstance(selection, sel_types.CellPosition)
+    show_target = isinstance(selection, sel_types.CellPosition)
 
     return render_template(
-            "partials/navigator/center.html",
-            show_help=help_state,
-            show_center=show_center,
+            "partials/navigator/target.html",
+            show_target=show_target,
     )
 
 
 def render(session):
     help_state = modes.check(session, "Help")
     navigator_state = modes.check(session, "Navigator")
-    center = render_center(session)
+    target = render_target(session)
     return render_template(
             "partials/navigator.html",
             show_help=help_state,
             show_navigator=navigator_state,
-            center=center,
+            target=target,
     )
 
 

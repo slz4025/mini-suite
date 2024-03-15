@@ -1,0 +1,17 @@
+<div
+  id="navigator-target"
+  hx-put="/navigator/target"
+  hx-trigger="navigator-target from:body"
+  hx-target="this"
+  hx-swap="outerHTML"
+  class="inner"
+  style="display: {{ 'inherit' if show_target else 'none' }};"
+>
+  <button 
+    hx-post="/navigator/target"
+    hx-target="#navigator-target"
+    hx-swap="outerHTML"
+  >
+    Target Cell Position
+  </button>
+</div>

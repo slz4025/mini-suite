@@ -269,8 +269,8 @@ def update_selection(mode, sel, error, reset=False):
         resp.headers['HX-Trigger'] += ",bulk-editor"
         # Show selection in port.
         resp.headers['HX-Trigger'] += ",update-port"
-        # Update showing navigator center feature.
-        resp.headers['HX-Trigger'] += ",navigator-center"
+        # Update showing navigator target feature.
+        resp.headers['HX-Trigger'] += ",navigator-target"
 
     return resp
 
@@ -453,24 +453,24 @@ def navigator_toggler():
     return resp
 
 
-@app.route("/navigator/center", methods=['PUT', 'POST'])
+@app.route("/navigator/target", methods=['PUT', 'POST'])
 @errors.handler
-def navigator_center():
+def navigator_target():
     assert htmx is not None
 
     resp = Response()
     resp.headers['HX-Trigger'] = "update-port"
     match request.method:
         case 'POST':
-            navigator.set_center(session)
+            navigator.set_target(session)
             notifications.set(session, notifications.Notification(
-                message="Centered port on cell position.",
+                message="Targeting cell position in port.",
                 mode=notifications.Mode.INFO,
             ))
             resp.headers['HX-Trigger'] += ",notification"
 
-    navigator_html = navigator.render(session)
-    resp.response = navigator_html
+    navigator_target_html = navigator.render_target(session)
+    resp.response = navigator_target_html
     return resp
 
 

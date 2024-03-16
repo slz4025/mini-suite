@@ -427,7 +427,7 @@ all_operations = {
     ),
     Name.COPY: Operation(
         name=Name.COPY,
-        icon="⎘",
+        icon="⧉",
         allow_with_selection=allow_copy_with_selection,
         validate_and_parse=validate_and_parse_copy,
         apply=apply_copy,

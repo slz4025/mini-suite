@@ -1,12 +1,12 @@
 from flask import render_template
 
-import src.modes as modes
+import src.command_palette as command_palette
 
 import src.bulk_editor.operations as operations
 
 
 def render(session):
-    bulk_editor_state = modes.check(session, "Bulk-Editor")
+    show_bulk_editor = command_palette.get_show_bulk_editor(session)
 
     default = None
     operation_html = None
@@ -18,7 +18,7 @@ def render(session):
 
     return render_template(
             "partials/bulk_editor.html",
-            show_bulk_editor=bulk_editor_state,
+            show_bulk_editor=show_bulk_editor,
             operation=default.value if default else '',
             operation_options={
                 o.value: operations.render_option(session, o) for o in options

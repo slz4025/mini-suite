@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from flask import render_template
 
-import src.modes as modes
+import src.command_palette as command_palette
 
 
 @dataclass
@@ -35,11 +35,11 @@ def get(session):
 
 
 def render(session):
-    settings_state = modes.check(session, "Settings")
+    show_settings = command_palette.get_show_settings(session)
     current_settings = get(session)
 
     return render_template(
         "partials/settings.html",
-        show_settings=settings_state,
+        show_settings=show_settings,
         render_mode=current_settings.render_mode,
     )

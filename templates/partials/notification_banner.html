@@ -7,12 +7,5 @@
   hx-swap="outerHTML"
   class="{{ mode }}"
   >
-  <span
-    hx-get="/modes"
-    hx-trigger="modes from:body"
-    hx-target="this"
-    hx-swap="innerHTML"
-  >{{ modes }}</span>
-  <span id="loader">Loading...</span>
-  {{ message }}
+  👤 {{ message }}
 </div>

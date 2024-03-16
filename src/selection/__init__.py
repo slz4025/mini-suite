@@ -1,9 +1,8 @@
 from flask import render_template
 import os
 
-import src.modes as use_modes
+import src.command_palette as command_palette
 import src.errors as errors
-
 import src.selection.helpers as helpers
 import src.selection.inputs as inputs
 import src.selection.modes as modes
@@ -34,7 +33,7 @@ def reset(session):
 
 
 def render_inputs(session, mode, sel=None):
-    help_state = use_modes.check(session, "Help")
+    show_help = command_palette.get_show_help(session)
 
     row_index = ""
     col_index = ""
@@ -75,7 +74,7 @@ def render_inputs(session, mode, sel=None):
     )
     html = render_template(
         template_path,
-        show_help=help_state,
+        show_help=show_help,
         row_index=row_index,
         col_index=col_index,
         row_start=row_start,
@@ -87,8 +86,8 @@ def render_inputs(session, mode, sel=None):
 
 
 def render(session):
-    help_state = use_modes.check(session, "Help")
-    selection_state = use_modes.check(session, "Selection")
+    show_help = command_palette.get_show_help(session)
+    show_selection = command_palette.get_show_selection(session)
 
     mode_options = inputs.options
 
@@ -104,8 +103,8 @@ def render(session):
 
     return render_template(
             "partials/selection.html",
-            show_help=help_state,
-            show_selection=selection_state,
+            show_help=show_help,
+            show_selection=show_selection,
             mode_options=[mo.value for mo in mode_options],
             mode=mode.value,
             input=inp,

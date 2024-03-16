@@ -1,8 +1,8 @@
 from flask import render_template
 
+import src.command_palette as command_palette
 import src.errors as errors
 import src.data.sheet as sheet
-import src.modes as modes
 import src.selection.state as sel_state
 import src.selection.types as sel_types
 
@@ -154,26 +154,26 @@ def move_upperleft(session, method):
 
 
 def render_target(session):
-    help_state = modes.check(session, "Help")
+    show_help = command_palette.get_show_help(session)
     show_target = get_selection_for_target(session) is not None
 
     return render_template(
             "partials/navigator/target.html",
-            show_help=help_state,
+            show_help=show_help,
             show_target=show_target,
     )
 
 
 def render(session):
-    help_state = modes.check(session, "Help")
-    navigator_state = modes.check(session, "Navigator")
+    show_help = command_palette.get_show_help(session)
+    show_navigator = command_palette.get_show_navigator(session)
     nrows, ncols = get_dimensions(session)
     mrows, mcols = get_move_increments(session)
     target = render_target(session)
     return render_template(
             "partials/navigator.html",
-            show_help=help_state,
-            show_navigator=navigator_state,
+            show_help=show_help,
+            show_navigator=show_navigator,
             mrows=mrows,
             mcols=mcols,
             nrows=nrows,

@@ -1,7 +1,7 @@
 from flask import render_template
 
 import src.errors as errors
-import src.modes as modes
+import src.command_palette as command_palette
 import src.navigator as navigator
 import src.data.operations as operations
 import src.selection.types as sel_types
@@ -38,7 +38,7 @@ def is_editing(session, cell_position):
 
 
 def render(session):
-    editor_state = modes.check(session, "Editor")
+    show_editor = command_palette.get_show_editor(session)
     focused_cell = get_focused_cell_position(session)
     if focused_cell is not None:
         try:
@@ -61,7 +61,7 @@ def render(session):
 
     return render_template(
         "partials/editor.html",
-        show_editor=editor_state,
+        show_editor=show_editor,
         editing=editing,
         row=row if row is not None else "",
         col=col if col is not None else "",

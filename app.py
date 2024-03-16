@@ -12,7 +12,6 @@ import src.bulk_editor as bulk_editor
 import src.command_palette as command_palette
 import src.editor as editor
 import src.errors as errors
-import src.modes as modes
 import src.navigator as navigator
 import src.notifications as notifications
 import src.port as port
@@ -49,14 +48,12 @@ def unexpected_error():
 
 
 def render_body(session):
-    help_state = modes.check(session, "Help")
     notification_banner = notifications.render(session, False)
     show_command_palette = command_palette.get_show(session)
     command_palette_html = command_palette.render(session)
     port_html = port.render(session)
     body = render_template(
             "partials/body.html",
-            show_help=help_state,
             notification_banner=notification_banner,
             command_palette=command_palette_html,
             data=port_html,
@@ -71,7 +68,6 @@ def root():
     assert htmx is not None
 
     # TODO: This should eventually be done for the user for the sheet.
-    modes.init(session)
     command_palette.init(session)
     notifications.init(session)
     navigator.init(session)
@@ -116,19 +112,10 @@ def command_palette_toggle():
 def help_toggler():
     assert htmx is not None
 
-    help_state = modes.check(session, "Help")
-    modes.set(session, "Help", not help_state)
+    show_help = command_palette.get_show_help(session)
+    command_palette.set_show_help(session, not show_help)
 
-    return render_body(session)
-
-
-@app.route("/modes", methods=['GET'])
-@errors.handler
-def get_modes_string():
-    assert htmx is not None
-
-    modes_string = modes.get_str(session)
-    return f"{modes_string}"
+    return command_palette.render(session)
 
 
 @app.route("/port", methods=['PUT'])
@@ -207,13 +194,11 @@ def cell_sync(row, col):
 def editor_toggler():
     assert htmx is not None
 
-    editor_state = modes.check(session, "Editor")
-    modes.set(session, "Editor", not editor_state)
+    show_editor = command_palette.get_show_editor(session)
+    command_palette.set_show_editor(session, not show_editor)
 
     html = editor.render(session)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "modes"
-    return resp
+    return html
 
 
 @app.route("/editor", methods=['PUT'])
@@ -231,13 +216,11 @@ def editor_endpoint():
 def selection_toggler():
     assert htmx is not None
 
-    selection_state = modes.check(session, "Selection")
-    modes.set(session, "Selection", not selection_state)
+    show_selection = command_palette.get_show_selection(session)
+    command_palette.set_show_selection(session, not show_selection)
 
     html = selection.render(session)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "modes"
-    return resp
+    return html
 
 
 # Though this updates the shown selection form,
@@ -344,13 +327,11 @@ def selection_endpoint():
 def bulk_editor_toggler():
     assert htmx is not None
 
-    bulk_editor_state = modes.check(session, "Bulk-Editor")
-    modes.set(session, "Bulk-Editor", not bulk_editor_state)
+    show_bulk_editor = command_palette.get_show_bulk_editor(session)
+    command_palette.set_show_bulk_editor(session, not show_bulk_editor)
 
     html = bulk_editor.render(session)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "modes"
-    return resp
+    return html
 
 
 # Though this updates the shown operation form,
@@ -453,13 +434,11 @@ def notification(show):
 def navigator_toggler():
     assert htmx is not None
 
-    navigator_state = modes.check(session, "Navigator")
-    modes.set(session, "Navigator", not navigator_state)
+    show_navigator = command_palette.get_show_navigator(session)
+    command_palette.set_show_navigator(session, not show_navigator)
 
     html = navigator.render(session)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "modes"
-    return resp
+    return html
 
 
 @app.route("/navigator/target", methods=['PUT', 'POST'])
@@ -517,13 +496,11 @@ def navigator_move(method):
 def settings_toggler():
     assert htmx is not None
 
-    settings_state = modes.check(session, "Settings")
-    modes.set(session, "Settings", not settings_state)
+    show_settings = command_palette.get_show_settings(session)
+    command_palette.set_show_settings(session, not show_settings)
 
     html = settings.render(session)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "modes"
-    return resp
+    return html
 
 
 @app.route("/settings/render-mode/<render_mode>", methods=['PUT'])

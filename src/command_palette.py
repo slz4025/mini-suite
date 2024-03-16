@@ -8,12 +8,66 @@ import src.settings as settings
 
 
 def get_show(session):
-    show = bool(session["show-command-palette"])
+    show = session["show-command-palette"] == 'True'
     return show
 
 
 def set_show(session, show):
-    session["show-command-palette"] = show
+    session["show-command-palette"] = str(show)
+
+
+def get_show_help(session):
+    show_help = session["show-help"] == 'True'
+    return show_help
+
+
+def set_show_help(session, show_help):
+    session["show-help"] = str(show_help)
+
+
+def get_show_editor(session):
+    show_editor = session["show-editor"] == 'True'
+    return show_editor
+
+
+def set_show_editor(session, show_editor):
+    session["show-editor"] = str(show_editor)
+
+
+def get_show_selection(session):
+    show_selection = session["show-selection"] == 'True'
+    return show_selection
+
+
+def set_show_selection(session, show_selection):
+    session["show-selection"] = str(show_selection)
+
+
+def get_show_bulk_editor(session):
+    show_bulk_editor = session["show-bulk-editor"] == 'True'
+    return show_bulk_editor
+
+
+def set_show_bulk_editor(session, show_bulk_editor):
+    session["show-bulk-editor"] = str(show_bulk_editor)
+
+
+def get_show_navigator(session):
+    show_navigator = session["show-navigator"] == 'True'
+    return show_navigator
+
+
+def set_show_navigator(session, show_navigator):
+    session["show-navigator"] = str(show_navigator)
+
+
+def get_show_settings(session):
+    show_settings = session["show-settings"] == 'True'
+    return show_settings
+
+
+def set_show_settings(session, show_settings):
+    session["show-settings"] = str(show_settings)
 
 
 def render(session):
@@ -38,3 +92,16 @@ def render(session):
 def init(session):
     show = True
     set_show(session, show)
+
+    show_help = False
+    set_show_help(session, show_help)
+    show_editor = False
+    set_show_editor(session, show_editor)
+    show_selection = False
+    set_show_selection(session, show_selection)
+    show_bulk_editor = False
+    set_show_bulk_editor(session, show_bulk_editor)
+    show_navigator = False
+    set_show_navigator(session, show_navigator)
+    show_settings = False
+    set_show_settings(session, show_settings)

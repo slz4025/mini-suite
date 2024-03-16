@@ -3,7 +3,6 @@ from enum import Enum
 from flask import render_template
 
 import src.errors as errors
-import src.modes as modes
 
 
 class Mode(Enum):
@@ -49,7 +48,6 @@ def render(session, show):
     notification = get(session)
     return render_template(
         "partials/notification_banner.html",
-        modes=modes.get_str(session),
         message=notification.message,
         mode=notification.mode.value,
         show=show,

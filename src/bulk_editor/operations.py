@@ -3,9 +3,9 @@ from enum import Enum
 from flask import render_template
 from typing import Callable, List
 
+import src.command_palette as command_palette
 import src.errors as errors
 import src.form_helpers as form_helpers
-import src.modes as modes
 import src.selection.modes as sel_modes
 import src.selection.state as sel_state
 import src.selection.types as sel_types
@@ -500,9 +500,9 @@ def get_allowed_options(session):
 
 
 def render_option(session, option):
-    help_state = modes.check(session, "Help")
+    show_help = command_palette.get_show_help(session)
 
-    if not help_state:
+    if not show_help:
         return option.value
     else:
         match option:

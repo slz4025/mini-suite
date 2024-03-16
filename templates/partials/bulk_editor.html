@@ -1,10 +1,11 @@
-{% if show_bulk_editor %}
 <div
   id="bulk-editor"
+  class="section"
   hx-put="/bulk-editor"
   hx-trigger="bulk-editor from:body"
   hx-target="this"
   hx-swap="outerHTML"
+  style="display: {{ 'inherit' if show_bulk_editor else 'none' }};"
 >
   <h2>BULK EDITOR</h2>
 
@@ -39,6 +40,3 @@
     <input type="submit" value="↵" id="bulk-editor-submit"/>
   </form>
 </div>
-{% else %}
- <div id="bulk-editor" style="display: none;"></div>
-{% endif %}

@@ -50,22 +50,6 @@ div.wrapper {
 
   color: var(--main-color); 
 }
-div#command-palette {
-  float: left;
-  width: 20%;
-  height: 100vh;
-
-  margin: 0;
-  border: 0;
-}
-div#port {
-  float: left;
-  height: 100vh;
-
-  margin: 0;
-  border: 0;
-  padding: 0;
-}
 div.inner {
   margin-bottom: 1rem;
   margin-top: 0;
@@ -75,6 +59,11 @@ div.inner {
   border: 0;
   padding: 0;
 }
+div.section {
+  margin: 0;
+  border: 0.1rem solid var(--main-color);
+  padding: 1rem;
+}
 div.justify {
   margin: 0;
   border: 0;
@@ -82,7 +71,6 @@ div.justify {
   display: flex;
   justify-content: space-between;
 }
-
 div.selected-pointer {
   z-index: 1;
 
@@ -94,6 +82,23 @@ div.selected-pointer {
 
   transform: rotate(45deg);
   background: var(--selected-pointer-color);
+
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+div#command-palette {
+  float: left;
+  width: 20%;
+  height: 100vh;
+
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+div#port {
+  float: left;
+  height: 100vh;
 
   margin: 0;
   border: 0;
@@ -173,13 +178,22 @@ button.icon {
   display: inline;
   height: 30px;
 }
-button#command-palette-toggle {
+button.toggler {
+  width: 100%;
+
+  margin: 0;
+  border: 1px solid var(--secondary-color);
+
+  background-color: var(--shade-color);
+  cursor: pointer;
+}
+button#command-palette-toggler {
   float: left;
-  width: 2.5%;
+  width: 2%;
   height: 100vh;
 
   margin: 0;
-  border: 0;
+  border: 1px solid var(--secondary-color);
 
   background-color: var(--shade-color);
   cursor: pointer;

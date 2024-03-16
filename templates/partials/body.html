@@ -2,7 +2,7 @@
 <div class="wrapper">
   {{ command_palette|safe }}
   <button
-      id="command-palette-toggle"
+      id="command-palette-toggler"
       hx-put="/command-palette/toggle"
       hx-trigger="click"
       hx-target="body"
@@ -20,7 +20,7 @@
     hx-trigger="update-port from:body"
     hx-target="this"
     hx-swap="innerHTML"
-    style="width: {{ '77.5%' if show_command_palette else '97.5%' }};"
+    style="width: {{ '78%' if show_command_palette else '98%' }};"
   >
     {{ data|safe }}
   </div>

@@ -4,71 +4,85 @@
 >
   <button
       id="help-toggler"
+      class="toggler"
       hx-put="/help/toggle"
       hx-trigger="click"
       hx-target="#command-palette"
       hx-swap="outerHTML"
-      style="display: none"
   >
+    [?] HELP
+    {% if show_help %}
+    [Ctrl+0]
+    {% endif %}
   </button>
   <button
       id="editor-toggler"
+      class="toggler"
       hx-put="/editor/toggle"
       hx-trigger="click"
       hx-target="#editor"
       hx-swap="outerHTML"
-      style="display: none"
   >
+    EDITOR
+    {% if show_help %}
+    [Ctrl+1]
+    {% endif %}
   </button>
+  {{ editor|safe }}
   <button
       id="selection-toggler"
+      class="toggler"
       hx-put="/selection/toggle"
       hx-trigger="click"
       hx-target="#selection"
       hx-swap="outerHTML"
-      style="display: none"
   >
+    SELECTION
+    {% if show_help %}
+    [Ctrl+2]
+    {% endif %}
   </button>
+  {{ selection|safe }}
   <button
       id="bulk-editor-toggler"
+      class="toggler"
       hx-put="/bulk-editor/toggle"
       hx-trigger="click"
       hx-target="#bulk-editor"
       hx-swap="outerHTML"
-      style="display: none"
   >
+    BULK-EDITOR
+    {% if show_help %}
+    [Ctrl+3]
+    {% endif %}
   </button>
+  {{ bulk_editor|safe }}
   <button
       id="navigator-toggler"
+      class="toggler"
       hx-put="/navigator/toggle"
       hx-trigger="click"
       hx-target="#navigator"
       hx-swap="outerHTML"
-      style="display: none"
   >
+    NAVIGATOR
+    {% if show_help %}
+    [Ctrl+4]
+    {% endif %}
   </button>
+  {{ navigator|safe }}
   <button
       id="settings-toggler"
+      class="toggler"
       hx-put="/settings/toggle"
       hx-trigger="click"
       hx-target="#settings"
       hx-swap="outerHTML"
-      style="display: none"
   >
+    [⚙] SETTINGS
+    {% if show_help %}
+    [Ctrl+5]
+    {% endif %}
   </button>
-
-  <div class="inner">
-    <div class="justify"><span>Editor</span><span>[Ctrl+1]</span></div>
-    <div class="justify"><span>Selection</span><span>[Ctrl+2]</span></div>
-    <div class="justify"><span>Bulk-Editor</span><span>[Ctrl+3]</span></div>
-    <div class="justify"><span>Navigator</span><span>[Ctrl+4]</span></div>
-    <div class="justify"><span>[⚙] Settings</span><span>[Ctrl+5]</span></div>
-    <div class="justify"><span>[?] Help</span><span>[Ctrl+0]</span></div>
-  </div>
-
-  {{ editor|safe }}
-  {{ selection|safe }}
-  {{ bulk_editor|safe }}
-  {{ navigator|safe }}
   {{ settings|safe }}
 </div>

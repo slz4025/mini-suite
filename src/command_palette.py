@@ -72,14 +72,18 @@ def set_show_settings(session, show_settings):
 
 def render(session):
     show_command_palette = get_show(session)
+    show_help = get_show_help(session)
+
     editor_html = editor.render(session)
     selection_html = selection.render(session)
     bulk_editor_html = bulk_editor.render(session)
     navigator_html = navigator.render(session)
     settings_html = settings.render(session)
+
     command_palette = render_template(
             "partials/command_palette.html",
             show_command_palette=show_command_palette,
+            show_help=show_help,
             editor=editor_html,
             selection=selection_html,
             bulk_editor=bulk_editor_html,

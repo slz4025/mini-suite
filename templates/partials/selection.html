@@ -41,21 +41,22 @@
 
     {{ input|safe }}
 
-    <div class="inner" style="margin-bottom: 0;">
+    <div class="inner" style="margin-bottom: 0; display: flex; align-items: top;">
       <input
         type="submit"
         class="icon"
         value="↵"
         id="selection-submit"
+        style="margin: 0.25rem;"
       />
       <button
           id="selection-clear"
-          class="icon"
+          class="icon justify"
           hx-delete="/selection"
           hx-trigger="click"
           hx-target="#selection"
           hx-swap="outerHTML"
-          style="font-size: 0.8rem;"
+          style="font-size: 0.8rem; margin: 0.25rem;"
       >🗑</button>
     </div>
   </form>

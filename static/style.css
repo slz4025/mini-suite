@@ -317,10 +317,3 @@ span {
   color: var(--error-color);
   background-color: var(--error-background-color);
 }
-
-#loader{
-	display: none;
-}
-.htmx-request#loader{
-	display: inline;
-}

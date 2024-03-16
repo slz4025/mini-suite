@@ -5,7 +5,6 @@ import src.editor as editor
 import src.navigator as navigator
 import src.selection.state as sel_state
 import src.selection.types as sel_types
-import src.settings as settings
 import src.data.sheet as sheet
 
 
@@ -243,14 +242,14 @@ def render_table(
 
 def render(session):
     upperleft = navigator.get_upperleft(session)
-    current_settings = settings.get(session)
+    nrows, ncols = navigator.get_dimensions(session)
     bounds = sheet.get_bounds()
 
     table = render_table(
         session,
         upperleft=upperleft,
-        nrows=current_settings.nrows,
-        ncols=current_settings.ncols,
+        nrows=nrows,
+        ncols=ncols,
         bounds=bounds,
     )
     return table

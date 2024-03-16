@@ -3,7 +3,6 @@ from flask import render_template
 import src.errors as errors
 import src.data.sheet as sheet
 import src.modes as modes
-import src.settings as settings
 import src.selection.state as sel_state
 import src.selection.types as sel_types
 
@@ -19,6 +18,32 @@ def set_upperleft(session, upperleft):
     session["upper-left"] = {
         "row-index": str(upperleft.row_index.value),
         "col-index": str(upperleft.col_index.value),
+    }
+
+
+def get_dimensions(session):
+    nrows = int(session["dimensions"]["nrows"])
+    ncols = int(session["dimensions"]["ncols"])
+    return nrows, ncols
+
+
+def set_dimensions(session, nrows, ncols):
+    session["dimensions"] = {
+        "nrows": str(nrows),
+        "ncols": str(ncols),
+    }
+
+
+def get_move_increments(session):
+    mrows = int(session["move-increments"]["mrows"])
+    mcols = int(session["move-increments"]["mcols"])
+    return mrows, mcols
+
+
+def set_move_increments(session, mrows, mcols):
+    session["move-increments"] = {
+        "mrows": str(mrows),
+        "mcols": str(mcols),
     }
 
 
@@ -40,9 +65,7 @@ def get_selection_for_target(session):
 
 
 def set_target(session):
-    current_settings = settings.get(session)
-    nrows = current_settings.nrows
-    ncols = current_settings.ncols
+    nrows, ncols = get_dimensions(session)
 
     selection_mode = sel_state.get_mode(session)
     selection = get_selection_for_target(session)
@@ -68,10 +91,24 @@ def set_target(session):
     set_upperleft(session, upperleft)
 
 
+def in_view(session, cell_position):
+    upperleft = get_upperleft(session)
+    start_row = upperleft.row_index.value
+    start_col = upperleft.col_index.value
+
+    nrows, ncols = get_dimensions(session)
+    end_row = start_row + nrows
+    end_col = start_col + ncols
+
+    row = cell_position.row_index.value
+    col = cell_position.col_index.value
+
+    return (row >= start_row and row < end_row) \
+        and (col >= start_col and col < end_col)
+
+
 def move_upperleft(session, method):
-    current_settings = settings.get(session)
-    mrows = current_settings.mrows
-    mcols = current_settings.mcols
+    mrows, mcols = get_move_increments(session)
 
     if method == 'home':
         moved = sel_types.CellPosition(
@@ -130,11 +167,17 @@ def render_target(session):
 def render(session):
     help_state = modes.check(session, "Help")
     navigator_state = modes.check(session, "Navigator")
+    nrows, ncols = get_dimensions(session)
+    mrows, mcols = get_move_increments(session)
     target = render_target(session)
     return render_template(
             "partials/navigator.html",
             show_help=help_state,
             show_navigator=navigator_state,
+            mrows=mrows,
+            mcols=mcols,
+            nrows=nrows,
+            ncols=ncols,
             target=target,
     )
 
@@ -145,3 +188,11 @@ def init(session):
         col_index=sel_types.ColIndex(0),
     )
     set_upperleft(session, upperleft)
+
+    nrows = 30
+    ncols = 15
+    set_dimensions(session, nrows, ncols)
+
+    mrows = 5
+    mcols = 5
+    set_move_increments(session, mrows, mcols)

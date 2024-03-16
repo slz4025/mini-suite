@@ -5,7 +5,6 @@ import src.modes as modes
 import src.navigator as navigator
 import src.data.operations as operations
 import src.selection.types as sel_types
-import src.settings as settings
 
 
 def get_focused_cell_position(session):
@@ -38,22 +37,6 @@ def is_editing(session, cell_position):
     return focused_cell_position.equals(cell_position)
 
 
-def in_port(session, cell_position):
-    upperleft = navigator.get_upperleft(session)
-    current_settings = settings.get(session)
-
-    start_row = upperleft.row_index.value
-    start_col = upperleft.col_index.value
-    end_row = start_row + current_settings.nrows
-    end_col = start_col + current_settings.ncols
-
-    row = cell_position.row_index.value
-    col = cell_position.col_index.value
-
-    return (row >= start_row and row < end_row) \
-        and (col >= start_col and col < end_col)
-
-
 def render(session):
     editor_state = modes.check(session, "Editor")
     focused_cell = get_focused_cell_position(session)
@@ -63,7 +46,7 @@ def render(session):
         except errors.OutOfBoundsError:
             reset_focused_cell_position(session)
             focused_cell = None
-        if not in_port(session, focused_cell):
+        if not navigator.in_view(session, focused_cell):
             reset_focused_cell_position(session)
             focused_cell = None
 

@@ -535,51 +535,16 @@ def render_mode(render_mode):
     return resp
 
 
-@app.route("/settings/mrows", methods=['PUT'])
+@app.route("/navigator/dimensions", methods=['PUT'])
 @errors.handler
-def mrows():
-    assert htmx is not None
-
-    mrows = int(request.form['mrows'])
-    settings.set(session, mrows=mrows)
-    notifications.set(session, notifications.Notification(
-        message="Updated row increments.",
-        mode=notifications.Mode.INFO,
-    ))
-
-    port_html = port.render(session)
-    resp = Response(port_html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
-
-
-@app.route("/settings/mcols", methods=['PUT'])
-@errors.handler
-def mcols():
-    assert htmx is not None
-
-    mcols = int(request.form['mcols'])
-    settings.set(session, mcols=mcols)
-    notifications.set(session, notifications.Notification(
-        message="Updated column increments.",
-        mode=notifications.Mode.INFO,
-    ))
-
-    port_html = port.render(session)
-    resp = Response(port_html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
-
-
-@app.route("/settings/nrows", methods=['PUT'])
-@errors.handler
-def nrows():
+def navigator_dimensions():
     assert htmx is not None
 
     nrows = int(request.form['nrows'])
-    settings.set(session, nrows=nrows)
+    ncols = int(request.form['ncols'])
+    navigator.set_dimensions(session, nrows, ncols)
     notifications.set(session, notifications.Notification(
-        message="Updated # of displayed rows.",
+        message="Updated view dimensions.",
         mode=notifications.Mode.INFO,
     ))
 
@@ -589,15 +554,16 @@ def nrows():
     return resp
 
 
-@app.route("/settings/ncols", methods=['PUT'])
+@app.route("/navigator/move-increments", methods=['PUT'])
 @errors.handler
-def ncols():
+def navigator_move_increments():
     assert htmx is not None
 
-    ncols = int(request.form['ncols'])
-    settings.set(session, ncols=ncols)
+    mrows = int(request.form['mrows'])
+    mcols = int(request.form['mcols'])
+    navigator.set_move_increments(session, mrows, mcols)
     notifications.set(session, notifications.Notification(
-        message="Updated # of displayed columns.",
+        message="Updated move increments.",
         mode=notifications.Mode.INFO,
     ))
 

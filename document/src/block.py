@@ -1,0 +1,269 @@
+from flask import render_template
+from markdown_it import MarkdownIt
+from typing import Dict, List, Optional
+import uuid
+
+
+md = (
+    MarkdownIt('commonmark', {'breaks': True, 'html': True})
+    .enable('table')
+)
+
+
+buffer: Optional[str] = None
+
+
+def get_buffer():
+    return buffer
+
+
+def set_buffer(contents):
+    global buffer
+    buffer = contents
+
+
+all_markdown: Dict[str, str] = {}
+
+
+def get_markdown(id):
+    global all_markdown
+    if id not in all_markdown:
+        raise Exception(f"'{id}' is not associated with markdown.")
+    return all_markdown[id]
+
+
+def set_markdown(markdown, id):
+    global all_markdown
+    all_markdown[id] = markdown
+
+
+def remove_markdown(id):
+    global all_markdown
+    del all_markdown[id]
+
+
+order: List[str]
+reverse_order: Dict[str, int]
+
+
+def get_id(pos):
+    if pos < 0 or pos >= len(order):
+        raise Exception(f"Position {pos} is not valid.")
+    return order[pos]
+
+
+def get_pos(id):
+    if id not in reverse_order:
+        raise Exception("Id 'id' does not have valid block position.")
+    return reverse_order[id]
+
+
+def swap_order(pos1, pos2):
+    global order, reverse_order
+
+    id1 = get_id(pos1)
+    id2 = get_id(pos2)
+
+    order[pos1] = id2
+    order[pos2] = id1
+
+    reverse_order[id1] = pos2
+    reverse_order[id2] = pos1
+
+
+def remove_from_order(id):
+    global order, reverse_order
+
+    pos = get_pos(id)
+    order = order[:pos] + order[pos+1:]
+
+    del reverse_order[id]
+    # shift-right everything after
+    for i in range(pos, len(order)):
+        temp_id = order[i]
+        assert i == reverse_order[temp_id] - 1
+        reverse_order[temp_id] = i
+
+
+def insert_into_order(id, pos):
+    global order, reverse_order
+
+    order = order[:pos] + [id] + order[pos:]
+    reverse_order[id] = pos
+
+    # shift-right everything after
+    for i in range(pos+1, len(order)):
+        temp_id = order[i]
+        assert i == reverse_order[temp_id] + 1
+        reverse_order[temp_id] = i
+
+
+def create_id():
+    id = uuid.uuid4().hex
+    return id
+
+
+def get_in_focus(session):
+    in_focus = session["in-focus"]
+    return in_focus
+
+
+def set_in_focus(session, id):
+    session["in-focus"] = id
+
+
+def set_prev_in_focus(session):
+    in_focus = get_in_focus(session)
+    pos = get_pos(in_focus)
+    if pos == 0:
+        return
+
+    prev_pos = pos - 1
+    prev_id = get_id(prev_pos)
+    set_in_focus(session, prev_id)
+
+
+def set_next_in_focus(session):
+    in_focus = get_in_focus(session)
+    pos = get_pos(in_focus)
+    if pos == len(order) - 1:
+        return
+
+    next_pos = pos + 1
+    next_id = get_id(next_pos)
+    set_in_focus(session, next_id)
+
+
+def render_markdown(markdown):
+    markdown_html = md.render(markdown)
+    return markdown_html
+
+
+def render(session, id):
+    in_focus = get_in_focus(session)
+    focused = in_focus == id
+    markdown = get_markdown(id)
+    rendered = render_markdown(markdown)
+
+    if focused:
+        block_html = render_template(
+                "partials/block.html",
+                focused=True,
+                id=id,
+                markdown=markdown,
+                )
+    else:
+        block_html = render_template(
+                "partials/block.html",
+                focused=False,
+                id=id,
+                markdown_html=rendered,
+                )
+    return block_html
+
+
+def render_all(session):
+    all_block_html = []
+    for id in order:
+        block_html = render(session, id)
+        all_block_html.append(block_html)
+    blocks_html = "\n".join(all_block_html)
+    return render_template(
+            "partials/blocks.html",
+            ordered_blocks=blocks_html,
+            )
+
+
+def move_up(session, id):
+    pos = get_pos(id)
+    if pos > 0:
+        prev_pos = pos - 1
+        swap_order(prev_pos, pos)
+
+    # for simplicity, re-render all blocks
+    return render_all(session)
+
+
+def move_down(session, id):
+    pos = get_pos(id)
+    if pos < len(order) - 1:
+        next_pos = pos + 1
+        swap_order(next_pos, pos)
+
+    # for simplicity, re-render all blocks
+    return render_all(session)
+
+
+def copy(session, id):
+    global buffer
+
+    markdown = get_markdown(id)
+    set_buffer(markdown)
+
+    return render(session, id)
+
+
+def paste(session, id):
+    markdown = get_buffer()
+
+    if markdown is not None:
+        set_markdown(markdown, id)
+
+    return render(session, id)
+
+
+def insert(session, id):
+    new_id = create_id()
+    set_markdown("", new_id)
+
+    pos = get_pos(id)
+    insert_into_order(new_id, pos+1)
+
+    curr_block = render(session, id)
+    next_block = render(session, new_id)
+    return "\n".join([curr_block, next_block])
+
+
+def delete(session, id):
+    remove_markdown(id)
+    remove_from_order(id)
+
+    return ""
+
+
+def append_media_reference(session, id, mediapath, alt):
+    ref = f"![{alt}](/media/{mediapath})"
+    markdown = get_markdown(id)
+    markdown += f"\n\n{ref}"
+    set_markdown(markdown, id)
+
+
+def cut(session, id):
+    copy(session, id)
+    return delete(session, id)
+
+
+def set_all_markdown(session, contents):
+    global all_markdown, order, reverse_order
+    all_markdown = {}
+    order = []
+    reverse_order = {}
+
+    blocks = contents.split("\n\n\n")
+    for i, b in enumerate(blocks):
+        id = create_id()
+        all_markdown[id] = b
+        order.append(id)
+        reverse_order[id] = i
+
+    id = create_id()
+    all_markdown[id] = ""
+    order.append(id)
+    reverse_order[id] = len(blocks)
+
+    id1 = get_id(0)
+    set_in_focus(session, id1)
+
+
+def get_all_markdown(session):
+    return "\n\n\n".join([v for v in all_markdown.values() if v != ''])

@@ -29,12 +29,17 @@ I am currently working on the spreadsheet.
 
 ## How do I try it out?
 
-Start the server:
+Setup the environment:
 ```
+cd {spreadsheet|document}
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python app.py
+```
+
+Start the server:
+```
+python {spreadsheet|document}/app.py
 ```
 
 Visit `localhost:5000` in your browser and interact with the webpage.

@@ -1,0 +1,118 @@
+{% if focused %}
+<div 
+  id="block-{{ id }}"
+  class="block focused"
+  hx-put="/block/{{ id }}"
+  hx-trigger="block-{{ id }} from:body"
+  hx-target="this"
+  hx-swap="outerHTML"
+>
+  <div id="block-controls-{{ id }}" class="block-controls">
+    <form
+      hx-post="/block/{{id}}/media"
+      hx-target="#block-{{ id }}"
+      hx-swap="outerHTML"
+      enctype="multipart/form-data"
+      style="margin-right: 1rem;"
+    >
+      <label for="media-file">APPEND MEDIA</label>
+      <input type="file" name="input" id="media-file" />
+      <input type="submit" value="🖻" id="media-submit" />
+    </form>
+    <button
+      hx-put="/block/{{id}}/insert"
+      hx-trigger="click"
+      hx-target="#block-{{ id }}"
+      hx-swap="outerHTML"
+      title="insert below"
+      style="color: var(--main-color);"
+    >
+      <span>➕</span>
+    </button>
+    <button
+      hx-put="/block/{{id}}/cut"
+      hx-trigger="click"
+      hx-target="#block-{{ id }}"
+      hx-swap="outerHTML"
+      style="font-size: 1.25rem;"
+      title="cut"
+    >
+      <span>✂</span>
+    </button>
+    <button
+      hx-put="/block/{{id}}/copy"
+      hx-trigger="click"
+      hx-target="#block-{{ id }}"
+      hx-swap="outerHTML"
+      style="padding-top: 0.25rem;"
+      title="copy"
+    >
+      <span>⧉</span>
+    </button>
+    <button
+      hx-put="/block/{{id}}/paste"
+      hx-trigger="click"
+      hx-target="#block-{{ id }}"
+      hx-swap="outerHTML"
+      style="padding-top: 0.25rem;"
+      title="paste replace"
+    >
+      <span>📋</span>
+    </button>
+    <button
+      hx-put="/block/{{id}}/up"
+      hx-trigger="click"
+      hx-target="#blocks"
+      hx-swap="outerHTML"
+      style="padding-top: 0.25rem;"
+      title="move up"
+    >
+      <span>⮝</span>
+    </button>
+    <button
+      hx-put="/block/{{id}}/down"
+      hx-trigger="click"
+      hx-target="#blocks"
+      hx-swap="outerHTML"
+      style="padding-top: 0.25rem;"
+      title="move down"
+    >
+      <span>⮟</span>
+    </button>
+    <button
+      hx-put="/block/{{id}}/delete"
+      hx-trigger="click"
+      hx-target="#block-{{ id }}"
+      hx-swap="outerHTML"
+      title="delete"
+    >
+      <span>❌</span>
+    </button>
+  </div>
+  <textarea
+      id="block-editor-{{ id }}"
+      name="contents"
+      hx-post="/block/{{ id }}/edit"
+      hx-target="#null"
+      hx-trigger="keyup changed delay:500ms"
+      hx-swap="outerHTML"
+  >{{ markdown }}</textarea>
+</div>
+{% else %}
+<div
+  id="block-{{ id }}"
+  class="block"
+>
+  <button
+    class="edit"
+    hx-post="/block/{{ id }}/focus"
+    hx-trigger="click"
+    hx-target="#block-{{ id }}"
+    hx-swap="outerHTML"
+    title="edit"
+  >
+    <span>✎</span>
+  </button>
+{{ markdown_html|safe }}
+</div>
+{% endif %}

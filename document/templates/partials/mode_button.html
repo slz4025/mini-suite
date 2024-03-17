@@ -1,0 +1,27 @@
+{% if dark_mode %}
+<button
+  id="mode-button"
+  title="light mode"
+  onclick="use_light_mode()"
+>
+  <span>☀️</span>
+  <script>
+    async function use_light_mode() {
+      window.open("/dark-mode/off", "_self");
+    }
+  </script>
+</button>
+{% else %}
+<button
+  id="mode-button"
+  title="dark mode"
+  onclick="use_dark_mode()"
+>
+  <span>🌙</span>
+  <script>
+    async function use_dark_mode() {
+      window.open("/dark-mode/on", "_self");
+    }
+  </script>
+</button>
+{% endif %}

@@ -1,0 +1,64 @@
+<div id="command-palette">
+  <div id="entries">
+    <label for="new-button">NEW</label>
+    <button
+      id="new-button"
+      onclick="new_entry()"
+    >
+      ➕
+      <script>
+        async function new_entry() {
+          window.open("/", "_self");
+        }                                                                           
+      </script>
+    </button>
+
+    <form
+      hx-post="/open"
+      hx-target="#null"
+      hx-swap="outerHTML"
+      enctype="multipart/form-data"
+    >
+      <label for="open-file">OPEN</label>
+      <input type="text" name="name" value="{{ current_entry }}" id="open-entry" />
+      <input type="submit" value="📂" id="open-submit" />
+    </form>
+    <form
+      hx-post="/save"
+      hx-target="#null"
+      hx-swap="outerHTML"
+      enctype="multipart/form-data"
+    >
+      <label for="save-file">SAVE</label>
+      <input type="text" name="name" value="{{ current_entry }}" id="save-entry" />
+      <input type="submit" value="💾" id="save-submit" />
+    </form>
+  </div>
+  <div id="io">
+    <form
+      hx-post="/import"
+      hx-target="#blocks"
+      hx-swap="outerHTML"
+      enctype="multipart/form-data"
+    >
+      <label for="import-file">IMPORT</label>
+      <input type="file" name="input" id="import-file" />
+      <input type="submit" value="⬏" id="import-submit" />
+    </form>
+    <form
+      hx-post="/export"
+      hx-target="#null"
+      hx-swap="outerHTML"
+      enctype="multipart/form-data"
+    >
+      <label for="export-filename">EXPORT</label>
+      <input type="text" name="input" id="export-filename" />
+      <input type="submit" value="⬎" id="export-submit" />
+    </form>
+  </div>
+  {{ mode_button|safe }}
+  <div id="help">
+    <p class="help">Prev block: [Ctrl+Up]</p>
+    <p class="help">Next block: [Ctrl+Down]</p>
+  </div>
+</div>

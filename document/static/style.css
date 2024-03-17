@@ -1,0 +1,293 @@
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background-color);
+  margin: 0;
+
+  font-family: var(--main-ff);
+  font-size: 1rem;
+}
+
+div {
+  width: 100%;
+
+  border: 0.1rem solid var(--secondary-color);
+  padding: 1rem;
+}
+div.wrapper {
+  z-index: 0;
+
+  position: absolute;
+  top: 10%;
+  width: 800px;
+  left: 50%;
+  transform: translate(-50%, 0%);
+
+  margin: 0;
+  border: 0;
+  padding: 0;
+
+  color: var(--main-color); 
+}
+div.block {
+  /* Let edit button be absolute relative to this. */
+  position: relative;
+  min-height: 2rem;
+
+  margin-bottom: 0.5rem;
+  padding-top: 2rem;
+  padding-left: 2rem;
+
+  font-family: var(--display-ff);
+}
+div.focused {
+  border: 0.15rem solid var(--main-color);
+  cursor: auto;
+}
+div#command-palette {
+  margin-bottom: 1rem;
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+
+  padding: 0.5rem;
+
+  display: flex;
+  align-items: center;
+}
+div#help {
+  width: 40rem;
+  margin: 0;
+  border: 0;
+
+  padding: 0.5rem;
+
+  align-items: center;
+}
+div#io {
+  width: 65rem;
+  margin: 0;
+  border: 0;
+
+  padding: 0.5rem;
+
+  align-items: center;
+}
+div#entries {
+  width: 45rem;
+  margin: 0;
+  border: 0;
+
+  padding: 0.5rem;
+
+  align-items: center;
+}
+div#blocks {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+div.block-controls {
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+
+  border: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+
+  font-family: var(--main-ff);
+}
+form {
+  margin: 0;
+  border: 0;
+  padding: 0.25rem;
+}
+input {
+  background-color: transparent;
+  margin: 0;
+  border: 0.1rem solid var(--secondary-color);
+
+  font-family: var(--main-ff);
+  color: var(--main-color);
+  height: 1.5rem;
+}
+input[type=submit] {
+  background-color: var(--invert-color);
+  cursor: pointer;
+}
+input[type=submit]:hover {
+  background-color: var(--secondary-color);
+}
+input[type=submit]:focus {
+  background-color: var(--secondary-color);
+}
+input[type=submit]:active {
+  background-color: var(--main-color);
+  color: var(--invert-color);
+}
+input[type=file]::file-selector-button {
+  background-color: transparent;
+  color: var(--main-color);
+  font-family: var(--main-ff);
+  border: 0.1rem solid var(--secondary-color);
+  height: 100%;
+}
+select {
+  background-color: transparent;
+  border: 0.1rem solid var(--secondary-color);
+  width: 100%;
+
+  font-family: var(--main-ff);
+  color: var(--main-color);
+}
+option {
+  background-color: var(--background-color);
+  border: 0.1rem solid var(--secondary-color);
+
+  font-family: var(--main-ff);
+  color: var(--main-color);
+}
+
+button {
+  background-color: var(--invert-color);
+  margin: 0.25rem;
+  border: 0.1rem solid var(--secondary-color);
+
+  font-family: var(--main-ff);
+  color: var(--main-color);
+
+  height: 2rem;
+  cursor: pointer;
+}
+button:hover {
+  background-color: var(--secondary-color);
+}
+button:focus {
+  background-color: var(--secondary-color);
+}
+button:active {
+  background-color: var(--main-color);
+  color: var(--invert-color);
+}
+button.edit {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2rem;
+    height: 2rem;
+
+    margin: 0;
+ 
+    font-size: 1.5rem;
+}
+textarea {
+  width: 100%;
+  height: 30vh;
+
+  background-color: transparent;
+  border: 0.1rem solid var(--secondary-color);
+  color: var(--main-color);
+}
+span {
+
+}
+#notification-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 2;
+
+  margin: 0;
+  border: 0;
+
+  font-weight: bold;
+}
+#notification-banner.none {
+  color: var(--background-color);
+  background-color: var(--main-color);
+}
+#notification-banner.info {
+  color: var(--info-color);
+  background-color: var(--info-background-color);
+}
+#notification-banner.error {
+  color: var(--error-color);
+  background-color: var(--error-background-color);
+}
+
+h1 {
+  font-size: 1.5rem;
+  text-align: center;
+  font-weight: normal;
+}
+h2 {
+  font-size: inherit;
+  background-color: var(--main-color);
+  color: var(--invert-color);
+  font-weight: bold;
+}
+h3 {
+  font-size: inherit;
+  color: var(--main-color);
+  font-weight: bold;
+}
+p {
+
+}
+p.help {
+  margin: 0;
+  border: 0;
+  padding: 0.25rem;
+}
+a {
+  color: var(--link-color);
+  font-weight: bold;
+}
+pre.code {
+  padding: 1rem; 
+}
+code {
+  font-family: monospace;
+}
+table {
+  width: 100%;
+  table-layout: fixed;
+  border-spacing: 0;
+  border: 0.1rem solid var(--secondary-color);
+  margin: 0;
+}
+tr:nth-child(even) {
+  background-color: var(--shade-color);
+}
+th {
+  border: 0.1rem solid var(--secondary-color);
+  padding: 0.25rem;
+}
+td {
+  padding: 0;
+  border: 0.1rem solid var(--secondary-color);
+}
+q {
+  color: var(--main-color);
+}
+blockquote {
+  color: var(--main-color);
+  border-left: 0.1em solid var(--main-color);
+  padding-left: 1em;
+}
+img {
+  max-width: 50%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

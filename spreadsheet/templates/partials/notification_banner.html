@@ -1,0 +1,11 @@
+<!-- If error, persist notification so user can see it. On success, it should update. -->
+<div
+  id="notification-banner"
+  hx-put="/notification/{{ 'off' if show and mode != 'error' else 'on'}}"
+  hx-trigger="{{'load delay:2s' if show and mode != 'error' else 'notification from:body' }}"
+  hx-target="this"
+  hx-swap="outerHTML"
+  class="{{ mode }}"
+  >
+  👤 {{ message }}
+</div>

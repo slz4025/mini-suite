@@ -12,13 +12,5 @@
     <script src="/static/htmx.min.js"></script>
     <script src="/static/key_bindings.js"></script>
   </head>
-  <body>
-    {{ notification_banner|safe }}
-    <!-- component for sending requests that should have no effect -->
-    {{ null|safe }}
-    <div class="wrapper">
-      {{ command_palette|safe }}
-      {{ blocks|safe }}
-    </div>
-  </body>
+  {{ body|safe }}
 </html>

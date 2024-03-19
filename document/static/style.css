@@ -18,18 +18,32 @@ div {
   border: 0.1rem solid var(--secondary-color);
   padding: 1rem;
 }
-div.wrapper {
+div#wrapper {
   z-index: 0;
 
   position: absolute;
-  top: 10%;
-  width: 800px;
+  top: 6%;
+
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+div#wrapper.expanded {
+  width: 100%;
+}
+div#wrapper.contracted {
+  left: 25%;
+  width: 75%;
+}
+div#blocks {
+  position: relative;
+  width: 1000px;
   left: 50%;
   transform: translate(-50%, 0%);
 
   margin: 0;
   border: 0;
-  padding: 0;
+  padding: 1rem;
 
   color: var(--main-color); 
 }
@@ -39,8 +53,6 @@ div.block {
   min-height: 2rem;
 
   margin-bottom: 0.5rem;
-  padding-top: 2rem;
-  padding-left: 2rem;
 
   font-family: var(--display-ff);
 }
@@ -49,47 +61,32 @@ div.focused {
   cursor: auto;
 }
 div#command-palette {
-  margin-bottom: 1rem;
-  margin-top: 0;
-  margin-left: 0;
-  margin-right: 0;
+  z-index: 1;
 
-  padding: 0.5rem;
+  position: fixed;
+  top: 6%;
+  left: 0;
 
-  display: flex;
-  align-items: center;
+  background-color: var(--shade-color);
 }
-div#help {
-  width: 40rem;
+div#command-palette.open {
+  width: 25%;
   margin: 0;
-  border: 0;
-
+  border: 0.1rem solid var(--secondary-color);
   padding: 0.5rem;
-
-  align-items: center;
 }
-div#io {
-  width: 65rem;
-  margin: 0;
-  border: 0;
-
-  padding: 0.5rem;
-
-  align-items: center;
-}
-div#entries {
-  width: 45rem;
-  margin: 0;
-  border: 0;
-
-  padding: 0.5rem;
-
-  align-items: center;
-}
-div#blocks {
+div#command-palette.close {
+  width: auto;
   margin: 0;
   border: 0;
   padding: 0;
+}
+div.command-palette-section {
+  margin: 0;
+  border: 0;
+  padding: 0.5rem;
+
+  align-items: center;
 }
 div.block-controls {
   margin-bottom: 0.5rem;
@@ -108,10 +105,10 @@ div.block-controls {
 form {
   margin: 0;
   border: 0;
-  padding: 0.25rem;
+  padding: 0;
 }
 input {
-  background-color: transparent;
+  background-color: var(--background-color);
   margin: 0;
   border: 0.1rem solid var(--secondary-color);
 
@@ -205,6 +202,7 @@ span {
   left: 0;
   right: 0;
   width: 100%;
+  min-height: 6%;
   z-index: 2;
 
   margin: 0;
@@ -263,27 +261,27 @@ table {
   width: 100%;
   table-layout: fixed;
   border-spacing: 0;
-  border: 0.1rem solid var(--secondary-color);
+  border: 0.05rem solid var(--secondary-color);
   margin: 0;
 }
 tr:nth-child(even) {
   background-color: var(--shade-color);
 }
 th {
-  border: 0.1rem solid var(--secondary-color);
+  border: 0.05rem solid var(--secondary-color);
   padding: 0.25rem;
 }
 td {
   padding: 0;
-  border: 0.1rem solid var(--secondary-color);
+  border: 0.05rem solid var(--secondary-color);
 }
 q {
   color: var(--main-color);
 }
 blockquote {
   color: var(--main-color);
-  border-left: 0.1em solid var(--main-color);
-  padding-left: 1em;
+  border-left: 0.1rem solid var(--main-color);
+  padding-left: 1rem;
 }
 img {
   max-width: 50%;

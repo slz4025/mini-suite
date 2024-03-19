@@ -23,19 +23,29 @@ def render_null(session):
             )
 
 
-def render(session):
-    dark_mode = settings.get_dark_mode()
+def render_body(session):
     null = render_null(session)
     notification_banner_html = notifications.render(session, False)
+    show_command_palette = command_palette.get_show()
     command_palette_html = command_palette.render(session)
     blocks_html = block.render_all(session)
     return render_template(
-            "index.html",
-            dark_mode=dark_mode,
+            "partials/body.html",
+            show_command_palette=show_command_palette,
             null=null,
             notification_banner=notification_banner_html,
             command_palette=command_palette_html,
             blocks=blocks_html,
+            )
+
+
+def render(session):
+    dark_mode = settings.get_dark_mode()
+    body = render_body(session)
+    return render_template(
+            "index.html",
+            dark_mode=dark_mode,
+            body=body,
             )
 
 ### BEGIN FEEDBACK ###
@@ -88,6 +98,15 @@ def dark_mode(state):
     settings.set_dark_mode(dark_mode)
 
     return render(session)
+
+
+@app.route("/command-palette/<state>", methods=['PUT'])
+@errors.handler
+def command_palette_toggle(state):
+    show = state == 'open'
+    command_palette.set_show(show)
+
+    return render_body(session)
 
 ### END SETTINGS ###
 
@@ -378,5 +397,6 @@ if __name__ == "__main__":
     wiki.set(path)
     notifications.init()
     settings.init()
+    command_palette.init()
 
     serve(app, host='0.0.0.0', port=5000)

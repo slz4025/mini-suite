@@ -1,5 +1,6 @@
-<div id="command-palette">
-  <div id="entries">
+{% if show %}
+<div id="command-palette" class="open">
+  <div class="command-palette-section">
     <label for="new-button">NEW</label>
     <button
       id="new-button"
@@ -12,7 +13,6 @@
         }                                                                           
       </script>
     </button>
-
     <form
       hx-post="/open"
       hx-target="#null"
@@ -34,7 +34,7 @@
       <input type="submit" value="💾" id="save-submit" />
     </form>
   </div>
-  <div id="io">
+  <div class="command-palette-section">
     <form
       hx-post="/import"
       hx-target="#blocks"
@@ -56,9 +56,39 @@
       <input type="submit" value="⬎" id="export-submit" />
     </form>
   </div>
-  {{ mode_button|safe }}
-  <div id="help">
+
+  <div class="command-palette-section">
     <p class="help">Prev block: [Ctrl+Up]</p>
     <p class="help">Next block: [Ctrl+Down]</p>
   </div>
+  <div
+    class="command-palette-section"
+    style="display: flex; align-items: center;"
+  >
+    {{ mode_button|safe }}
+    <button
+      id="collapse-button"
+      hx-put="/command-palette/close"
+      hx-trigger="click"
+      hx-target="body"
+      hx-swap="outerHTML"
+      style="font-size: 1.25rem; height: 2rem; width: 2rem;"
+    >
+      <span>⇱</span>
+    </button>
+  </div>
 </div>
+{% else %}
+<div id="command-palette" class="close">
+  <button
+    id="expand-button"
+    hx-put="/command-palette/open"
+    hx-trigger="click"
+    hx-target="body"
+    hx-swap="outerHTML"
+    style="font-size: 1.25rem; height: 2rem; width: 2rem;"
+  >
+    <span>⇲</span>
+  </button>
+</div>
+{% endif %}

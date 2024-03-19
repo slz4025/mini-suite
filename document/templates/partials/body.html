@@ -1,0 +1,12 @@
+<body>
+  {{ notification_banner|safe }}
+  {{ command_palette|safe }}
+  <!-- component for sending requests that should have no effect -->
+  {{ null|safe }}
+  <div
+    id="wrapper"
+    class="{{ 'contracted' if show_command_palette else 'expanded' }}"
+  >
+    {{ blocks|safe }}
+  </div>
+</body>

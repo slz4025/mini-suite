@@ -104,12 +104,19 @@ def create_id():
 
 
 def get_in_focus(session):
+    if "in-focus" not in session:
+        return None
     in_focus = session["in-focus"]
     return in_focus
 
 
 def set_in_focus(session, id):
     session["in-focus"] = id
+
+
+def reset_in_focus(session):
+    if "in-focus" in session:
+        del session["in-focus"]
 
 
 def set_prev_in_focus(session):
@@ -261,8 +268,7 @@ def set_all_markdown(session, contents):
     order.append(id)
     reverse_order[id] = len(blocks)
 
-    id1 = get_id(0)
-    set_in_focus(session, id1)
+    reset_in_focus(session)
 
 
 def get_all_markdown(session):

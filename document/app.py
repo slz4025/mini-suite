@@ -24,27 +24,29 @@ def render_null(session):
 
 
 def render_body(session):
+    dark_mode = settings.get_dark_mode()
     null = render_null(session)
     notification_banner_html = notifications.render(session, False)
     show_command_palette = command_palette.get_show()
     command_palette_html = command_palette.render(session)
+    current_entry = entry.get(allow_temp=False)
     blocks_html = block.render_all(session)
     return render_template(
             "partials/body.html",
+            dark_mode=dark_mode,
             show_command_palette=show_command_palette,
             null=null,
             notification_banner=notification_banner_html,
             command_palette=command_palette_html,
+            current_entry=current_entry if current_entry is not None else '',
             blocks=blocks_html,
             )
 
 
 def render(session):
-    dark_mode = settings.get_dark_mode()
     body = render_body(session)
     return render_template(
             "index.html",
-            dark_mode=dark_mode,
             body=body,
             )
 
@@ -84,9 +86,7 @@ def notification(show):
 @app.route("/")
 @errors.handler
 def root():
-    entry.use_temp(session)
-
-    return render(session)
+    return redirect("/entry/new")
 
 
 ### BEGIN SETTINGS ###
@@ -97,7 +97,7 @@ def dark_mode(state):
     dark_mode = state == "on"
     settings.set_dark_mode(dark_mode)
 
-    return render(session)
+    return render_body(session)
 
 
 @app.route("/command-palette/<state>", methods=['PUT'])
@@ -112,6 +112,16 @@ def command_palette_toggle(state):
 
 
 ### BEGIN BLOCK ###
+
+@app.route("/block/unfocus", methods=['POST'])
+@errors.handler
+def block_unfocus():
+    assert htmx is not None
+
+    block.reset_in_focus(session)
+
+    return block.render_all(session)
+
 
 @app.route("/block/<id>/focus", methods=['POST'])
 @errors.handler
@@ -266,6 +276,16 @@ def block_endpoint(id):
 
 ### BEGIN ENTRY ###
 
+@app.route("/new", methods=['POST'])
+@errors.handler
+def new_entry():
+    assert htmx is not None
+
+    resp = Response()
+    resp.headers["HX-Redirect"] = "/entry/new"
+    return resp
+
+
 @app.route("/open", methods=['POST'])
 @errors.handler
 def open_entry():
@@ -315,10 +335,18 @@ def save_entry():
     return resp
 
 
+@app.route("/entry/new", methods=['GET'])
+@errors.handler
+def get_new_entry():
+    notifications.init()
+    entry.use_temp(session)
+
+    return render(session)
+
+
 @app.route("/entry/<name>", methods=['GET'])
 @errors.handler
 def get_entry(name):
-    resp = Response()
     error = None
     try:
         entry.set(session, name)
@@ -328,9 +356,8 @@ def get_entry(name):
     if error is not None:
         return redirect("/")
     else:
-        html = render(session)
-        resp.response = html
-        return resp
+        notifications.init()
+        return render(session)
 
 
 @app.route("/media/<path:filename>", methods=['GET'])
@@ -395,7 +422,6 @@ if __name__ == "__main__":
     path = sys.argv[1]
 
     wiki.set(path)
-    notifications.init()
     settings.init()
     command_palette.init()
 

@@ -1,4 +1,11 @@
 <body>
+  {% if dark_mode %}
+  <link rel="stylesheet" type="text/css" href="/static/dark_variables.css">
+  {% else %}
+  <link rel="stylesheet" type="text/css" href="/static/light_variables.css">
+  {% endif %}
+  <link rel="stylesheet" type="text/css" href="/static/style.css">
+
   {{ notification_banner|safe }}
   {{ command_palette|safe }}
   <!-- component for sending requests that should have no effect -->
@@ -7,6 +14,30 @@
     id="wrapper"
     class="{{ 'contracted' if show_command_palette else 'expanded' }}"
   >
+    <div id="title">
+      <form
+        hx-post="/save"
+        hx-target="#null"
+        hx-swap="outerHTML"
+        enctype="multipart/form-data"
+        style="padding: 0; display: flex; align-items: center;"
+      >
+        <label for="save-file" hidden>SAVE</label>
+        <input
+          type="text"
+          name="name"
+          value="{{ current_entry }}"
+          id="save-entry"
+          style="font-size: 1.5rem; height: 2rem;"
+        />
+        <input
+          type="submit"
+          value="💾"
+          id="save-submit"
+          style="font-size: 1.25rem; height: 2rem; margin-left: 1rem;"
+        />
+      </form>
+    </div>
     {{ blocks|safe }}
   </div>
 </body>

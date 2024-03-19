@@ -55,6 +55,8 @@ def use_temp(session):
 
 
 def save(session, name):
+    if name == '':
+        raise errors.UserError("Entry name was not given.")
     if name.startswith("temp-"):
         raise errors.UserError(f"Name cannot start with 'temp-': {name}.")
 

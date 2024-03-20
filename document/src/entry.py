@@ -64,18 +64,20 @@ def save(session, name):
         wiki.create(name)
     wiki_dir = wiki.get()
 
-    # save index markdown file
+    current_entry = get()
+    curr_dir = os.path.join(wiki_dir, current_entry)
+
+    index_path = os.path.join(curr_dir, "index.md")
     markdown = block.get_all_markdown(session)
-    filepath = os.path.join(wiki_dir, name, "index.md")
-    with open(filepath, 'w+') as file:
+    with open(index_path, 'w+') as file:
         file.write(markdown)
 
-    # copy media only if necessary
-    current_entry = get()
     if name != current_entry:
-        curr_media_path = os.path.join(wiki_dir, current_entry, "media")
-        new_media_path = os.path.join(wiki_dir, name, "media")
-        shutil.copytree(curr_media_path, new_media_path, dirs_exist_ok=True)
+        new_dir = os.path.join(wiki_dir, name)
+        # allow destructive overwrites
+        if os.path.isdir(new_dir):
+            shutil.rmtree(new_dir)
+        shutil.move(curr_dir, new_dir)
 
 
 def import_file(session, file):

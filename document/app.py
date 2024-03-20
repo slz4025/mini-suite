@@ -326,13 +326,14 @@ def save_entry():
 
     if error is not None:
         notifications.set_error(error)
+        html = render_null(session)
+        resp = Response(html)
+        resp.headers['HX-Trigger'] = "notification"
+        return resp
     else:
-        notifications.set_info("Entry saved.")
-
-    html = render_null(session)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
+        resp = Response()
+        resp.headers["HX-Redirect"] = f"/entry/{name}"
+        return resp
 
 
 @app.route("/entry/new", methods=['GET'])

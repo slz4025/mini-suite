@@ -2,14 +2,9 @@
 
 ## What is it?
 
-mini-suite is a (planned) set of collaborative tools inspired by the likes
-of <a href="https://www.office.com/">Microsoft Office</a>
-or <a href="https://workspace.google.com/">Google Workspace</a>.
-The following tools are planned for development:
-- Spreadsheet
-- Editor
-- File system
-- [maybe] Meetings
+mini-suite is a (planned) set of collaborative tools inspired by the likes of [Microsoft Office](https://www.office.com/) or [Google Workspace](https://workspace.google.com/). The following tools are planned for development:
+- Markdown editor
+- Spreadsheet editor
 
 Whereas Microsoft Office or Google Workspace offer a ton of features,
 mini-suite aims to:
@@ -19,19 +14,15 @@ mini-suite aims to:
 
 ## What does it currently support?
 
-This is still in active development.
-I am currently working on the spreadsheet.
+This is still in active development. I have mostly finished the markdown editor and am currently working on the spreadsheet editor.
 
-## Why are you doing this?
+## How do I use the markdown editor?
 
-1. Because it's fun and I'm learning a lot.
-2. Because I want a good user experience on my machine.
-
-## How do I try it out?
+The markdown editor allows you to create a wiki of inter-linking markdown files.
 
 Setup the environment:
 ```
-cd {spreadsheet|document}
+cd document
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -39,19 +30,34 @@ pip install -r requirements.txt
 
 Start the server:
 ```
-python {spreadsheet|document}/app.py
+python document/app.py <path to wiki folder>
+```
+
+Visit `localhost:5000` in your browser and interact with the webpage.
+
+## How do I use the spreadsheet editor?
+
+The spreadsheet editor allows you to manipulate table-based data via a GUI.
+
+Setup the environment:
+```
+cd spreadsheet
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Start the server:
+```
+python spreadsheet/app.py
 ```
 
 Visit `localhost:5000` in your browser and interact with the webpage.
 
 ## How does this work?
 
-This runs as a web application so it can be usable from any operating system.
-It uses HTML/CSS that I would expect to be compatible with most browsers.
+The tools run as a web application so that they can be usable from any operating system. It uses HTML/CSS that I would expect to be compatible with most browsers.
 
-I'm testing this with <a href="https://www.qutebrowser.org/">qutebrowser</a>
-on <a href="https://www.openbsd.org/73.html">OpenBSD 7.3</a>.
+I'm testing this with [qutebrowser](https://www.qutebrowser.org/) on [OpenBSD 7.3](https://www.openbsd.org/73.html).
 
-This is written mostly in <a href="https://www.python.org/">Python 3</a>
-using <a href="https://flask.palletsprojects.com/en/3.0.x/">flask</a>
-and <a href="https://htmx.org/">htmx</a>.
+This is written mostly in [Python 3](https://www.python.org/) using [flask](https://flask.palletsprojects.com/en/3.0.x/) and [htmx](https://htmx.org/). The markdown processor I'm using is the Python port of [markdown-it](https://github.com/markdown-it/markdown-it).

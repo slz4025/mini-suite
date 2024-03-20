@@ -114,7 +114,7 @@ div.block-controls {
 
   font-family: var(--main-ff);
 }
-div#entry-results {
+div.entry-results {
   z-index: 2;
 
   margin: 0;
@@ -156,7 +156,7 @@ input[type=file]::file-selector-button {
   border: 0.1rem solid var(--secondary-color);
   height: 100%;
 }
-input#select-entry {
+input.select-entry {
   width: 100%;
 }
 select {

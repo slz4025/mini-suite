@@ -1,6 +1,7 @@
 from flask import render_template
 
 import src.entry as entry
+import src.selector as selector
 import src.settings as settings
 
 
@@ -23,7 +24,10 @@ def init():
 def render(session):
     show = get_show()
     entry_name = entry.get(allow_temp=False)
-    open_entry_selector = entry.render_selector(session)
+    open_entry_selector = selector.render(
+        session,
+        operation="open",
+    )
     mode_button_html = settings.render_mode_button(session)
     return render_template(
             "partials/command_palette.html",

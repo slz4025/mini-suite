@@ -3,6 +3,8 @@ from markdown_it import MarkdownIt
 from typing import Dict, List, Optional
 import uuid
 
+import src.selector as selector
+
 
 md = (
     MarkdownIt('commonmark', {'breaks': True, 'html': True})
@@ -149,24 +151,18 @@ def render_markdown(markdown):
 def render(session, id):
     in_focus = get_in_focus(session)
     focused = in_focus == id
+    link_entry_selector = selector.render(session, f"link-to-block-{id}")
     markdown = get_markdown(id)
     rendered = render_markdown(markdown)
 
-    if focused:
-        block_html = render_template(
-                "partials/block.html",
-                focused=True,
-                id=id,
-                markdown=markdown,
-                )
-    else:
-        block_html = render_template(
-                "partials/block.html",
-                focused=False,
-                id=id,
-                markdown_html=rendered,
-                )
-    return block_html
+    return render_template(
+            "partials/block.html",
+            focused=focused,
+            id=id,
+            link_entry_selector=link_entry_selector,
+            markdown=markdown,
+            markdown_html=rendered,
+            )
 
 
 def render_all(session):
@@ -242,6 +238,13 @@ def append_media_reference(session, id, mediapath, alt):
     ref = f"![{alt}](/media/{mediapath})"
     markdown = get_markdown(id)
     markdown += f"\n\n{ref}"
+    set_markdown(markdown, id)
+
+
+def add_link(session, id, name):
+    link = f"[{name}](/entry/{name})"
+    markdown = get_markdown(id)
+    markdown += f"\n\n{link}"
     set_markdown(markdown, id)
 
 

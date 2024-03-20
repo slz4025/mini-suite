@@ -8,6 +8,7 @@ import src.command_palette as command_palette
 import src.entry as entry
 import src.errors as errors
 import src.notifications as notifications
+import src.selector as selector
 import src.settings as settings
 import src.wiki as wiki
 
@@ -169,6 +170,29 @@ def block_edit(id):
     block.set_markdown(contents, id=id)
 
     return render_null(session)
+
+
+@app.route("/block/<id>/link/<name>", methods=['POST'])
+@errors.handler
+def block_link(id, name):
+    assert htmx is not None
+
+    error = None
+    try:
+        entry.check(name)
+        block.add_link(session, id, name)
+    except errors.UserError as e:
+        error = e
+
+    if error is not None:
+        notifications.set_error(error)
+    else:
+        notifications.set_info("Link added.")
+
+    html = block.render(session, id)
+    resp = Response(html)
+    resp.headers['HX-Trigger'] = "notification"
+    return resp
 
 
 @app.route("/block/<id>/media", methods=['POST'])
@@ -337,14 +361,14 @@ def save_entry():
         return resp
 
 
-@app.route("/entry/results", methods=['POST'])
+@app.route("/entry/<operation>/results", methods=['POST'])
 @errors.handler
-def get_results():
+def get_results(operation):
     assert htmx is not None
 
     search = request.form["search"]
 
-    return entry.render_results(session, search)
+    return selector.render_results(session, operation, search)
 
 
 @app.route("/entry/new", methods=['GET'])

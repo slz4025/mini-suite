@@ -45,8 +45,9 @@ def set_info(message):
     set(Notification(message=message, mode=Mode.INFO))
 
 
-def render(session, show):
+def render(session):
     notification = get()
+    show = notification.mode != Mode.NONE
     return render_template(
         "partials/notification_banner.html",
         message=notification.message,

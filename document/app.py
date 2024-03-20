@@ -26,7 +26,7 @@ def render_null(session):
 def render_body(session):
     dark_mode = settings.get_dark_mode()
     null = render_null(session)
-    notification_banner_html = notifications.render(session, False)
+    notification_banner_html = notifications.render(session)
     show_command_palette = command_palette.get_show()
     command_palette_html = command_palette.render(session)
     current_entry = entry.get(allow_temp=False)
@@ -78,7 +78,7 @@ def notification(show):
     if not show_notifications:
         notifications.reset()
 
-    return notifications.render(session, show_notifications)
+    return notifications.render(session)
 
 ### END FEEDBACK ###
 
@@ -281,6 +281,7 @@ def block_endpoint(id):
 def new_entry():
     assert htmx is not None
 
+    notifications.set_info("Creating new entry.")
     resp = Response()
     resp.headers["HX-Redirect"] = "/entry/new"
     return resp
@@ -307,6 +308,7 @@ def open_entry():
         return resp
     else:
         resp = Response()
+        notifications.set_info("Entry opened.")
         resp.headers["HX-Redirect"] = f"/entry/{name}"
         return resp
 
@@ -332,6 +334,7 @@ def save_entry():
         return resp
     else:
         resp = Response()
+        notifications.set_info("Entry saved.")
         resp.headers["HX-Redirect"] = f"/entry/{name}"
         return resp
 
@@ -339,7 +342,6 @@ def save_entry():
 @app.route("/entry/new", methods=['GET'])
 @errors.handler
 def get_new_entry():
-    notifications.init()
     entry.use_temp(session)
 
     return render(session)
@@ -355,9 +357,9 @@ def get_entry(name):
         error = e
 
     if error is not None:
+        notifications.set_error(error)
         return redirect("/")
     else:
-        notifications.init()
         return render(session)
 
 
@@ -423,6 +425,7 @@ if __name__ == "__main__":
     path = sys.argv[1]
 
     wiki.set(path)
+    notifications.init()
     settings.init()
     command_palette.init()
 

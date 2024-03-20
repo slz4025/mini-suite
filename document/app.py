@@ -95,15 +95,26 @@ def root():
 @app.route("/dark-mode/<state>", methods=['GET'])
 @errors.handler
 def dark_mode(state):
+    assert htmx is not None
+
     dark_mode = state == "on"
     settings.set_dark_mode(dark_mode)
 
     return render_body(session)
 
+@app.route("/command-palette/io/<operation>", methods=['PUT'])
+@errors.handler
+def command_palette_operation(operation):
+    assert htmx is not None
+
+    return command_palette.render_operation(session, operation)
+
 
 @app.route("/command-palette/<state>", methods=['PUT'])
 @errors.handler
 def command_palette_toggle(state):
+    assert htmx is not None
+
     show = state == 'open'
     command_palette.set_show(show)
 
@@ -113,6 +124,14 @@ def command_palette_toggle(state):
 
 
 ### BEGIN BLOCK ###
+
+@app.route("/block/<id>/inputs/<operation>", methods=['PUT'])
+@errors.handler
+def block_operation(id, operation):
+    assert htmx is not None
+
+    return block.render_operation(session, id, operation)
+
 
 @app.route("/block/unfocus", methods=['POST'])
 @errors.handler

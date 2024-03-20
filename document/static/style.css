@@ -122,9 +122,21 @@ div.entry-results {
   padding: 0;
 }
 form {
+  width: 100%;
   margin: 0;
   border: 0;
   padding: 0.25rem;
+}
+form.block {
+  margin-bottom: 0.5rem;
+}
+legend {
+  color: var(--main-color);
+  font-family: var(--main-ff);
+}
+label {
+  color: var(--main-color);
+  font-family: var(--main-ff);
 }
 input {
   background-color: var(--background-color);
@@ -184,6 +196,7 @@ button {
   color: var(--main-color);
 
   height: 2rem;
+  width: 2rem;
   cursor: pointer;
 }
 button:hover {
@@ -231,7 +244,7 @@ span {
   right: 0;
   width: 100%;
   min-height: 6%;
-  z-index: 1;
+  z-index: 2;
 
   margin: 0;
   border: 0;
@@ -268,7 +281,7 @@ h3 {
   font-weight: bold;
 }
 p {
-
+  color: var(--main-color);
 }
 p.help {
   margin: 0;

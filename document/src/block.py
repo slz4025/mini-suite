@@ -148,10 +148,37 @@ def render_markdown(markdown):
     return markdown_html
 
 
+def render_media(session, id):
+    return render_template(
+            "partials/block/media.html",
+            id=id,
+            )
+
+
+def render_link(session, id):
+    link_entry_selector = selector.render(session, f"link-to-block-{id}")
+    return render_template(
+            "partials/block/link.html",
+            id=id,
+            link_entry_selector=link_entry_selector,
+            )
+
+
+def render_operation(session, id, operation):
+    match operation:
+        case 'media':
+            return render_media(session, id)
+        case 'link':
+            return render_link(session, id)
+        case _:
+            raise Exception(
+                f"'{operation}' is not a block operation."
+            )
+
+
 def render(session, id):
     in_focus = get_in_focus(session)
     focused = in_focus == id
-    link_entry_selector = selector.render(session, f"link-to-block-{id}")
     markdown = get_markdown(id)
     rendered = render_markdown(markdown)
 
@@ -159,7 +186,6 @@ def render(session, id):
             "partials/block.html",
             focused=focused,
             id=id,
-            link_entry_selector=link_entry_selector,
             markdown=markdown,
             markdown_html=rendered,
             )

@@ -12,15 +12,11 @@
         <label for="new-button">NEW</label>
         <input type="submit" value="➕" id="new-submit" />
       </form>
-      <form
-        hx-post="/open"
-        hx-target="#null"
-        hx-swap="outerHTML"
-        enctype="multipart/form-data"
-      >
-        <label for="open-file">OPEN</label>
-        <input type="text" name="name" value="{{ current_entry }}" id="open-entry" />
-        <input type="submit" value="📂" id="open-submit" />
+      <form>
+        <label for="open-file">📂 OPEN</label>
+        <span id="open-file">
+          {{ open_entry_selector|safe }}
+        </span>
       </form>
       <form
         hx-post="/import"

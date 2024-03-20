@@ -287,12 +287,10 @@ def new_entry():
     return resp
 
 
-@app.route("/open", methods=['POST'])
+@app.route("/open/<name>", methods=['POST'])
 @errors.handler
-def open_entry():
+def open_entry(name):
     assert htmx is not None
-
-    name = request.form["name"]
 
     error = None
     try:
@@ -337,6 +335,16 @@ def save_entry():
         notifications.set_info("Entry saved.")
         resp.headers["HX-Redirect"] = f"/entry/{name}"
         return resp
+
+
+@app.route("/entry/results", methods=['POST'])
+@errors.handler
+def get_results():
+    assert htmx is not None
+
+    search = request.form["search"]
+
+    return entry.render_results(session, search)
 
 
 @app.route("/entry/new", methods=['GET'])

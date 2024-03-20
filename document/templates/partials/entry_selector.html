@@ -1,0 +1,13 @@
+<input
+  type="search"
+  name="search"
+  placeholder="Find entry..."
+  id="select-entry"
+  hx-post="/entry/results"
+  hx-trigger="input changed delay:500ms"
+  hx-target="#entry-results"
+  hx-swap="innerHTML"
+/>
+<div id="entry-results">
+{{ entry_results|safe }}
+</div>

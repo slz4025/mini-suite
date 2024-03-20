@@ -114,6 +114,13 @@ div.block-controls {
 
   font-family: var(--main-ff);
 }
+div#entry-results {
+  z-index: 2;
+
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
 form {
   margin: 0;
   border: 0;
@@ -148,6 +155,9 @@ input[type=file]::file-selector-button {
   font-family: var(--main-ff);
   border: 0.1rem solid var(--secondary-color);
   height: 100%;
+}
+input#select-entry {
+  width: 100%;
 }
 select {
   background-color: transparent;
@@ -197,6 +207,12 @@ button.edit {
  
     font-size: 1.5rem;
 }
+button.entry-result {
+  width: 100%;
+  margin: 0;
+
+  text-align: left;
+}
 textarea {
   width: 100%;
   height: 30vh;
@@ -215,7 +231,7 @@ span {
   right: 0;
   width: 100%;
   min-height: 6%;
-  z-index: 2;
+  z-index: 1;
 
   margin: 0;
   border: 0;

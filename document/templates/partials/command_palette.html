@@ -47,23 +47,25 @@
     <p class="help">Prev block: [Shift+Up]</p>
     <p class="help">Next block: [Shift+Down]</p>
   </div>
+
   <div
     id="command-palette-settings"
     class="command-palette-section"
-    style="display: flex; align-items: center;"
+    style="padding: 0; display: flex; align-items: center;"
   >
     {{ mode_button|safe }}
-    <button
-      id="collapse-button"
-      hx-put="/command-palette/close"
-      hx-trigger="click"
-      hx-target="body"
-      hx-swap="outerHTML"
-      style="font-size: 1.25rem;"
-    >
-      <span>⇱</span>
-    </button>
   </div>
+
+  <button
+    id="collapse-button"
+    hx-put="/command-palette/close"
+    hx-trigger="click"
+    hx-target="body"
+    hx-swap="outerHTML"
+    style="font-size: 1.25rem; position: absolute; right: 0; bottom: 0;"
+  >
+    <span>⇱</span>
+  </button>
 </div>
 {% else %}
 <div id="command-palette" class="close">

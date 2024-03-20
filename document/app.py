@@ -403,7 +403,7 @@ def get_media(filename):
 
 @app.route("/import", methods=['POST'])
 @errors.handler
-def import_file():
+def import_markdown():
     assert htmx is not None
 
     file = None
@@ -419,7 +419,7 @@ def import_file():
     if error is not None:
         notifications.set_error(error)
     else:
-        notifications.set_info("File imported.")
+        notifications.set_info("Markdown imported.")
 
     html = block.render_all(session)
     resp = Response(html)
@@ -429,21 +429,21 @@ def import_file():
 
 @app.route("/export", methods=['POST'])
 @errors.handler
-def export_file():
+def export_html():
     assert htmx is not None
 
     filename = request.form["input"]
 
     error = None
     try:
-        entry.export(session, filename)
+        wiki.export(session, filename)
     except errors.UserError as e:
         error = e
 
     if error is not None:
         notifications.set_error(error)
     else:
-        notifications.set_info("File exported.")
+        notifications.set_info("HTML exported.")
 
     html = render_null(session)
     resp = Response(html)

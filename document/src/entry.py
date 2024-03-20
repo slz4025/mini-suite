@@ -8,7 +8,6 @@ import src.errors as errors
 import src.wiki as wiki
 
 
-DOWNLOADS_PATH = os.path.expanduser("~/Downloads")
 ENTRY = None
 
 
@@ -87,18 +86,6 @@ def import_file(session, file):
 
     contents = file.read().decode("utf-8")
     block.set_all_markdown(session, contents)
-
-
-# TODO: Modify so exports rendered html.
-def export(session, filename):
-    if filename == '':
-        raise errors.UserError("File name was not given.")
-
-    markdown = block.get_all_markdown(session)
-
-    filepath = os.path.join(DOWNLOADS_PATH, f"{filename}.md")
-    with open(filepath, "w+") as file:
-        file.write(markdown)
 
 
 def get_media(session, filename):

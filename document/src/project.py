@@ -274,7 +274,11 @@ def save_entry(session, name):
             resp.headers["HX-Redirect"] = f"/entry/{name}"
             return resp
         else:
-            return render_null(session)
+            html = render_null(session)
+            resp = Response(html)
+            notifications.set_info("Entry saved.")
+            resp.headers['HX-Trigger'] = "notification"
+            return resp
 
 
 def get_entry_results(session, operation, search):

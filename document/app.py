@@ -140,46 +140,6 @@ def block_media(id):
     return project.block_media(session, id, file)
 
 
-@app.route("/block/<id>/up", methods=['PUT'])
-@errors.handler
-def block_up(id):
-    assert htmx is not None
-
-    return project.move_up(session, id)
-
-
-@app.route("/block/<id>/down", methods=['PUT'])
-@errors.handler
-def block_down(id):
-    assert htmx is not None
-
-    return project.move_down(session, id)
-
-
-@app.route("/block/<id>/cut", methods=['PUT'])
-@errors.handler
-def block_cut(id):
-    assert htmx is not None
-
-    return project.block_cut(session, id)
-
-
-@app.route("/block/<id>/copy", methods=['PUT'])
-@errors.handler
-def block_copy(id):
-    assert htmx is not None
-
-    return project.block_copy(session, id)
-
-
-@app.route("/block/<id>/paste", methods=['PUT'])
-@errors.handler
-def block_paste(id):
-    assert htmx is not None
-
-    return project.block_paste(session, id)
-
-
 @app.route("/block/<id>/insert", methods=['PUT'])
 @errors.handler
 def block_insert(id):

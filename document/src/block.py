@@ -1,21 +1,9 @@
 from flask import render_template
-from typing import Dict, List, Optional
+from typing import Dict, List
 import uuid
 
 import src.markdown as md
 import src.selector as selector
-
-
-buffer: Optional[str] = None
-
-
-def get_buffer():
-    return buffer
-
-
-def set_buffer(contents):
-    global buffer
-    buffer = contents
 
 
 all_markdown: Dict[str, str] = {}
@@ -193,44 +181,6 @@ def render_all(session, show_linking=True):
             )
 
 
-def move_up(session, id, show_linking=True):
-    pos = get_pos(id)
-    if pos > 0:
-        prev_pos = pos - 1
-        swap_order(prev_pos, pos)
-
-    # for simplicity, re-render all blocks
-    return render_all(session, show_linking)
-
-
-def move_down(session, id, show_linking=True):
-    pos = get_pos(id)
-    if pos < len(order) - 1:
-        next_pos = pos + 1
-        swap_order(next_pos, pos)
-
-    # for simplicity, re-render all blocks
-    return render_all(session, show_linking)
-
-
-def copy(session, id, show_linking=True):
-    global buffer
-
-    markdown = get_markdown(id)
-    set_buffer(markdown)
-
-    return render(session, id, show_linking)
-
-
-def paste(session, id, show_linking=True):
-    markdown = get_buffer()
-
-    if markdown is not None:
-        set_markdown(markdown, id)
-
-    return render(session, id, show_linking)
-
-
 def insert(session, id, show_linking=True):
     new_id = create_id()
     set_markdown("", new_id)
@@ -262,11 +212,6 @@ def add_link(session, id, name):
     markdown = get_markdown(id)
     markdown += f"\n\n{link}"
     set_markdown(markdown, id)
-
-
-def cut(session, id):
-    copy(session, id)
-    return delete(session, id)
 
 
 def set_all_markdown(session, contents):

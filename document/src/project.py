@@ -191,36 +191,6 @@ def block_media(session, id, file):
     return resp
 
 
-def move_up(session, id):
-    return block.move_up(session, id, show_linking=FILE_NAME is None)
-
-
-def move_down(session, id):
-    return block.move_down(session, id, show_linking=FILE_NAME is None)
-
-
-def block_cut(session, id):
-    notifications.set_info("Block copied.")
-
-    html = block.cut(session, id, show_linking=FILE_NAME is None)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
-
-
-def block_copy(session, id):
-    notifications.set_info("Block copied.")
-
-    html = block.copy(session, id, show_linking=FILE_NAME is None)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
-
-
-def block_paste(session, id):
-    return block.paste(session, id, show_linking=FILE_NAME is None)
-
-
 def block_insert(session, id):
     return block.insert(session, id, show_linking=FILE_NAME is None)
 

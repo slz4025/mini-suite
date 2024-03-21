@@ -1,15 +1,8 @@
-from markdown_it import MarkdownIt
 import os
-import re
 import shutil
 
 import src.errors as errors
-
-
-md = (
-    MarkdownIt('commonmark', {'breaks': True, 'html': True})
-    .enable('table')
-)
+import src.markdown as md
 
 
 DOWNLOADS_PATH = os.path.expanduser("~/Downloads")
@@ -90,48 +83,6 @@ def rename(prev_name, new_name):
     remove(prev_name)
 
 
-def render_html(markdown):
-    media_instances = re.finditer(
-        r"\!\[(?P<alt>.*)\]\(\/media\/(?P<media_id>.*)\)",
-        markdown,
-    )
-    offset = 0
-    for instance in media_instances:
-        alt = instance.group("alt")
-        media_id = instance.group("media_id")
-        fixed = f"![{alt}](./media/{media_id})"
-
-        start_index = instance.start(0) + offset
-        end_index = instance.end(0) + offset
-        markdown = markdown[:start_index] + fixed + markdown[end_index:]
-
-        fixed_len = len(fixed)
-        orig_len = end_index - start_index
-        offset += fixed_len - orig_len
-
-    link_instances = re.finditer(
-        r"\[(?P<alt>.*)\]\(\/entry\/(?P<name>.*)\)",
-        markdown,
-    )
-    offset = 0
-    for instance in link_instances:
-        alt = instance.group("alt")
-        name = instance.group("name")
-        fixed = f"[alt](../{name}/index.html)"
-
-        start_index = instance.start(0) + offset
-        end_index = instance.end(0) + offset
-        markdown = markdown[:start_index] + fixed + markdown[end_index:]
-
-        fixed_len = len(fixed)
-        orig_len = end_index - start_index
-        offset += fixed_len - orig_len
-
-    modified_markdown = markdown
-    html = md.render(modified_markdown)
-    return html
-
-
 def export(session, filename):
     if filename == '':
         raise errors.UserError("File name was not given.")
@@ -160,7 +111,7 @@ def export(session, filename):
         with open(md_indexpath, 'r') as file:
             markdown = file.read()
 
-        html = render_html(markdown)
+        html = md.html_for_external(markdown)
 
         html_indexpath = os.path.join(html_dir, "index.html")
         with open(html_indexpath, 'w+') as file:

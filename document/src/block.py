@@ -1,15 +1,9 @@
 from flask import render_template
-from markdown_it import MarkdownIt
 from typing import Dict, List, Optional
 import uuid
 
+import src.markdown as md
 import src.selector as selector
-
-
-md = (
-    MarkdownIt('commonmark', {'breaks': True, 'html': True})
-    .enable('table')
-)
 
 
 buffer: Optional[str] = None
@@ -143,11 +137,6 @@ def set_next_in_focus(session):
     set_in_focus(session, next_id)
 
 
-def render_markdown(markdown):
-    markdown_html = md.render(markdown)
-    return markdown_html
-
-
 def render_media(session, id):
     return render_template(
             "partials/block/media.html",
@@ -180,7 +169,7 @@ def render(session, id):
     in_focus = get_in_focus(session)
     focused = in_focus == id
     markdown = get_markdown(id)
-    rendered = render_markdown(markdown)
+    rendered = md.html_for_internal(markdown)
 
     return render_template(
             "partials/block.html",

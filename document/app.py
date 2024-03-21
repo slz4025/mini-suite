@@ -18,6 +18,13 @@ htmx = HTMX(app)
 app.config.from_object('config.Config')
 
 
+def get_file(files):
+    if 'input' not in files:
+        raise errors.UserError("File was not chosen.")
+    file = request.files['input']
+    return file
+
+
 def render_null(session):
     return render_template(
             "partials/null.html",
@@ -30,7 +37,7 @@ def render_body(session):
     notification_banner_html = notifications.render(session)
     show_command_palette = command_palette.get_show()
     command_palette_html = command_palette.render(session)
-    current_entry = entry.get(allow_temp=False)
+    current_entry = entry.get_name()
     blocks_html = block.render_all(session)
     return render_template(
             "partials/body.html",
@@ -198,7 +205,8 @@ def block_link(id, name):
 
     error = None
     try:
-        entry.check(name)
+        entry.check_name(name)
+        wiki.check_exists(name)
         block.add_link(session, id, name)
     except errors.UserError as e:
         error = e
@@ -219,12 +227,9 @@ def block_link(id, name):
 def block_media(id):
     assert htmx is not None
 
-    file = None
     error = None
     try:
-        if 'input' not in request.files:
-            raise errors.UserError("File was not chosen.")
-        file = request.files['input']
+        file = get_file(request.files)
         media_id = entry.save_media(session, file)
         block.append_media_reference(session, id, media_id, alt=file.name)
     except errors.UserError as e:
@@ -337,7 +342,8 @@ def open_entry(name):
 
     error = None
     try:
-        entry.check(name)
+        entry.check_name(name)
+        wiki.check_exists(name)
     except errors.UserError as e:
         error = e
 
@@ -403,6 +409,7 @@ def get_new_entry():
 def get_entry(name):
     error = None
     try:
+        wiki.check_exists(name)
         entry.set(session, name)
     except errors.UserError as e:
         error = e
@@ -425,12 +432,9 @@ def get_media(filename):
 def import_markdown():
     assert htmx is not None
 
-    file = None
     error = None
     try:
-        if 'input' not in request.files:
-            raise errors.UserError("File was not chosen.")
-        file = request.files['input']
+        file = get_file(request.files)
         entry.import_file(session, file)
     except errors.UserError as e:
         error = e

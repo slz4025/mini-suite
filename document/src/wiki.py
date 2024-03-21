@@ -13,6 +13,9 @@ md = (
 
 
 DOWNLOADS_PATH = os.path.expanduser("~/Downloads")
+if not os.path.exists(DOWNLOADS_PATH):
+    os.makedirs(DOWNLOADS_PATH)
+
 WIKI_PATH = None
 entries = []
 
@@ -39,12 +42,17 @@ def set(path):
     use(path)
 
 
-def exists(name):
-    return name in entries
+def check_exists(name):
+    if name not in entries:
+        raise errors.UserError("Entry name does not exist in wiki.")
 
 
 def add(name):
     entries.append(name)
+
+
+def remove(name):
+    entries.remove(name)
 
 
 def create(name):
@@ -60,6 +68,26 @@ def create(name):
     os.makedirs(mediadir)
 
     add(name)
+
+
+def move(src_dir, dest_name):
+    wiki_dir = get()
+    dest_dir = os.path.join(wiki_dir, dest_name)
+
+    # allow destructive overwrites
+    if os.path.isdir(dest_dir):
+        shutil.rmtree(dest_dir)
+    else:
+        add(dest_name)
+
+    shutil.move(src_dir, dest_dir)
+
+
+def rename(prev_name, new_name):
+    wiki_dir = get()
+    prev_dir = os.path.join(wiki_dir, prev_name)
+    move(prev_dir, new_name)
+    remove(prev_name)
 
 
 def render_html(markdown):

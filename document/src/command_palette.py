@@ -61,7 +61,7 @@ def render_operation(session, operation):
 
 def render(session):
     show = get_show()
-    entry_name = entry.get(allow_temp=False)
+    entry_name = entry.get_name()
     mode_button_html = settings.render_mode_button(session)
     return render_template(
             "partials/command_palette.html",

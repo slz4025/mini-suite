@@ -1,6 +1,5 @@
 from flask import send_from_directory
 import os
-import shutil
 import uuid
 
 import src.block as block
@@ -8,75 +7,88 @@ import src.errors as errors
 import src.wiki as wiki
 
 
+TEMP_DIR = os.path.expanduser("~/.minisuite/documents/")
+if not os.path.exists(TEMP_DIR):
+    os.makedirs(TEMP_DIR)
+
+IS_TEMP = None
 ENTRY = None
 
 
-def istemp():
-    return ENTRY.startswith("temp-")
-
-
-def create_temp_name():
-    return "temp-{}".format(uuid.uuid4().hex)
-
-
-def get(allow_temp=True):
-    if not allow_temp and istemp():
+def get_name():
+    if IS_TEMP:
         return None
     return ENTRY
 
 
-def check(name):
-    if name == '':
-        raise errors.UserError("Entry name was not given.")
-    if not wiki.exists(name):
-        raise errors.UserError("Entry name does not exist in wiki.")
+def get_dir():
+    if IS_TEMP:
+        base = TEMP_DIR
+    else:
+        base = wiki.get()
+
+    dir = os.path.join(base, ENTRY)
+    return dir
 
 
-def set(session, name):
-    check(name)
-
-    global ENTRY
-    ENTRY = name
-
-    wiki_dir = wiki.get()
-
-    filepath = os.path.join(wiki_dir, name, "index.md")
+def set_contents(session):
+    dir = get_dir()
+    filepath = os.path.join(dir, "index.md")
     with open(filepath, 'r') as file:
-        contents = file.read()
+        markdown = file.read()
 
-    block.set_all_markdown(session, contents)
+    block.set_all_markdown(session, markdown)
 
 
 def use_temp(session):
-    temp_name = create_temp_name()
-    wiki.create(temp_name)
-    set(session, temp_name)
+    temp_name = uuid.uuid4().hex
+    dir = os.path.join(TEMP_DIR, temp_name)
+    os.makedirs(dir)
+
+    indexpath = os.path.join(dir, "index.md")
+    file = open(indexpath, 'w+')
+    file.close()
+
+    mediadir = os.path.join(dir, "media")
+    os.makedirs(mediadir)
+
+    global ENTRY, IS_TEMP
+    ENTRY = temp_name
+    IS_TEMP = True
+
+    set_contents(session)
+
+
+def check_name(name):
+    if name == '':
+        raise errors.UserError("Entry name was not given.")
+
+
+def set(session, name):
+    check_name(name)
+
+    global ENTRY, IS_TEMP
+    ENTRY = name
+    IS_TEMP = False
+
+    set_contents(session)
 
 
 def save(session, name):
-    if name == '':
-        raise errors.UserError("Entry name was not given.")
-    if name.startswith("temp-"):
-        raise errors.UserError(f"Name cannot start with 'temp-': {name}.")
+    check_name(name)
 
-    if not wiki.exists(name):
-        wiki.create(name)
-    wiki_dir = wiki.get()
-
-    current_entry = get()
-    curr_dir = os.path.join(wiki_dir, current_entry)
-
-    index_path = os.path.join(curr_dir, "index.md")
     markdown = block.get_all_markdown(session)
+
+    dir = get_dir()
+    index_path = os.path.join(dir, "index.md")
     with open(index_path, 'w+') as file:
         file.write(markdown)
 
-    if name != current_entry:
-        new_dir = os.path.join(wiki_dir, name)
-        # allow destructive overwrites
-        if os.path.isdir(new_dir):
-            shutil.rmtree(new_dir)
-        shutil.move(curr_dir, new_dir)
+    if IS_TEMP:
+        dir = get_dir()
+        wiki.move(dir, name)
+    elif name != ENTRY:
+        wiki.rename(ENTRY, name)
 
 
 def import_file(session, file):
@@ -88,31 +100,30 @@ def import_file(session, file):
     block.set_all_markdown(session, contents)
 
 
-def get_media(session, filename):
-    wiki_dir = wiki.get()
-    current_entry = get()
+def get_media(session, media_name):
+    dir = get_dir()
+    media_dir = os.path.join(dir, "media")
+    media_path = os.path.join(media_dir, media_name)
 
-    media_folder = os.path.join(wiki_dir, current_entry, "media")
-    filepath = os.path.join(media_folder, filename)
-    if not os.path.exists(filepath):
-        raise errors.UserError(f"Media file does not exist: {filename}.")
+    if not os.path.exists(media_path):
+        raise errors.UserError(f"Media file does not exist: {media_name}.")
 
-    return send_from_directory(media_folder, filename)
+    return send_from_directory(media_dir, media_name)
 
 
 def save_media(session, file):
-    wiki_dir = wiki.get()
-    current_entry = get()
-    media_folder = os.path.join(wiki_dir, current_entry, "media")
-
     filename = file.filename
     _, extension = os.path.splitext(filename)
-    media_id = uuid.uuid4().hex
-    mediapath = f"{media_id}{extension}"
-
-    filepath = os.path.join(media_folder, mediapath)
     contents = file.read()
-    with open(filepath, 'wb+') as media_file:
+
+    media_id = uuid.uuid4().hex
+    media_name = f"{media_id}{extension}"
+
+    dir = get_dir()
+    media_dir = os.path.join(dir, "media")
+    media_path = os.path.join(media_dir, media_name)
+
+    with open(media_path, 'wb+') as media_file:
         media_file.write(contents)
 
-    return mediapath
+    return media_name

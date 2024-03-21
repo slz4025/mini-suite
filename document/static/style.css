@@ -96,8 +96,11 @@ div#command-palette.close {
 div.command-palette-section {
   margin: 0;
   border: 0;
-  padding: 0.5rem;
+  padding: 0;
 
+  align-items: center;
+
+  display: flex;
   align-items: center;
 }
 div.block-controls {
@@ -129,6 +132,12 @@ form {
 }
 form.block {
   margin-bottom: 0.5rem;
+}
+form#title-form {
+  padding: 0;
+  
+  display: flex;
+  align-items: center;
 }
 legend {
   color: var(--main-color);
@@ -170,6 +179,17 @@ input[type=file]::file-selector-button {
 }
 input.select-entry {
   width: 100%;
+}
+input#title-name {
+  height: 2rem;
+
+  font-size: 1.5rem;
+}
+input#title-submit {
+  height: 2rem;
+  margin-left: 1rem;
+
+  font-size: 1.25rem;
 }
 select {
   background-color: transparent;
@@ -225,6 +245,11 @@ button.entry-result {
   margin: 0;
 
   text-align: left;
+}
+button#command-palette-toggle-button {
+  position: absolute;
+
+  font-size: 1.25rem;
 }
 textarea {
   width: 100%;

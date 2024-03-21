@@ -6,7 +6,6 @@
     <div 
       id="command-palette-io"
       class="command-palette-section"
-      style="padding: 0; display: flex; align-items: center;"
     >
       <button
           title="new entry"
@@ -44,7 +43,11 @@
   </fieldset>
   {% endif %}
 
-  <div id="command-palette-key-maps" class="command-palette-section">
+  <div
+    id="command-palette-key-maps"
+    class="command-palette-section"
+    style="padding: 0.5rem; display: flex;"
+  >
     <p class="help">Render block: [Shift+Enter]</p>
     <p class="help">Prev block: [Shift+Up]</p>
     <p class="help">Next block: [Shift+Down]</p>
@@ -53,18 +56,17 @@
   <div
     id="command-palette-settings"
     class="command-palette-section"
-    style="padding: 0; display: flex; align-items: center;"
   >
     {{ mode_button|safe }}
   </div>
 
   <button
-    id="collapse-button"
+    id="command-palette-toggle-button"
     hx-put="/command-palette/close"
     hx-trigger="click"
     hx-target="body"
     hx-swap="outerHTML"
-    style="font-size: 1.25rem; position: absolute; right: 0; bottom: 0;"
+    style="bottom: 0; right: 0;"
   >
     <span>⇱</span>
   </button>
@@ -72,12 +74,12 @@
 {% else %}
 <div id="command-palette" class="close">
   <button
-    id="expand-button"
+    id="command-palette-toggle-button"
     hx-put="/command-palette/open"
     hx-trigger="click"
     hx-target="body"
     hx-swap="outerHTML"
-    style="font-size: 1.25rem; height: 2rem; width: 2rem;"
+    style="top: 0; left: 0;"
   >
     <span>⇲</span>
   </button>

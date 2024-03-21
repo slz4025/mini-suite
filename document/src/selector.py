@@ -41,12 +41,12 @@ def render_results(session, operation, search):
         valid_entries = [e for e in wiki.entries if not e.startswith("temp-")]
         filtered_names = sorted(
                 [e for e in valid_entries if e.startswith(search)]
-        )
+                )
         num_results = min(5, len(filtered_names))
         filtered_names = filtered_names[:num_results]
     entry_results = [
-        render_result(session, operation, name) for name in filtered_names
-    ]
+            render_result(session, operation, name) for name in filtered_names
+            ]
     return '\n'.join(entry_results)
 
 

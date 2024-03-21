@@ -49,8 +49,8 @@ def render(session):
     notification = get()
     show = notification.mode != Mode.NONE
     return render_template(
-        "partials/notification_banner.html",
-        message=notification.message,
-        mode=notification.mode.value,
-        show=show,
-    )
+            "partials/notification_banner.html",
+            message=notification.message,
+            mode=notification.mode.value,
+            show=show,
+            )

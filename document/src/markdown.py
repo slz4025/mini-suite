@@ -3,9 +3,9 @@ import re
 
 
 md = (
-    MarkdownIt('commonmark', {'breaks': True, 'html': True})
-    .enable('table')
-)
+        MarkdownIt('commonmark', {'breaks': True, 'html': True})
+        .enable('table')
+        )
 
 
 def html_for_internal(markdown):
@@ -15,9 +15,9 @@ def html_for_internal(markdown):
 
 def html_for_external(markdown):
     media_instances = re.finditer(
-        r"\!\[(?P<alt>.*)\]\(\/media\/(?P<media_id>.*)\)",
-        markdown,
-    )
+            r"\!\[(?P<alt>.*)\]\(\/media\/(?P<media_id>.*)\)",
+            markdown,
+            )
     offset = 0
     for instance in media_instances:
         alt = instance.group("alt")
@@ -33,9 +33,9 @@ def html_for_external(markdown):
         offset += fixed_len - orig_len
 
     link_instances = re.finditer(
-        r"\[(?P<alt>.*)\]\(\/entry\/(?P<name>.*)\)",
-        markdown,
-    )
+            r"\[(?P<alt>.*)\]\(\/entry\/(?P<name>.*)\)",
+            markdown,
+            )
     offset = 0
     for instance in link_instances:
         alt = instance.group("alt")

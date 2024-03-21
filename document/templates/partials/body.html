@@ -13,7 +13,7 @@
   <div
     id="wrapper"
     class="{{ 'contracted' if show_command_palette else 'expanded' }}"
-  >
+    >
     <div id="title">
       <form
         id="title-form"
@@ -21,20 +21,20 @@
         hx-target="#null"
         hx-swap="outerHTML"
         enctype="multipart/form-data"
-      >
+        >
         <label for="save-file" hidden>SAVE</label>
         <input
-          id="title-name"
-          type="text"
-          name="name"
-          value="{{ current_entry }}"
-          id="save-entry"
+        id="title-name"
+        type="text"
+        name="name"
+        value="{{ current_entry }}"
+        id="save-entry"
         />
         <input
-          id="title-submit"
-          type="submit"
-          value="💾"
-          id="save-submit"
+        id="title-submit"
+        type="submit"
+        value="💾"
+        id="save-submit"
         />
       </form>
     </div>

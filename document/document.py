@@ -38,7 +38,7 @@ if __name__ == "__main__":
             type=str,
             default='',
             help="Path to one-off file to modify."
-    )
+            )
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         file_path = os.path.abspath(args.file_path)
 
     app.start(
-        port=args.port,
-        wiki_path=wiki_path,
-        one_off_file=file_path
-    )
+            port=args.port,
+            wiki_path=wiki_path,
+            one_off_file=file_path
+            )

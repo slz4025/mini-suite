@@ -23,9 +23,9 @@ def init():
 
 def render_open(session):
     open_entry_selector = selector.render(
-        session,
-        operation="open",
-    )
+            session,
+            operation="open",
+            )
     return render_template(
             "partials/command_palette/open.html",
             open_entry_selector=open_entry_selector,
@@ -54,9 +54,9 @@ def render_operation(session, operation):
             return render_export(session)
         case _:
             raise Exception(
-                f"'{operation}' is not a command palette "
-                "input/output operation."
-            )
+                    f"'{operation}' is not a command palette "
+                    "input/output operation."
+                    )
 
 
 def render(session, show_io=True):

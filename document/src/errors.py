@@ -1,8 +1,8 @@
 from flask import (
-    session,
-    make_response,
-    url_for,
-)
+        session,
+        make_response,
+        url_for,
+        )
 import traceback
 
 

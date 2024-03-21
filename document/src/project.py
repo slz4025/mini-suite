@@ -54,9 +54,9 @@ def render_body(session):
     notification_banner_html = notifications.render(session)
     show_command_palette = command_palette.get_show()
     command_palette_html = command_palette.render(
-        session,
-        show_io=FILE_NAME is None,
-    )
+            session,
+            show_io=FILE_NAME is None,
+            )
     current_entry = entry.get_name() if FILE_NAME is None else FILE_NAME
     blocks_html = block.render_all(session, show_linking=FILE_NAME is None)
     return render_template(

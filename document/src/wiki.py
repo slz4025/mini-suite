@@ -94,8 +94,8 @@ def export(session, filename):
         os.makedirs(export_dir)
     except OSError:
         raise errors.UserError(
-            f"Download folder already has entry '{filename}'."
-        )
+                f"Download folder already has entry '{filename}'."
+                )
 
     # only exports what is saved in current entry and others
     for entry in entries:

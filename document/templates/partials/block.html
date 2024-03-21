@@ -6,55 +6,55 @@
   hx-trigger="block-{{ id }} from:body"
   hx-target="this"
   hx-swap="outerHTML"
->
+  >
   <div id="block-controls-{{ id }}" class="block-controls">
     {% if show_linking %}
     <button
-        title="append media"
-        hx-put="/block/{{id}}/inputs/media"
-        hx-trigger="click"
-        hx-target="#block-{{id}}-form"
-        hx-swap="outerHTML"
-    >🖻</button>
+      title="append media"
+      hx-put="/block/{{id}}/inputs/media"
+      hx-trigger="click"
+      hx-target="#block-{{id}}-form"
+      hx-swap="outerHTML"
+      >🖻</button>
     <button
-        title="add link"
-        hx-put="/block/{{id}}/inputs/link"
-        hx-trigger="click"
-        hx-target="#block-{{id}}-form"
-        hx-swap="outerHTML"
-    >
+      title="add link"
+      hx-put="/block/{{id}}/inputs/link"
+      hx-trigger="click"
+      hx-target="#block-{{id}}-form"
+      hx-swap="outerHTML"
+      >
       🔗
     </button>
-    {% endif %}
-    <button
-      hx-put="/block/{{id}}/insert"
-      hx-trigger="click"
-      hx-target="#block-{{ id }}"
-      hx-swap="outerHTML"
-      title="insert below"
+      {% endif %}
+      <button
+        hx-put="/block/{{id}}/insert"
+        hx-trigger="click"
+        hx-target="#block-{{ id }}"
+        hx-swap="outerHTML"
+        title="insert below"
+        >
+        <span>➕</span>
+      </button>
+  <button
+    hx-put="/block/{{id}}/delete"
+    hx-trigger="click"
+    hx-target="#block-{{ id }}"
+    hx-swap="outerHTML"
+    title="delete"
     >
-      <span>➕</span>
-    </button>
-    <button
-      hx-put="/block/{{id}}/delete"
-      hx-trigger="click"
-      hx-target="#block-{{ id }}"
-      hx-swap="outerHTML"
-      title="delete"
-    >
-      <span>❌</span>
-    </button>
+    <span>❌</span>
+  </button>
   </div>
   <form id="block-{{id}}-form" class="block" style="display: none;"></form>
 
   <textarea
-      id="block-editor-{{ id }}"
-      name="contents"
-      hx-post="/block/{{ id }}/edit"
-      hx-target="#null"
-      hx-trigger="keyup changed delay:500ms"
-      hx-swap="outerHTML"
-  >{{ markdown }}</textarea>
+    id="block-editor-{{ id }}"
+    name="contents"
+    hx-post="/block/{{ id }}/edit"
+    hx-target="#null"
+    hx-trigger="keyup changed delay:500ms"
+    hx-swap="outerHTML"
+    >{{ markdown }}</textarea>
 </div>
 {% else %}
 <div
@@ -65,7 +65,7 @@
   hx-target="this"
   hx-swap="outerHTML"
   style="padding-top: 2rem; padding-left: 2rem;"
->
+  >
   <button
     class="edit"
     hx-post="/block/{{ id }}/focus"
@@ -73,9 +73,9 @@
     hx-target="#block-{{ id }}"
     hx-swap="outerHTML"
     title="edit"
-  >
+    >
     <span>✎</span>
   </button>
-{{ markdown_html|safe }}
+  {{ markdown_html|safe }}
 </div>
 {% endif %}

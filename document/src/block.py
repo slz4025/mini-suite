@@ -149,8 +149,8 @@ def render_operation(session, id, operation):
             return render_link(session, id)
         case _:
             raise Exception(
-                f"'{operation}' is not a block operation."
-            )
+                    f"'{operation}' is not a block operation."
+                    )
 
 
 def render(session, id, show_linking=True):

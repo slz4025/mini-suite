@@ -7,7 +7,7 @@ import src.errors as errors
 import src.wiki as wiki
 
 
-TEMP_DIR = os.path.expanduser("~/.minisuite/documents/")
+TEMP_DIR = os.path.expanduser("/tmp/minisuite/documents")
 if not os.path.exists(TEMP_DIR):
     os.makedirs(TEMP_DIR)
 

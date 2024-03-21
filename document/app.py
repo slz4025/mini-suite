@@ -1,6 +1,5 @@
 from flask import Flask, render_template, session, Response, redirect, request
 from flask_htmx import HTMX
-import sys
 from waitress import serve
 
 import src.block as block
@@ -474,14 +473,10 @@ def export_html():
     return resp
 
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        raise errors.UserError("Expected just a wiki directory path as input.")
-    path = sys.argv[1]
-
-    wiki.set(path)
+def start(port, wiki_path):
+    wiki.set(wiki_path)
     notifications.init()
     settings.init()
     command_palette.init()
 
-    serve(app, host='0.0.0.0', port=5000)
+    serve(app, host='0.0.0.0', port=port)

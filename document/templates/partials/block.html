@@ -61,6 +61,10 @@
 <div
   id="block-{{ id }}"
   class="block"
+  hx-put="/block/{{ id }}"
+  hx-trigger="block-{{ id }} from:body"
+  hx-target="this"
+  hx-swap="outerHTML"
   style="padding-top: 2rem; padding-left: 2rem;"
 >
   <button

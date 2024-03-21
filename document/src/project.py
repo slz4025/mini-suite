@@ -107,14 +107,19 @@ def command_palette_toggle(session, state):
     return render_body(session)
 
 
+def get_block_in_focus(session):
+    return block.get_in_focus(session)
+
+
 def block_operation(session, id, operation):
     return block.render_operation(session, id, operation)
 
 
 def block_unfocus(session):
+    id = block.get_in_focus(session)
     block.reset_in_focus(session)
 
-    return block.render_all(session, show_linking=FILE_NAME is None)
+    return block.render(session, id, show_linking=FILE_NAME is None)
 
 
 def block_focus(session, id):
@@ -130,15 +135,27 @@ def block_focus(session, id):
 
 
 def block_next(session):
+    id = block.get_in_focus(session)
     block.set_next_in_focus(session)
 
-    return block.render_all(session, show_linking=FILE_NAME is None)
+    html = block.render(session, id, show_linking=FILE_NAME is None)
+    resp = Response(html)
+    next_in_focus = block.get_in_focus(session)
+    if next_in_focus != id:
+        resp.headers['HX-Trigger'] = f"block-{next_in_focus}"
+    return resp
 
 
 def block_prev(session):
+    id = block.get_in_focus(session)
     block.set_prev_in_focus(session)
 
-    return block.render_all(session, show_linking=FILE_NAME is None)
+    html = block.render(session, id, show_linking=FILE_NAME is None)
+    resp = Response(html)
+    next_in_focus = block.get_in_focus(session)
+    if next_in_focus != id:
+        resp.headers['HX-Trigger'] = f"block-{next_in_focus}"
+    return resp
 
 
 def block_edit(session, id, contents):

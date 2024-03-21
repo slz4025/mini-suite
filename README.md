@@ -18,6 +18,8 @@ This is still in active development. I have mostly finished the markdown editor 
 
 ## How do I use the markdown editor?
 
+![demo](./media/readme.png)
+
 The markdown editor allows you edit markdown files. It has two modes:
 1. Edit a one-off file and save changes back to the file.
 1. Create a wiki of inter-linking markdown files to explore later or rendered as html.

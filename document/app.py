@@ -46,7 +46,13 @@ def notification(show):
 @app.route("/")
 @errors.handler
 def root():
-    return redirect("/entry/temp")
+    return project.root(session)
+
+
+@app.route("/file", methods=['GET'])
+@errors.handler
+def get_one_off_file():
+    return project.get_one_off_file(session)
 
 
 @app.route("/dark-mode/<state>", methods=['GET'])

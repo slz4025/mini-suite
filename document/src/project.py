@@ -1,3 +1,4 @@
+from enum import Enum
 from flask import render_template, Response, redirect
 
 import os
@@ -12,32 +13,47 @@ import src.settings as settings
 import src.wiki as wiki
 
 
+class Mode(Enum):
+    FILE = 1
+    WIKI = 2
+
+
+MODE = None
 FILE_PATH = None
 FILE_NAME = None
 
 
 def setup(wiki_path, one_off_file):
-    global FILE_PATH, FILE_NAME
-    FILE_PATH = one_off_file
+    global MODE
 
-    if one_off_file is None:
-        wiki.set(wiki_path)
-    else:
+    if one_off_file is not None:
+        global FILE_PATH, FILE_NAME
         _, basename = os.path.split(one_off_file)
         FILE_NAME = basename
+        FILE_PATH = one_off_file
+        MODE = Mode.FILE
+    elif wiki_path is not None:
+        wiki.set(wiki_path)
+        MODE = Mode.WIKI
+    else:
+        raise Exception("Mode not specified.")
 
     notifications.init()
     settings.init()
     command_palette.init()
 
 
+def check_using_file():
+    if MODE != Mode.FILE:
+        raise Exception("Not in one-off file mode.")
+
+
 def check_using_wiki():
-    if FILE_NAME is not None:
-        raise Exception("Writing to one-off file. Not using wiki.")
+    if MODE != Mode.WIKI:
+        raise Exception("Not in wiki mode.")
 
 
 def check_in_wiki(name):
-    check_using_wiki()
     entry.check_name(name)
     wiki.check_exists(name)
 
@@ -55,10 +71,16 @@ def render_body(session):
     show_command_palette = command_palette.get_show()
     command_palette_html = command_palette.render(
             session,
-            show_io=FILE_NAME is None,
+            show_io=MODE == Mode.WIKI,
             )
-    current_entry = entry.get_name() if FILE_NAME is None else FILE_NAME
-    blocks_html = block.render_all(session, show_linking=FILE_NAME is None)
+
+    match MODE:
+        case Mode.FILE:
+            current_entry = FILE_NAME
+        case Mode.WIKI:
+            current_entry = entry.get_name()
+
+    blocks_html = block.render_all(session, show_linking=MODE == Mode.WIKI)
     return render_template(
             "partials/body.html",
             dark_mode=dark_mode,
@@ -77,6 +99,26 @@ def render(session):
             "index.html",
             body=body,
             )
+
+
+def root(session):
+    match MODE:
+        case Mode.FILE:
+            return redirect("/file")
+        case Mode.WIKI:
+            return redirect("/entry/temp")
+
+
+def get_one_off_file(session):
+    check_using_file()
+
+    contents = ""
+    if os.path.isfile(FILE_PATH):
+        with open(FILE_PATH, 'r') as file:
+            contents = file.read()
+    block.set_all_markdown(session, contents)
+
+    return render(session)
 
 
 def notification(session, show):
@@ -119,14 +161,14 @@ def block_unfocus(session):
     id = block.get_in_focus(session)
     block.reset_in_focus(session)
 
-    return block.render(session, id, show_linking=FILE_NAME is None)
+    return block.render(session, id, show_linking=MODE == Mode.WIKI)
 
 
 def block_focus(session, id):
     prev_in_focus = block.get_in_focus(session)
     block.set_in_focus(session, id)
 
-    html = block.render(session, id, show_linking=FILE_NAME is None)
+    html = block.render(session, id, show_linking=MODE == Mode.WIKI)
     resp = Response(html)
     if prev_in_focus is not None:
         # rerender so shows as unfocused
@@ -138,7 +180,7 @@ def block_next(session):
     id = block.get_in_focus(session)
     block.set_next_in_focus(session)
 
-    html = block.render(session, id, show_linking=FILE_NAME is None)
+    html = block.render(session, id, show_linking=MODE == Mode.WIKI)
     resp = Response(html)
     next_in_focus = block.get_in_focus(session)
     if next_in_focus != id:
@@ -150,7 +192,7 @@ def block_prev(session):
     id = block.get_in_focus(session)
     block.set_prev_in_focus(session)
 
-    html = block.render(session, id, show_linking=FILE_NAME is None)
+    html = block.render(session, id, show_linking=MODE == Mode.WIKI)
     resp = Response(html)
     next_in_focus = block.get_in_focus(session)
     if next_in_focus != id:
@@ -165,6 +207,8 @@ def block_edit(session, id, contents):
 
 
 def block_link(session, id, name):
+    check_using_wiki()
+
     error = None
     try:
         check_in_wiki(name)
@@ -177,7 +221,7 @@ def block_link(session, id, name):
     else:
         notifications.set_info("Link added.")
 
-    html = block.render(session, id, show_linking=FILE_NAME is None)
+    html = block.render(session, id, show_linking=MODE == Mode.WIKI)
     resp = Response(html)
     resp.headers['HX-Trigger'] = "notification"
     return resp
@@ -185,13 +229,15 @@ def block_link(session, id, name):
 
 def get_media(session, filename):
     check_using_wiki()
+
     return entry.get_media(session, filename)
 
 
 def block_media(session, id, file):
+    check_using_wiki()
+
     error = None
     try:
-        check_using_wiki()
         media_id = entry.save_media(session, file)
         block.append_media_reference(session, id, media_id, alt=file.name)
     except errors.UserError as e:
@@ -202,14 +248,14 @@ def block_media(session, id, file):
     else:
         notifications.set_info("Media appended.")
 
-    html = block.render(session, id, show_linking=FILE_NAME is None)
+    html = block.render(session, id, show_linking=MODE == Mode.WIKI)
     resp = Response(html)
     resp.headers['HX-Trigger'] = "notification"
     return resp
 
 
 def block_insert(session, id):
-    return block.insert(session, id, show_linking=FILE_NAME is None)
+    return block.insert(session, id, show_linking=MODE == Mode.WIKI)
 
 
 def block_delete(session, id):
@@ -217,7 +263,7 @@ def block_delete(session, id):
 
 
 def block_render(session, id):
-    return block.render(session, id=id, show_linking=FILE_NAME is None)
+    return block.render(session, id=id, show_linking=MODE == Mode.WIKI)
 
 
 def new_entry(session):
@@ -230,6 +276,8 @@ def new_entry(session):
 
 
 def open_entry(session, name):
+    check_using_wiki()
+
     error = None
     try:
         check_in_wiki(name)
@@ -250,35 +298,36 @@ def open_entry(session, name):
 
 
 def save_entry(session, name):
-    error = None
-    try:
-        if FILE_NAME is None:
-            entry.save(session, name)
-        else:
+    match MODE:
+        case Mode.FILE:
             markdown = block.get_all_markdown(session)
             with open(FILE_PATH, 'w+') as file:
                 file.write(markdown)
-    except errors.UserError as e:
-        error = e
 
-    if error is not None:
-        notifications.set_error(error)
-        html = render_null(session)
-        resp = Response(html)
-        resp.headers['HX-Trigger'] = "notification"
-        return resp
-    else:
-        if FILE_NAME is None:
-            resp = Response()
-            notifications.set_info("Entry saved.")
-            resp.headers["HX-Redirect"] = f"/entry/{name}"
-            return resp
-        else:
             html = render_null(session)
             resp = Response(html)
             notifications.set_info("Entry saved.")
             resp.headers['HX-Trigger'] = "notification"
             return resp
+
+        case Mode.WIKI:
+            error = None
+            try:
+                entry.save(session, name)
+            except errors.UserError as e:
+                error = e
+
+            if error is not None:
+                notifications.set_error(error)
+                html = render_null(session)
+                resp = Response(html)
+                resp.headers['HX-Trigger'] = "notification"
+                return resp
+            else:
+                resp = Response()
+                notifications.set_info("Entry saved.")
+                resp.headers["HX-Redirect"] = f"/entry/{name}"
+                return resp
 
 
 def get_entry_results(session, operation, search):
@@ -288,20 +337,18 @@ def get_entry_results(session, operation, search):
 
 
 def get_temp_entry(session):
-    entry.use_temp(session)
+    check_using_wiki()
 
-    if FILE_NAME is not None and os.path.isfile(FILE_PATH):
-        with open(FILE_PATH, 'r') as file:
-            contents = file.read()
-        block.set_all_markdown(session, contents)
+    entry.use_temp(session)
 
     return render(session)
 
 
 def get_wiki_entry(session, name):
+    check_using_wiki()
+
     error = None
     try:
-        check_using_wiki()
         entry.set(session, name)
     except errors.UserError as e:
         error = e
@@ -314,9 +361,10 @@ def get_wiki_entry(session, name):
 
 
 def import_markdown(session, file):
+    check_using_wiki()
+
     error = None
     try:
-        check_using_wiki()
         entry.import_file(session, file)
     except errors.UserError as e:
         error = e
@@ -333,9 +381,10 @@ def import_markdown(session, file):
 
 
 def export_html(session, filename):
+    check_using_wiki()
+
     error = None
     try:
-        check_using_wiki()
         entry.export(session, filename)
     except errors.UserError as e:
         error = e

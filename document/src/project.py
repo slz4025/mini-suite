@@ -88,6 +88,7 @@ def render_body(session):
             null=null,
             notification_banner=notification_banner_html,
             command_palette=command_palette_html,
+            non_editable_title=MODE == Mode.FILE,
             current_entry=current_entry if current_entry is not None else '',
             blocks=blocks_html,
             )
@@ -300,6 +301,9 @@ def open_entry(session, name):
 def save_entry(session, name):
     match MODE:
         case Mode.FILE:
+            if name != FILE_NAME:
+                raise Exception("Cannot change name in one-file mode.")
+
             markdown = block.get_all_markdown(session)
             with open(FILE_PATH, 'w+') as file:
                 file.write(markdown)

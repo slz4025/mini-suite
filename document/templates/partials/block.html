@@ -8,6 +8,7 @@
   hx-swap="outerHTML"
 >
   <div id="block-controls-{{ id }}" class="block-controls">
+    {% if show_linking %}
     <button
         title="append media"
         hx-put="/block/{{id}}/inputs/media"
@@ -24,6 +25,7 @@
     >
       🔗
     </button>
+    {% endif %}
     <button
       hx-put="/block/{{id}}/insert"
       hx-trigger="click"

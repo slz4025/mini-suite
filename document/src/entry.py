@@ -100,6 +100,10 @@ def import_file(session, file):
     block.set_all_markdown(session, contents)
 
 
+def export(session, filename):
+    wiki.export(session, filename)
+
+
 def get_media(session, media_name):
     dir = get_dir()
     media_dir = os.path.join(dir, "media")

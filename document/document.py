@@ -32,5 +32,23 @@ if __name__ == "__main__":
             "If not specified, will use default, non-wiki path.",
             )
 
+    parser.add_argument(
+            '-f',
+            '--file-path',
+            type=str,
+            default='',
+            help="Path to one-off file to modify."
+    )
+
     args = parser.parse_args(sys.argv[1:])
-    app.start(args.port, args.wiki_path)
+
+    wiki_path = os.path.abspath(args.wiki_path)
+    file_path = None
+    if args.file_path != "":
+        file_path = os.path.abspath(args.file_path)
+
+    app.start(
+        port=args.port,
+        wiki_path=wiki_path,
+        one_off_file=file_path
+    )

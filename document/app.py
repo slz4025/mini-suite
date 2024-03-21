@@ -1,15 +1,9 @@
-from flask import Flask, render_template, session, Response, redirect, request
+from flask import Flask, session, request, redirect
 from flask_htmx import HTMX
 from waitress import serve
 
-import src.block as block
-import src.command_palette as command_palette
-import src.entry as entry
 import src.errors as errors
-import src.notifications as notifications
-import src.selector as selector
-import src.settings as settings
-import src.wiki as wiki
+import src.project as project
 
 
 app = Flask(__name__)
@@ -23,41 +17,6 @@ def get_file(files):
     file = request.files['input']
     return file
 
-
-def render_null(session):
-    return render_template(
-            "partials/null.html",
-            )
-
-
-def render_body(session):
-    dark_mode = settings.get_dark_mode()
-    null = render_null(session)
-    notification_banner_html = notifications.render(session)
-    show_command_palette = command_palette.get_show()
-    command_palette_html = command_palette.render(session)
-    current_entry = entry.get_name()
-    blocks_html = block.render_all(session)
-    return render_template(
-            "partials/body.html",
-            dark_mode=dark_mode,
-            show_command_palette=show_command_palette,
-            null=null,
-            notification_banner=notification_banner_html,
-            command_palette=command_palette_html,
-            current_entry=current_entry if current_entry is not None else '',
-            blocks=blocks_html,
-            )
-
-
-def render(session):
-    body = render_body(session)
-    return render_template(
-            "index.html",
-            body=body,
-            )
-
-### BEGIN FEEDBACK ###
 
 @app.route("/error")
 def unexpected_error():
@@ -81,39 +40,29 @@ def unexpected_error():
 def notification(show):
     assert htmx is not None
 
-    show_notifications = show == "on"
-    if not show_notifications:
-        notifications.reset()
-
-    return notifications.render(session)
-
-### END FEEDBACK ###
+    return project.notification(session, show)
 
 
 @app.route("/")
 @errors.handler
 def root():
-    return redirect("/entry/new")
+    return redirect("/entry/temp")
 
-
-### BEGIN SETTINGS ###
 
 @app.route("/dark-mode/<state>", methods=['GET'])
 @errors.handler
 def dark_mode(state):
     assert htmx is not None
 
-    dark_mode = state == "on"
-    settings.set_dark_mode(dark_mode)
+    return project.dark_mode(session, state)
 
-    return render_body(session)
 
 @app.route("/command-palette/io/<operation>", methods=['PUT'])
 @errors.handler
 def command_palette_operation(operation):
     assert htmx is not None
 
-    return command_palette.render_operation(session, operation)
+    return project.command_palette_operation(session, operation)
 
 
 @app.route("/command-palette/<state>", methods=['PUT'])
@@ -121,22 +70,15 @@ def command_palette_operation(operation):
 def command_palette_toggle(state):
     assert htmx is not None
 
-    show = state == 'open'
-    command_palette.set_show(show)
+    return project.command_palette_toggle(session, state)
 
-    return render_body(session)
-
-### END SETTINGS ###
-
-
-### BEGIN BLOCK ###
 
 @app.route("/block/<id>/inputs/<operation>", methods=['PUT'])
 @errors.handler
 def block_operation(id, operation):
     assert htmx is not None
 
-    return block.render_operation(session, id, operation)
+    return project.block_operation(session, id, operation)
 
 
 @app.route("/block/unfocus", methods=['POST'])
@@ -144,9 +86,7 @@ def block_operation(id, operation):
 def block_unfocus():
     assert htmx is not None
 
-    block.reset_in_focus(session)
-
-    return block.render_all(session)
+    return project.block_unfocus(session)
 
 
 @app.route("/block/<id>/focus", methods=['POST'])
@@ -154,15 +94,7 @@ def block_unfocus():
 def block_focus(id):
     assert htmx is not None
 
-    prev_in_focus = block.get_in_focus(session)
-    block.set_in_focus(session, id)
-
-    html = block.render(session, id)
-    resp = Response(html)
-    if prev_in_focus is not None:
-        # rerender so shows as unfocused
-        resp.headers['HX-Trigger'] = f"block-{prev_in_focus}"
-    return resp
+    return project.block_focus(session, id)
 
 
 @app.route("/block/next", methods=['POST'])
@@ -170,9 +102,7 @@ def block_focus(id):
 def block_next():
     assert htmx is not None
 
-    block.set_next_in_focus(session)
-
-    return block.render_all(session)
+    return project.block_next(session)
 
 
 @app.route("/block/prev", methods=['POST'])
@@ -180,9 +110,7 @@ def block_next():
 def block_prev():
     assert htmx is not None
 
-    block.set_prev_in_focus(session)
-
-    return block.render_all(session)
+    return project.block_prev(session)
 
 
 @app.route("/block/<id>/edit", methods=['POST'])
@@ -192,9 +120,7 @@ def block_edit(id):
 
     contents = request.form["contents"]
 
-    block.set_markdown(contents, id=id)
-
-    return render_null(session)
+    return project.block_edit(session, id, contents)
 
 
 @app.route("/block/<id>/link/<name>", methods=['POST'])
@@ -202,23 +128,7 @@ def block_edit(id):
 def block_link(id, name):
     assert htmx is not None
 
-    error = None
-    try:
-        entry.check_name(name)
-        wiki.check_exists(name)
-        block.add_link(session, id, name)
-    except errors.UserError as e:
-        error = e
-
-    if error is not None:
-        notifications.set_error(error)
-    else:
-        notifications.set_info("Link added.")
-
-    html = block.render(session, id)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
+    return project.block_link(session, id, name)
 
 
 @app.route("/block/<id>/media", methods=['POST'])
@@ -226,23 +136,8 @@ def block_link(id, name):
 def block_media(id):
     assert htmx is not None
 
-    error = None
-    try:
-        file = get_file(request.files)
-        media_id = entry.save_media(session, file)
-        block.append_media_reference(session, id, media_id, alt=file.name)
-    except errors.UserError as e:
-        error = e
-
-    if error is not None:
-        notifications.set_error(error)
-    else:
-        notifications.set_info("Media appended.")
-
-    html = block.render(session, id)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
+    file = get_file(request.files)
+    return project.block_media(session, id, file)
 
 
 @app.route("/block/<id>/up", methods=['PUT'])
@@ -250,7 +145,7 @@ def block_media(id):
 def block_up(id):
     assert htmx is not None
 
-    return block.move_up(session, id)
+    return project.move_up(session, id)
 
 
 @app.route("/block/<id>/down", methods=['PUT'])
@@ -258,7 +153,7 @@ def block_up(id):
 def block_down(id):
     assert htmx is not None
 
-    return block.move_down(session, id)
+    return project.move_down(session, id)
 
 
 @app.route("/block/<id>/cut", methods=['PUT'])
@@ -266,12 +161,7 @@ def block_down(id):
 def block_cut(id):
     assert htmx is not None
 
-    notifications.set_info("Block copied.")
-
-    html = block.cut(session, id)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
+    return project.block_cut(session, id)
 
 
 @app.route("/block/<id>/copy", methods=['PUT'])
@@ -279,12 +169,7 @@ def block_cut(id):
 def block_copy(id):
     assert htmx is not None
 
-    notifications.set_info("Block copied.")
-
-    html = block.copy(session, id)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
+    return project.block_copy(session, id)
 
 
 @app.route("/block/<id>/paste", methods=['PUT'])
@@ -292,7 +177,7 @@ def block_copy(id):
 def block_paste(id):
     assert htmx is not None
 
-    return block.paste(session, id)
+    return project.block_paste(session, id)
 
 
 @app.route("/block/<id>/insert", methods=['PUT'])
@@ -300,7 +185,7 @@ def block_paste(id):
 def block_insert(id):
     assert htmx is not None
 
-    return block.insert(session, id)
+    return project.block_insert(session, id)
 
 
 @app.route("/block/<id>/delete", methods=['PUT'])
@@ -308,30 +193,23 @@ def block_insert(id):
 def block_delete(id):
     assert htmx is not None
 
-    return block.delete(session, id)
+    return project.block_delete(session, id)
 
 
 @app.route("/block/<id>", methods=['PUT'])
 @errors.handler
-def block_endpoint(id):
+def block_render(id):
     assert htmx is not None
 
-    return block.render(session, id=id)
+    return project.block_render(session, id)
 
-### END BLOCK ###
-
-
-### BEGIN ENTRY ###
 
 @app.route("/new", methods=['POST'])
 @errors.handler
 def new_entry():
     assert htmx is not None
 
-    notifications.set_info("Creating new entry.")
-    resp = Response()
-    resp.headers["HX-Redirect"] = "/entry/new"
-    return resp
+    return project.new_entry(session)
 
 
 @app.route("/open/<name>", methods=['POST'])
@@ -339,24 +217,7 @@ def new_entry():
 def open_entry(name):
     assert htmx is not None
 
-    error = None
-    try:
-        entry.check_name(name)
-        wiki.check_exists(name)
-    except errors.UserError as e:
-        error = e
-
-    if error is not None:
-        notifications.set_error(error)
-        html = render_null(session)
-        resp = Response(html)
-        resp.headers['HX-Trigger'] = "notification"
-        return resp
-    else:
-        resp = Response()
-        notifications.set_info("Entry opened.")
-        resp.headers["HX-Redirect"] = f"/entry/{name}"
-        return resp
+    return project.open_entry(session, name)
 
 
 @app.route("/save", methods=['POST'])
@@ -366,64 +227,35 @@ def save_entry():
 
     name = request.form["name"]
 
-    error = None
-    try:
-        entry.save(session, name)
-    except errors.UserError as e:
-        error = e
-
-    if error is not None:
-        notifications.set_error(error)
-        html = render_null(session)
-        resp = Response(html)
-        resp.headers['HX-Trigger'] = "notification"
-        return resp
-    else:
-        resp = Response()
-        notifications.set_info("Entry saved.")
-        resp.headers["HX-Redirect"] = f"/entry/{name}"
-        return resp
+    return project.save_entry(session, name)
 
 
 @app.route("/entry/<operation>/results", methods=['POST'])
 @errors.handler
-def get_results(operation):
+def get_entry_results(operation):
     assert htmx is not None
 
     search = request.form["search"]
 
-    return selector.render_results(session, operation, search)
+    return project.get_entry_results(session, operation, search)
 
 
-@app.route("/entry/new", methods=['GET'])
+@app.route("/entry/temp", methods=['GET'])
 @errors.handler
-def get_new_entry():
-    entry.use_temp(session)
-
-    return render(session)
+def get_temp_entry():
+    return project.get_temp_entry(session)
 
 
 @app.route("/entry/<name>", methods=['GET'])
 @errors.handler
-def get_entry(name):
-    error = None
-    try:
-        wiki.check_exists(name)
-        entry.set(session, name)
-    except errors.UserError as e:
-        error = e
-
-    if error is not None:
-        notifications.set_error(error)
-        return redirect("/")
-    else:
-        return render(session)
+def get_wiki_entry(name):
+    return project.get_wiki_entry(session, name)
 
 
 @app.route("/media/<path:filename>", methods=['GET'])
 @errors.handler
 def get_media(filename):
-    return entry.get_media(session, filename)
+    return project.get_media(session, filename)
 
 
 @app.route("/import", methods=['POST'])
@@ -431,22 +263,9 @@ def get_media(filename):
 def import_markdown():
     assert htmx is not None
 
-    error = None
-    try:
-        file = get_file(request.files)
-        entry.import_file(session, file)
-    except errors.UserError as e:
-        error = e
+    file = get_file(request.files)
 
-    if error is not None:
-        notifications.set_error(error)
-    else:
-        notifications.set_info("Markdown imported.")
-
-    html = block.render_all(session)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
+    return project.import_markdown(session, file)
 
 
 @app.route("/export", methods=['POST'])
@@ -455,28 +274,11 @@ def export_html():
     assert htmx is not None
 
     filename = request.form["input"]
-
-    error = None
-    try:
-        wiki.export(session, filename)
-    except errors.UserError as e:
-        error = e
-
-    if error is not None:
-        notifications.set_error(error)
-    else:
-        notifications.set_info("HTML exported.")
-
-    html = render_null(session)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
+    return project.export_html(session, filename)
 
 
-def start(port, wiki_path):
-    wiki.set(wiki_path)
-    notifications.init()
-    settings.init()
-    command_palette.init()
+def start(port, wiki_path, one_off_file=None):
+    project.setup(wiki_path, one_off_file)
 
+    print(f"Serving on port {port}.")
     serve(app, host='0.0.0.0', port=port)

@@ -165,7 +165,7 @@ def render_operation(session, id, operation):
             )
 
 
-def render(session, id):
+def render(session, id, show_linking=True):
     in_focus = get_in_focus(session)
     focused = in_focus == id
     markdown = get_markdown(id)
@@ -175,15 +175,16 @@ def render(session, id):
             "partials/block.html",
             focused=focused,
             id=id,
+            show_linking=show_linking,
             markdown=markdown,
             markdown_html=rendered,
             )
 
 
-def render_all(session):
+def render_all(session, show_linking=True):
     all_block_html = []
     for id in order:
-        block_html = render(session, id)
+        block_html = render(session, id, show_linking)
         all_block_html.append(block_html)
     blocks_html = "\n".join(all_block_html)
     return render_template(
@@ -192,53 +193,53 @@ def render_all(session):
             )
 
 
-def move_up(session, id):
+def move_up(session, id, show_linking=True):
     pos = get_pos(id)
     if pos > 0:
         prev_pos = pos - 1
         swap_order(prev_pos, pos)
 
     # for simplicity, re-render all blocks
-    return render_all(session)
+    return render_all(session, show_linking)
 
 
-def move_down(session, id):
+def move_down(session, id, show_linking=True):
     pos = get_pos(id)
     if pos < len(order) - 1:
         next_pos = pos + 1
         swap_order(next_pos, pos)
 
     # for simplicity, re-render all blocks
-    return render_all(session)
+    return render_all(session, show_linking)
 
 
-def copy(session, id):
+def copy(session, id, show_linking=True):
     global buffer
 
     markdown = get_markdown(id)
     set_buffer(markdown)
 
-    return render(session, id)
+    return render(session, id, show_linking)
 
 
-def paste(session, id):
+def paste(session, id, show_linking=True):
     markdown = get_buffer()
 
     if markdown is not None:
         set_markdown(markdown, id)
 
-    return render(session, id)
+    return render(session, id, show_linking)
 
 
-def insert(session, id):
+def insert(session, id, show_linking=True):
     new_id = create_id()
     set_markdown("", new_id)
 
     pos = get_pos(id)
     insert_into_order(new_id, pos+1)
 
-    curr_block = render(session, id)
-    next_block = render(session, new_id)
+    curr_block = render(session, id, show_linking)
+    next_block = render(session, new_id, show_linking)
     return "\n".join([curr_block, next_block])
 
 

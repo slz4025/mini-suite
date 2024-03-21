@@ -1,5 +1,6 @@
 {% if show %}
 <div id="command-palette" class="open">
+  {% if show_io %}
   <fieldset>
     <legend>INPUT/OUTPUT</legend>
     <div 
@@ -41,6 +42,7 @@
 
     <form id="command-palette-io-form" style="display: none;"></form>
   </fieldset>
+  {% endif %}
 
   <div id="command-palette-key-maps" class="command-palette-section">
     <p class="help">Render block: [Shift+Enter]</p>

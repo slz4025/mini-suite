@@ -9,6 +9,13 @@ md = (
         )
 
 
+def get_abs_path(path, base_rel_path):
+    path = os.path.expanduser(path)
+    if not os.path.isabs(path):
+        path = os.path.join(base_rel_path, path)
+    return path
+
+
 def use_abs_path(markdown, base_rel_path):
     media_instances = re.finditer(
             r"\!\[(?P<alt>.*)\]\((?P<path>.*)\)",
@@ -18,7 +25,7 @@ def use_abs_path(markdown, base_rel_path):
     for instance in media_instances:
         alt = instance.group("alt")
         path = instance.group("path")
-        abs_path = os.path.join(base_rel_path, path)
+        abs_path = get_abs_path(path, base_rel_path)
         fixed = f"![{alt}]({abs_path})"
 
         start_index = instance.start(0) + offset
@@ -37,7 +44,7 @@ def use_abs_path(markdown, base_rel_path):
     for instance in link_instances:
         alt = instance.group("alt")
         path = instance.group("path")
-        abs_path = os.path.join(base_rel_path, path)
+        abs_path = get_abs_path(path, base_rel_path)
         fixed = f"[{alt}]({abs_path})"
 
         start_index = instance.start(0) + offset

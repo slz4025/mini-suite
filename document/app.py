@@ -228,6 +228,12 @@ def get_wiki_entry(name):
     return project.get_wiki_entry(session, name)
 
 
+@app.route("/<path:filepath>", methods=['GET'])
+@errors.handler
+def get_file_obj(filepath):
+    return project.get_file_obj(session, filepath)
+
+
 @app.route("/media/<path:filename>", methods=['GET'])
 @errors.handler
 def get_media(filename):

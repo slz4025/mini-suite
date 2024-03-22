@@ -153,11 +153,11 @@ def render_operation(session, id, operation):
                     )
 
 
-def render(session, id, show_linking=True):
+def render(session, id, show_linking=True, base_rel_path=None):
     in_focus = get_in_focus(session)
     focused = in_focus == id
     markdown = get_markdown(id)
-    rendered = md.html_for_internal(markdown)
+    rendered = md.html_for_internal(markdown, base_rel_path)
 
     return render_template(
             "partials/block.html",
@@ -169,10 +169,10 @@ def render(session, id, show_linking=True):
             )
 
 
-def render_all(session, show_linking=True):
+def render_all(session, show_linking=True, base_rel_path=None):
     all_block_html = []
     for id in order:
-        block_html = render(session, id, show_linking)
+        block_html = render(session, id, show_linking, base_rel_path)
         all_block_html.append(block_html)
     blocks_html = "\n".join(all_block_html)
     return render_template(
@@ -181,15 +181,15 @@ def render_all(session, show_linking=True):
             )
 
 
-def insert(session, id, show_linking=True):
+def insert(session, id, show_linking=True, base_rel_path=None):
     new_id = create_id()
     set_markdown("", new_id)
 
     pos = get_pos(id)
     insert_into_order(new_id, pos+1)
 
-    curr_block = render(session, id, show_linking)
-    next_block = render(session, new_id, show_linking)
+    curr_block = render(session, id, show_linking, base_rel_path)
+    next_block = render(session, new_id, show_linking, base_rel_path)
     return "\n".join([curr_block, next_block])
 
 

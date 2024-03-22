@@ -1,5 +1,5 @@
 from enum import Enum
-from flask import render_template, Response, redirect
+from flask import render_template, Response, redirect, send_from_directory
 
 import os
 
@@ -20,6 +20,7 @@ class Mode(Enum):
 
 MODE = None
 FILE_PATH = None
+FILE_DIR = None
 FILE_NAME = None
 
 
@@ -27,9 +28,10 @@ def setup(wiki_path, one_off_file):
     global MODE
 
     if one_off_file is not None:
-        global FILE_PATH, FILE_NAME
-        _, basename = os.path.split(one_off_file)
+        global FILE_PATH, FILE_DIR, FILE_NAME
+        dir, basename = os.path.split(one_off_file)
         FILE_NAME = basename
+        FILE_DIR = dir
         FILE_PATH = one_off_file
         MODE = Mode.FILE
     elif wiki_path is not None:
@@ -80,7 +82,11 @@ def render_body(session):
         case Mode.WIKI:
             current_entry = entry.get_name()
 
-    blocks_html = block.render_all(session, show_linking=MODE == Mode.WIKI)
+    blocks_html = block.render_all(
+            session,
+            show_linking=MODE == Mode.WIKI,
+            base_rel_path=FILE_DIR,
+            )
     return render_template(
             "partials/body.html",
             dark_mode=dark_mode,
@@ -162,14 +168,24 @@ def block_unfocus(session):
     id = block.get_in_focus(session)
     block.reset_in_focus(session)
 
-    return block.render(session, id, show_linking=MODE == Mode.WIKI)
+    return block.render(
+            session,
+            id,
+            show_linking=MODE == Mode.WIKI,
+            base_rel_path=FILE_DIR,
+            )
 
 
 def block_focus(session, id):
     prev_in_focus = block.get_in_focus(session)
     block.set_in_focus(session, id)
 
-    html = block.render(session, id, show_linking=MODE == Mode.WIKI)
+    html = block.render(
+            session,
+            id,
+            show_linking=MODE == Mode.WIKI,
+            base_rel_path=FILE_DIR,
+            )
     resp = Response(html)
     if prev_in_focus is not None:
         # rerender so shows as unfocused
@@ -181,7 +197,12 @@ def block_next(session):
     id = block.get_in_focus(session)
     block.set_next_in_focus(session)
 
-    html = block.render(session, id, show_linking=MODE == Mode.WIKI)
+    html = block.render(
+            session,
+            id,
+            show_linking=MODE == Mode.WIKI,
+            base_rel_path=FILE_DIR,
+            )
     resp = Response(html)
     next_in_focus = block.get_in_focus(session)
     if next_in_focus != id:
@@ -193,7 +214,12 @@ def block_prev(session):
     id = block.get_in_focus(session)
     block.set_prev_in_focus(session)
 
-    html = block.render(session, id, show_linking=MODE == Mode.WIKI)
+    html = block.render(
+            session,
+            id,
+            show_linking=MODE == Mode.WIKI,
+            base_rel_path=FILE_DIR,
+            )
     resp = Response(html)
     next_in_focus = block.get_in_focus(session)
     if next_in_focus != id:
@@ -222,10 +248,23 @@ def block_link(session, id, name):
     else:
         notifications.set_info("Link added.")
 
-    html = block.render(session, id, show_linking=MODE == Mode.WIKI)
+    html = block.render(
+            session,
+            id,
+            show_linking=MODE == Mode.WIKI,
+            base_rel_path=FILE_DIR,
+            )
     resp = Response(html)
     resp.headers['HX-Trigger'] = "notification"
     return resp
+
+
+def get_file_obj(session, filepath):
+    check_using_file()
+
+    filepath = "/" + filepath
+    filedir, filename = os.path.split(filepath)
+    return send_from_directory(filedir, filename)
 
 
 def get_media(session, filename):
@@ -249,14 +288,24 @@ def block_media(session, id, file):
     else:
         notifications.set_info("Media appended.")
 
-    html = block.render(session, id, show_linking=MODE == Mode.WIKI)
+    html = block.render(
+            session,
+            id,
+            show_linking=MODE == Mode.WIKI,
+            base_rel_path=FILE_DIR,
+            )
     resp = Response(html)
     resp.headers['HX-Trigger'] = "notification"
     return resp
 
 
 def block_insert(session, id):
-    return block.insert(session, id, show_linking=MODE == Mode.WIKI)
+    return block.insert(
+            session,
+            id,
+            show_linking=MODE == Mode.WIKI,
+            base_rel_path=FILE_DIR,
+            )
 
 
 def block_delete(session, id):
@@ -264,7 +313,12 @@ def block_delete(session, id):
 
 
 def block_render(session, id):
-    return block.render(session, id=id, show_linking=MODE == Mode.WIKI)
+    return block.render(
+            session,
+            id=id,
+            show_linking=MODE == Mode.WIKI,
+            base_rel_path=FILE_DIR,
+            )
 
 
 def new_entry(session):

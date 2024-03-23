@@ -115,20 +115,22 @@ fieldset {
   margin-right: 0;
 }
 textarea {
+  width: 100%;
   background-color: transparent;
   border: 0.1rem solid var(--secondary-color);
 
   color: var(--main-color);
 }
 input {
+  width: 100%;
   background-color: transparent;
   border: 0.1rem solid var(--secondary-color);
 
   color: var(--main-color);
 }
-input[type='submit'].icon {
+input[type='submit'] {
   display: inline;
-  height: 30px;
+  height: 25px;
 }
 input.cell {
   padding: 0.25rem;
@@ -151,14 +153,15 @@ input.cell:focus {
   cursor: text;
 }
 select {
+  width: 100%;
   background-color: transparent;
   border: 0.1rem solid var(--secondary-color);
-  width: 100%;
 
   font-family: var(--main-ff);
   color: var(--main-color);
 }
 option {
+  width: 100%;
   background-color: var(--background-color);
   border: 0.1rem solid var(--secondary-color);
 
@@ -176,7 +179,8 @@ button {
 }
 button.icon {
   display: inline;
-  height: 30px;
+  height: 25px;
+  width: 25px;
 }
 button.toggler {
   width: 100%;

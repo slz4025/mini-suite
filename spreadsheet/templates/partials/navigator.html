@@ -23,8 +23,9 @@
       hx-trigger="click"
       hx-target="#navigator"
       hx-swap="outerHTML"
+      style="width: {{ 'auto' if show_help else '' }};"
     >
-      🏠
+      <span>🏠</span>
       {% if show_help %}
         <span>[Ctrl+h]</span>
       {% endif %}
@@ -37,8 +38,9 @@
       hx-trigger="click"
       hx-target="#navigator"
       hx-swap="outerHTML"
+      style="width: {{ 'auto' if show_help else '' }};"
     >
-      ⮝
+      <span>⮝</span>
       {% if show_help %}
         <span>[Ctrl+Up]</span>
       {% endif %}
@@ -51,8 +53,9 @@
       hx-trigger="click"
       hx-target="#navigator"
       hx-swap="outerHTML"
+      style="width: {{ 'auto' if show_help else '' }};"
     >
-      ⮟
+      <span>⮟</span>
       {% if show_help %}
         <span>[Ctrl+Down]</span>
       {% endif %}
@@ -65,8 +68,9 @@
       hx-trigger="click"
       hx-target="#navigator"
       hx-swap="outerHTML"
+      style="width: {{ 'auto' if show_help else '' }};"
     >
-      ⮜
+      <span>⮜</span>
       {% if show_help %}
         <span>[Ctrl+Left]</span>
       {% endif %}
@@ -79,8 +83,9 @@
       hx-trigger="click"
       hx-target="#navigator"
       hx-swap="outerHTML"
+      style="width: {{ 'auto' if show_help else '' }};"
     >
-      ⮞
+      <span>⮞</span>
       {% if show_help %}
         <span>[Ctrl+Right]</span>
       {% endif %}

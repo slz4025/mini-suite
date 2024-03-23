@@ -27,7 +27,6 @@
         hx-get="/selection/inputs"
         hx-target="#selection-inputs"
         hx-swap="outerHTML"
-        style="width: auto;"
       >
         {% for mode_option in mode_options %}
         {% if mode_option == mode or (not mode and loop.index == 0) %}
@@ -44,7 +43,6 @@
     <div class="inner" style="margin-bottom: 0; display: flex; align-items: top;">
       <input
         type="submit"
-        class="icon"
         value="↵"
         id="selection-submit"
         style="margin: 0.25rem;"
@@ -57,7 +55,7 @@
           hx-target="#selection"
           hx-swap="outerHTML"
           style="font-size: 0.8rem; margin: 0.25rem;"
-      >🗑</button>
+          ><span>🗑</span></button>
     </div>
   </form>
 </div>

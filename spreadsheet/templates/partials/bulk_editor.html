@@ -23,7 +23,6 @@
         hx-get="/bulk-editor/operation"
         hx-target="#bulk-editor-operation-form"
         hx-swap="outerHTML"
-        style="width: auto;"
       >
         {% for operation_option, operation_name in operation_options.items() %}
         {% if operation_option == operation or (not operation and loop.index == 0) %}

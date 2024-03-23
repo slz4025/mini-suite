@@ -240,23 +240,16 @@ def update_selection(mode, sel, error, reset=False):
     resp.headers['HX-Trigger'] = "notification"
 
     if error is not None:
-        notifications.set(session, notifications.Notification(
-            message=str(error),
-            mode=notifications.Mode.ERROR,
-        ))
+        notifications.set_error(session, error)
     else:
         if reset:
             selection.reset(session)
         else:
             selection.save(session, mode, sel)
 
-        notifications.set(session, notifications.Notification(
-            message="Selection {}.".format(
-                "cleared" if reset else "registered"
-            ),
-            mode=notifications.Mode.INFO,
+        notifications.set_info(session, "Selection {}.".format(
+            "cleared" if reset else "registered"
         ))
-
         # Rerender what operations are allowed based on selection.
         resp.headers['HX-Trigger'] += ",bulk-editor"
         # Show selection in port.
@@ -353,16 +346,9 @@ def apply_operation(name, modifications, error):
 
     resp.headers['HX-Trigger'] = "notification"
     if error is not None:
-        notifications.set(session, notifications.Notification(
-            message=str(error),
-            mode=notifications.Mode.ERROR,
-        ))
+        notifications.set_error(session, error)
     else:
-        notifications.set(session, notifications.Notification(
-            message="Bulk operation complete.",
-            mode=notifications.Mode.INFO,
-        ))
-
+        notifications.set_info(session, "Bulk operation complete.")
         resp.headers['HX-Trigger'] += ",update-port"
 
     return resp
@@ -457,15 +443,12 @@ def navigator_target():
                 error = e
 
             if error is not None:
-                notifications.set(session, notifications.Notification(
-                    message=str(error),
-                    mode=notifications.Mode.ERROR,
-                ))
+                notifications.set_error(session, error)
             else:
-                notifications.set(session, notifications.Notification(
-                    message="Targeting cell position in port.",
-                    mode=notifications.Mode.INFO,
-                ))
+                notifications.set_info(
+                    session,
+                    "Targeting cell position in port.",
+                )
             resp.headers['HX-Trigger'] += ",notification"
 
     navigator_target_html = navigator.render_target(session)
@@ -480,27 +463,11 @@ def navigator_move(method):
 
     navigator.move_upperleft(session, method)
 
-    notifications.set(session, notifications.Notification(
-        message="Moved port.",
-        mode=notifications.Mode.INFO,
-    ))
-
+    notifications.set_info(session, "Moved port.")
     navigator_html = navigator.render(session)
     resp = Response(navigator_html)
     resp.headers['HX-Trigger'] = "update-port,notification"
     return resp
-
-
-@app.route("/settings/toggle", methods=['PUT'])
-@errors.handler
-def settings_toggler():
-    assert htmx is not None
-
-    show_settings = command_palette.get_show_settings(session)
-    command_palette.set_show_settings(session, not show_settings)
-
-    html = settings.render(session)
-    return html
 
 
 @app.route("/settings/render-mode/<render_mode>", methods=['PUT'])
@@ -509,11 +476,8 @@ def render_mode(render_mode):
     assert htmx is not None
 
     settings.set(session, render_mode)
-    notifications.set(session, notifications.Notification(
-        message="Updated render mode.",
-        mode=notifications.Mode.INFO,
-    ))
 
+    notifications.set_info(session, "Updated render mode.")
     resp = Response()
     resp.headers['HX-Trigger'] = "notification"
     return resp
@@ -527,11 +491,8 @@ def navigator_dimensions():
     nrows = int(request.form['nrows'])
     ncols = int(request.form['ncols'])
     navigator.set_dimensions(session, nrows, ncols)
-    notifications.set(session, notifications.Notification(
-        message="Updated view dimensions.",
-        mode=notifications.Mode.INFO,
-    ))
 
+    notifications.set_info(session, "Updated view dimensions.")
     port_html = port.render(session)
     resp = Response(port_html)
     resp.headers['HX-Trigger'] = "notification"
@@ -546,11 +507,8 @@ def navigator_move_increments():
     mrows = int(request.form['mrows'])
     mcols = int(request.form['mcols'])
     navigator.set_move_increments(session, mrows, mcols)
-    notifications.set(session, notifications.Notification(
-        message="Updated move increments.",
-        mode=notifications.Mode.INFO,
-    ))
 
+    notifications.set_info(session, "Updated move increments.")
     port_html = port.render(session)
     resp = Response(port_html)
     resp.headers['HX-Trigger'] = "notification"

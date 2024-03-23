@@ -44,6 +44,14 @@ def init(session):
     reset(session)
 
 
+def set_error(session, error):
+    set(session, Notification(message=str(error), mode=Mode.ERROR))
+
+
+def set_info(session, message):
+    set(session, Notification(message=message, mode=Mode.INFO))
+
+
 def render(session, show):
     notification = get(session)
     return render_template(

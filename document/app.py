@@ -11,13 +11,6 @@ htmx = HTMX(app)
 app.config.from_object('config.Config')
 
 
-def get_file(files):
-    if 'input' not in files:
-        raise errors.UserError("File was not chosen.")
-    file = request.files['input']
-    return file
-
-
 @app.route("/error")
 def unexpected_error():
     error_message = errors.get_message(session)
@@ -152,8 +145,7 @@ def block_link(id, name):
 def block_media(id):
     assert htmx is not None
 
-    file = get_file(request.files)
-    return project.block_media(session, id, file)
+    return project.block_media(request, session, id)
 
 
 @app.route("/block/<id>/insert", methods=['PUT'])
@@ -245,9 +237,7 @@ def get_media(filename):
 def import_markdown():
     assert htmx is not None
 
-    file = get_file(request.files)
-
-    return project.import_markdown(session, file)
+    return project.import_markdown(request, session)
 
 
 @app.route("/export", methods=['POST'])

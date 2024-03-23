@@ -108,6 +108,13 @@ def render(session):
             )
 
 
+def get_file(files):
+    if 'input' not in files:
+        raise errors.UserError("File was not chosen.")
+    file = files['input']
+    return file
+
+
 def root(session):
     match MODE:
         case Mode.FILE:
@@ -273,11 +280,12 @@ def get_media(session, filename):
     return entry.get_media(session, filename)
 
 
-def block_media(session, id, file):
+def block_media(request, session, id):
     check_using_wiki()
 
     error = None
     try:
+        file = get_file(request.files)
         media_id = entry.save_media(session, file)
         block.append_media_reference(session, id, media_id, alt=file.name)
     except errors.UserError as e:
@@ -418,11 +426,12 @@ def get_wiki_entry(session, name):
         return render(session)
 
 
-def import_markdown(session, file):
+def import_markdown(request, session):
     check_using_wiki()
 
     error = None
     try:
+        file = get_file(request.files)
         entry.import_file(session, file)
     except errors.UserError as e:
         error = e

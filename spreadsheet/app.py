@@ -12,6 +12,7 @@ import src.bulk_editor as bulk_editor
 import src.command_palette as command_palette
 import src.editor as editor
 import src.errors as errors
+import src.files as files
 import src.navigator as navigator
 import src.notifications as notifications
 import src.port as port
@@ -468,6 +469,66 @@ def navigator_move(method):
     resp = Response(navigator_html)
     resp.headers['HX-Trigger'] = "update-port,notification"
     return resp
+
+
+@app.route("/files/toggle", methods=['PUT'])
+@errors.handler
+def files_toggler():
+    assert htmx is not None
+
+    show_files = command_palette.get_show_files(session)
+    command_palette.set_show_files(session, not show_files)
+
+    html = files.render(session)
+    return html
+
+
+@app.route("/files/import", methods=['PUT'])
+@errors.handler
+def files_import():
+    assert htmx is not None
+
+    if 'input' not in request.files:
+        raise errors.UserError("File was not chosen.")
+    file = request.files['input']
+
+    # TODO: Import contents of file to sheet.
+
+    notifications.set_info(session, "Imported file.")
+    port_html = port.render(session)
+    resp = Response(port_html)
+    resp.headers['HX-Trigger'] = "notification"
+    return resp
+
+
+@app.route("/files/export", methods=['PUT'])
+@errors.handler
+def files_export():
+    assert htmx is not None
+
+    filename = request.form["input"]
+    if filename == '':
+        raise errors.UserError("Filename not given.")
+
+    # TODO: Save current sheet to filename under DOWNLOADS.
+
+    notifications.set_info(session, "Exported file.")
+    port_html = port.render(session)
+    resp = Response(port_html)
+    resp.headers['HX-Trigger'] = "notification"
+    return resp
+
+
+@app.route("/settings/toggle", methods=['PUT'])
+@errors.handler
+def settings_toggler():
+    assert htmx is not None
+
+    show_settings = command_palette.get_show_settings(session)
+    command_palette.set_show_settings(session, not show_settings)
+
+    html = settings.render(session)
+    return html
 
 
 @app.route("/settings/render-mode/<render_mode>", methods=['PUT'])

@@ -132,6 +132,13 @@ input[type='submit'] {
   display: inline;
   height: 25px;
 }
+input[type=file]::file-selector-button {
+  background-color: transparent;
+  color: var(--main-color);
+  font-family: var(--main-ff);
+  border: 0.1rem solid var(--secondary-color);
+  height: 100%;
+}
 input.cell {
   padding: 0.25rem;
   border: 0;

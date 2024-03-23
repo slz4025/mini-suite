@@ -2,6 +2,7 @@ from flask import render_template
 
 import src.bulk_editor as bulk_editor
 import src.editor as editor
+import src.files as files
 import src.navigator as navigator
 import src.selection as selection
 import src.settings as settings
@@ -61,6 +62,15 @@ def set_show_navigator(session, show_navigator):
     session["show-navigator"] = str(show_navigator)
 
 
+def get_show_files(session):
+    show_files = session["show-files"] == 'True'
+    return show_files
+
+
+def set_show_files(session, show_files):
+    session["show-files"] = str(show_files)
+
+
 def get_show_settings(session):
     show_settings = session["show-settings"] == 'True'
     return show_settings
@@ -78,6 +88,7 @@ def render(session):
     selection_html = selection.render(session)
     bulk_editor_html = bulk_editor.render(session)
     navigator_html = navigator.render(session)
+    files_html = files.render(session)
     settings_html = settings.render(session)
 
     command_palette = render_template(
@@ -88,6 +99,7 @@ def render(session):
             selection=selection_html,
             bulk_editor=bulk_editor_html,
             navigator=navigator_html,
+            files=files_html,
             settings=settings_html,
     )
     return command_palette
@@ -107,5 +119,7 @@ def init(session):
     set_show_bulk_editor(session, show_bulk_editor)
     show_navigator = False
     set_show_navigator(session, show_navigator)
+    show_files = False
+    set_show_files(session, show_files)
     show_settings = False
     set_show_settings(session, show_settings)

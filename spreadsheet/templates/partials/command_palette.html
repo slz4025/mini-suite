@@ -72,6 +72,20 @@
   </button>
   {{ navigator|safe }}
   <button
+      id="files-toggler"
+      class="toggler"
+      hx-put="/files/toggle"
+      hx-trigger="click"
+      hx-target="#files"
+      hx-swap="outerHTML"
+  >
+    FILES
+    {% if show_help %}
+    [Ctrl+5]
+    {% endif %}
+  </button>
+  {{ files|safe }}
+  <button
       id="settings-toggler"
       class="toggler"
       hx-put="/settings/toggle"
@@ -81,7 +95,7 @@
   >
     [⚙] SETTINGS
     {% if show_help %}
-    [Ctrl+5]
+    [Ctrl+6]
     {% endif %}
   </button>
   {{ settings|safe }}

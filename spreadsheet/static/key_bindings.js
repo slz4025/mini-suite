@@ -18,6 +18,9 @@ window.addEventListener('keyup', function(event) {
         document.getElementById("navigator-toggler").click();
         break;
       case '5':
+        document.getElementById("files-toggler").click();
+        break
+      case '6':
         document.getElementById("settings-toggler").click();
         break;
 

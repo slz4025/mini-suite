@@ -48,13 +48,19 @@ def unexpected_error():
     return user_error_msg
 
 
+def render_null(session):
+    return render_template("partials/null.html")
+
+
 def render_body(session):
+    null = render_null(session)
     notification_banner = notifications.render(session, False)
     show_command_palette = command_palette.get_show(session)
     command_palette_html = command_palette.render(session)
     port_html = port.render(session)
     body = render_template(
             "partials/body.html",
+            null=null,
             notification_banner=notification_banner,
             command_palette=command_palette_html,
             data=port_html,
@@ -483,38 +489,46 @@ def files_toggler():
     return html
 
 
-@app.route("/files/import", methods=['PUT'])
+@app.route("/files/import", methods=['POST'])
 @errors.handler
 def files_import():
     assert htmx is not None
 
-    if 'input' not in request.files:
-        raise errors.UserError("File was not chosen.")
-    file = request.files['input']
+    error = None
+    try:
+        files.import_from(request)
+    except errors.UserError as e:
+        error = e
 
-    # TODO: Import contents of file to sheet.
+    if error is None:
+        notifications.set_info(session, "Imported file.")
+    else:
+        notifications.set_error(session, error)
 
-    notifications.set_info(session, "Imported file.")
     port_html = port.render(session)
     resp = Response(port_html)
     resp.headers['HX-Trigger'] = "notification"
     return resp
 
 
-@app.route("/files/export", methods=['PUT'])
+@app.route("/files/export", methods=['POST'])
 @errors.handler
 def files_export():
     assert htmx is not None
 
-    filename = request.form["input"]
-    if filename == '':
-        raise errors.UserError("Filename not given.")
+    error = None
+    try:
+        files.export_to(request)
+    except errors.UserError as e:
+        error = e
 
-    # TODO: Save current sheet to filename under DOWNLOADS.
+    if error is None:
+        notifications.set_info(session, "Exported file.")
+    else:
+        notifications.set_error(session, error)
 
-    notifications.set_info(session, "Exported file.")
-    port_html = port.render(session)
-    resp = Response(port_html)
+    null_html = render_null(session)
+    resp = Response(null_html)
     resp.headers['HX-Trigger'] = "notification"
     return resp
 

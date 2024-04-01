@@ -15,10 +15,9 @@
       Object.entries(json).forEach(([key, value]) => {
         style.setProperty(key, value);
       });
-      htmx.ajax('PUT', `/settings/render-mode/${render_mode}`, '#none');
+      htmx.ajax('PUT', `/settings/render-mode/${render_mode}`, '#null');
     }
   </script>
-  <div id="none" style="display: none"></div>
 
   <div class="inner">
     <label for="render-mode">Render Mode</label>

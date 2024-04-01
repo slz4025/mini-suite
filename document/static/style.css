@@ -340,6 +340,8 @@ th {
 td {
   padding: 0;
   border: 0.05rem solid var(--secondary-color);
+  word-wrap: break-word;
+  word-break: break-word;
 }
 q {
   color: var(--main-color);

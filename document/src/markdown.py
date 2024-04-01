@@ -44,6 +44,11 @@ def use_abs_path(markdown, base_rel_path):
     for instance in link_instances:
         alt = instance.group("alt")
         path = instance.group("path")
+
+        # skip web-links
+        if path.startswith("http"):
+            continue
+
         abs_path = get_abs_path(path, base_rel_path)
         fixed = f"[{alt}]({abs_path})"
 

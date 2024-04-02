@@ -28,6 +28,15 @@ class CellPosition:
         return self.row_index.in_bounds(start_row, end_row) \
             and self.col_index.in_bounds(start_col, end_col)
 
+    def __eq__(self, other):
+        return self.equals(other)
+
+    def __ne__(self, other):
+        return not self.equals(other)
+
+    def __hash__(self):
+        return hash((self.row_index.value, self.col_index.value))
+
 
 class RowRange(sheet.Range):
     def __init__(self, start, end):

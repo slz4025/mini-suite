@@ -19,6 +19,31 @@
   -->
   <h2>EDITOR</h2>
 
+  {% if show_help %}
+  <p>
+    This editor allows you to view and manipulate the
+    underlying formula of the currently focused cell.
+  <p>
+  </p>
+    Refer to a selection of other cells:
+      <code>ROWS(rs:re)</code>,
+      <code>COLS(cs:ce)</code>,
+      <code>BOX(rs:re,cs:ce)</code>,
+    where
+      <code>rs</code> = inclusive-start index of row range,
+      <code>re</code> = exclusive-end index of row range,
+      <code>cs</code> = inclusive-start index of column range,
+      <code>ce</code> = exclusive-end index of column range.
+  </p>
+  <p>
+    Cast the values within the selection:
+      <code>INT(sel)</code>,
+      <code>FLOAT(sel)</code>,
+    where
+      <code>sel</code> is the selection.
+  </p>
+  {% endif %}
+
   {% if editing %}
   <form
     hx-put="/cell/{{ row }}/{{ col }}/update"

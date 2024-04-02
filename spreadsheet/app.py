@@ -165,10 +165,22 @@ def cell_rerender(row, col):
 
     key = f"input-cell-{row}-{col}"
     value = request.form[key]
-    operations.update_cell(cell_position, value)
+
+    error = None
+    cell = None
+    try:
+        operations.update_cell(cell_position, value)
+    except (errors.UserError) as e:
+        error = e
+
+    if error is not None:
+        notifications.set_error(session, error)
+    else:
+        notifications.set_info(session, "Updated cell value successfully.")
 
     cell = port.render_cell(session, cell_position)
     resp = Response(cell)
+    resp.headers['HX-Trigger'] = "notification"
     return resp
 
 

@@ -38,6 +38,7 @@ def is_editing(session, cell_position):
 
 
 def render(session):
+    show_help = command_palette.get_show_help(session)
     show_editor = command_palette.get_show_editor(session)
     focused_cell = get_focused_cell_position(session)
     if focused_cell is not None:
@@ -57,10 +58,11 @@ def render(session):
     if editing:
         row = focused_cell.row_index.value
         col = focused_cell.col_index.value
-        data = operations.get_cell(focused_cell)
+        data = operations.get_cell_formula(focused_cell)
 
     return render_template(
         "partials/editor.html",
+        show_help=show_help,
         show_editor=show_editor,
         editing=editing,
         row=row if row is not None else "",

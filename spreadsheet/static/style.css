@@ -321,6 +321,10 @@ h2 {
 p {
   margin: 0.5rem 0;
 }
+code {
+  background-color: var(--main-color);
+  color: var(--background-color);
+}
 
 span {
 

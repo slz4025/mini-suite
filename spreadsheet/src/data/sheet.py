@@ -49,14 +49,14 @@ def get_bounds():
 def init(debug=False):
     global sheet
 
-    maxrows = 100
-    maxcols = 100
+    maxrows = 10
+    maxcols = 10
 
     sheet = np.empty((maxrows, maxcols), dtype=object)
     if debug:
         for row in range(maxrows):
             for col in range(maxcols):
-                sheet[row, col] = f"{row}x{col}"
+                sheet[row, col] = row*maxcols + col
 
 
 def get():

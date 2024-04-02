@@ -69,7 +69,7 @@ def render_cell(session, cell_position, editing=False, render_selected=None):
         renders.append("editing-current")
         input_render = "editing"
 
-    value = operations.get_cell(cell_position)
+    value = operations.get_cell_value(cell_position)
     if value is None:
         value = ""
 

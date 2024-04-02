@@ -185,8 +185,7 @@ def apply_paste(sel):
     ptr[row_start:row_end, col_start:col_end] = copied_buffer
 
 
-@dataclass
-class Type:
+class Type(Enum):
     DELETE = 'DELETE'
     INSERT = 'INSERT'
     VALUE = 'VALUE'

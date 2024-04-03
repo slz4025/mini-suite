@@ -54,8 +54,8 @@
   {% if editing %}
   <form
     hx-put="/cell/{{ row }}/{{ col }}/update"
-    hx-target="#cell-{{ row }}-{{ col }}"
-    hx-swap="outerHTML"
+    hx-target="#port"
+    hx-swap="innerHTML"
     enctype="multipart/form-data"
   >
     <textarea

@@ -167,7 +167,6 @@ def cell_rerender(row, col):
     value = request.form[key]
 
     error = None
-    cell = None
     try:
         operations.update_cell(cell_position, value)
     except (errors.UserError) as e:
@@ -178,8 +177,10 @@ def cell_rerender(row, col):
     else:
         notifications.set_info(session, "Updated cell value successfully.")
 
-    cell = port.render_cell(session, cell_position)
-    resp = Response(cell)
+    # Re-render the entire port in case other cells depended on the
+    # current cell's value.
+    port_html = port.render(session)
+    resp = Response(port_html)
     resp.headers['HX-Trigger'] = "notification"
     return resp
 

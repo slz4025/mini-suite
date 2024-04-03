@@ -320,7 +320,7 @@ def validate_and_parse_value(session, form):
 
     inp = operations.ValueInput(selection=sel, value=value)
     modification = operations.Modification(
-        operation=operations.Type.Value,
+        operation=operations.Type.VALUE,
         input=inp,
     )
     return [modification]

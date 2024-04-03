@@ -58,7 +58,7 @@ def _get_cell_value(cell_position):
     formula = get_cell_formula(cell_position)
 
     visited.add(cell_position)
-    value = computer.compute(formula)
+    value = computer.compute(cell_position, formula)
     visited.remove(cell_position)
 
     return value

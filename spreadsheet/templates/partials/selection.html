@@ -5,6 +5,12 @@
 >
   <h2>SELECTION</h2>
 
+  {% if show_help %}
+  <p>
+    You can also click+drag to make a selection, which will appear here.
+  </p>
+  {% endif %}
+
   <form
     hx-post="/selection"
     hx-target="#selection"

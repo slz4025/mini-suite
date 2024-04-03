@@ -34,61 +34,55 @@
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("mousedown", (event) => {
-      // Don't allow focus into input with just a mousedown.
-      //event.preventDefault();
+      if (!event.ctrlKey) {
+        // prevent focus into input
+        event.preventDefault();
 
-      const row = "{{ row }}";
-      const col = "{{ col }}";
+        const row = "{{ row }}";
+        const col = "{{ col }}";
 
-      set_selection_start(row, col);
+        set_selection_start(row, col);
+      }
     });
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("mousemove", (event) => {
-      const row = "{{ row }}";
-      const col = "{{ col }}";
-      request_change_selection(row, col);
+      if (!event.ctrlKey) {
+        const row = "{{ row }}";
+        const col = "{{ col }}";
+        request_change_selection(row, col);
+      }
     })
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("mouseup", (event) => {
-      const [start_row, start_col] = get_selection_start();
-      const end_row = "{{ row }}";
-      const end_col = "{{ col }}";
+      if (!event.ctrlKey) {
+        const [start_row, start_col] = get_selection_start();
+        const end_row = "{{ row }}";
+        const end_col = "{{ col }}";
 
-      htmx.ajax(
-        'PUT',
-        `/selection/start/${start_row}/${start_col}/end/${end_row}/${end_col}`,
-        {
-          target: "#selection",
-          swap: "outerHTML",
-        }
-      );
-
-      reset_selection_start();
+        htmx.ajax(
+          'PUT',
+          `/selection/start/${start_row}/${start_col}/end/${end_row}/${end_col}`,
+          {
+            target: "#selection",
+            swap: "outerHTML",
+          }
+        );
+        reset_selection_start();
+      }
     });
 
-    // Focus on input only when double-clicking.
-    document.querySelector(
-      `#input-cell-${ {{ row }} }-${ {{ col }} }`
-    ).addEventListener("mousedown", (event) => {
-      event.preventDefault();
-    });
-    document.querySelector(
-      `#input-cell-${ {{ row }} }-${ {{ col }} }`
-    ).addEventListener("dblclick", (event) => {
-      document.querySelector(
-        `#input-cell-${ {{ row }} }-${ {{ col }} }`
-      ).focus();
-    });
     document.querySelector(
       `#input-cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("focusin", (event) => {
+      // requires ctrl+key if also clicking to bypass selection mode
+
       const row = "{{ row }}";
       const col = "{{ col }}";
 
       htmx.ajax('PUT', `/cell/${row}/${col}/edit`, {
-        target: `#editor`,
+        target: "#editor",
         swap: "outerHTML",
       });
     });

@@ -6,13 +6,15 @@ import src.errors as errors
 import src.selection.types as sel_types
 
 
+def is_formula(formula):
+    return isinstance(formula, str) and formula.startswith("=")
+
+
 def compute(cell_position, formula):
-    if not isinstance(formula, str):
-        value = formula
-    elif not (formula.startswith("<") and formula.endswith(">")):
+    if not is_formula(formula):
         value = formula
     else:
-        formula = formula.removeprefix("<").removesuffix(">")
+        formula = formula.removeprefix("=")
         formula = compile_position_references(cell_position, formula)
         formula = compile_selections(formula)
         formula = compile_castings(formula)

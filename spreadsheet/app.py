@@ -20,6 +20,7 @@ import src.selection as selection
 import src.settings as settings
 
 import src.data.sheet as sheet
+import src.data.computer as computer
 import src.data.operations as operations
 
 app = Flask(__name__)
@@ -187,6 +188,7 @@ def cell_sync(row, col):
     assert htmx is not None
 
     # Update cell.
+    error = None
     cell_position = selection.types.CellPosition(
         row_index=selection.types.RowIndex(int(row)),
         col_index=selection.types.ColIndex(int(col)),
@@ -194,7 +196,13 @@ def cell_sync(row, col):
     key = f"input-cell-{row}-{col}"
     if key in request.form:
         value = request.form[key]
-        operations.update_cell(cell_position, value)
+        if computer.is_formula(value):
+            error = errors.UserError(
+                "Cannot input a formula in the cell. Use the editor instead."
+            )
+            notifications.set_error(session, error)
+        else:
+            operations.update_cell(cell_position, value)
 
     prev_focused = editor.get_focused_cell_position(session)
     editor.set_focused_cell_position(session, cell_position)
@@ -207,6 +215,9 @@ def cell_sync(row, col):
         resp.headers['HX-Trigger'] = f"cell-{row}-{col},cell"\
             + f"-{prev_focused.row_index.value}"\
             + f"-{prev_focused.col_index.value}"
+
+    if error is not None:
+        resp.headers['HX-Trigger'] = "notification"
 
     return resp
 

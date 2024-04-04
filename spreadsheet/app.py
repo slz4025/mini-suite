@@ -53,6 +53,38 @@ def render_null(session):
     return render_template("partials/null.html")
 
 
+def render_port(session):
+    error = None
+    try:
+        port_html = port.render(session)
+    except errors.UserError as e:
+        port_html = port.render(session, compute=False)
+        error = e
+
+    if error is None:
+        notifications.set_error(session, error)
+
+    resp = Response(port_html)
+    resp.headers['HX-Trigger'] = "editor,notification"
+    return resp
+
+
+def render_cell(session, cell_position):
+    error = None
+    try:
+        cell_html = port.render_cell(session, cell_position)
+    except errors.UserError as e:
+        cell_html = port.render_cell(session, cell_position, compute=False)
+        error = e
+
+    if error is None:
+        notifications.set_error(session, error)
+
+    resp = Response(cell_html)
+    resp.headers['HX-Trigger'] = "editor,notification"
+    return resp
+
+
 def render_body(session):
     null = render_null(session)
     notification_banner = notifications.render(session, False)
@@ -131,9 +163,8 @@ def help_toggler():
 def update_port():
     assert htmx is not None
 
-    port_html = port.render(session)
-    resp = Response(port_html)
-    resp.headers['HX-Trigger'] = "editor"
+    resp = render_port(session)
+    resp.headers['HX-Trigger'] += "editor"
     return resp
 
 
@@ -147,7 +178,7 @@ def cell_render(row, col):
         col_index=selection.types.ColIndex(int(col)),
     )
 
-    return port.render_cell(session, cell_position)
+    return render_cell(session, cell_position)
 
 
 @app.route("/cell/<row>/<col>/update", methods=['PUT'])
@@ -176,10 +207,7 @@ def cell_rerender(row, col):
 
     # Re-render the entire port in case other cells depended on the
     # current cell's value.
-    port_html = port.render(session)
-    resp = Response(port_html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
+    return render_port(session)
 
 
 @app.route("/cell/<row>/<col>/focus", methods=['PUT'])
@@ -567,10 +595,7 @@ def files_import():
     else:
         notifications.set_error(session, error)
 
-    port_html = port.render(session)
-    resp = Response(port_html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
+    return render_port(session)
 
 
 @app.route("/files/export", methods=['POST'])
@@ -611,10 +636,7 @@ def files_open():
     else:
         notifications.set_error(session, error)
 
-    port_html = port.render(session)
-    resp = Response(port_html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
+    return render_port(session)
 
 
 @app.route("/files/save", methods=['POST'])
@@ -674,10 +696,7 @@ def navigator_dimensions():
     navigator.set_dimensions(session, nrows, ncols)
 
     notifications.set_info(session, "Updated view dimensions.")
-    port_html = port.render(session)
-    resp = Response(port_html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
+    return render_port(session)
 
 
 @app.route("/navigator/move-increments", methods=['PUT'])
@@ -690,10 +709,7 @@ def navigator_move_increments():
     navigator.set_move_increments(session, mrows, mcols)
 
     notifications.set_info(session, "Updated move increments.")
-    port_html = port.render(session)
-    resp = Response(port_html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
+    return render_port(session)
 
 
 if __name__ == "__main__":

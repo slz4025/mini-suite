@@ -53,7 +53,7 @@ def make_render_selected(session):
     return render_selected
 
 
-def render_cell(session, cell_position, render_selected=None):
+def render_cell(session, cell_position, render_selected=None, compute=True):
     sel_types.check_cell_position(cell_position)
 
     renders = []
@@ -69,7 +69,10 @@ def render_cell(session, cell_position, render_selected=None):
         renders.append("editing-current")
         input_render = "editing"
 
-    value = operations.get_cell_value(cell_position)
+    if compute:
+        value = operations.get_cell_value(cell_position)
+    else:
+        value = operations.get_cell_formula(cell_position)
     if value is None:
         value = ""
 
@@ -142,7 +145,14 @@ def render_col_header(session, col_index, render_selected=None):
     )
 
 
-def render_row(session, leftmost, ncols, bounds, render_selected):
+def render_row(
+    session,
+    leftmost,
+    ncols,
+    bounds,
+    render_selected,
+    compute=True,
+):
     header = render_row_header(
         session,
         leftmost.row_index,
@@ -161,6 +171,7 @@ def render_row(session, leftmost, ncols, bounds, render_selected):
                 col_index=sel_types.ColIndex(col),
             ),
             render_selected=render_selected,
+            compute=compute,
         )
         cells.append(cell)
 
@@ -205,6 +216,7 @@ def render_table(
     nrows,
     ncols,
     bounds,
+    compute=True,
 ):
     render_selected = make_render_selected(session)
 
@@ -230,6 +242,7 @@ def render_table(
             ncols,
             bounds,
             render_selected,
+            compute=compute,
         )
         tablerows.append(tablerow)
 
@@ -240,7 +253,7 @@ def render_table(
     )
 
 
-def render(session):
+def render(session, compute=True):
     upperleft = navigator.get_upperleft(session)
     nrows, ncols = navigator.get_dimensions(session)
     bounds = sheet.get_bounds()
@@ -251,5 +264,6 @@ def render(session):
         nrows=nrows,
         ncols=ncols,
         bounds=bounds,
+        compute=compute,
     )
     return table

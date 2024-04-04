@@ -34,6 +34,8 @@ def reset_focused_cell_position(session):
 
 def is_editing(session, cell_position):
     focused_cell_position = get_focused_cell_position(session)
+    if focused_cell_position is None:
+        return False
     return focused_cell_position.equals(cell_position)
 
 

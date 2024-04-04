@@ -53,7 +53,7 @@ def make_render_selected(session):
     return render_selected
 
 
-def render_cell(session, cell_position, editing=False, render_selected=None):
+def render_cell(session, cell_position, render_selected=None):
     sel_types.check_cell_position(cell_position)
 
     renders = []
@@ -65,7 +65,7 @@ def render_cell(session, cell_position, editing=False, render_selected=None):
         input_render = "selected"
     renders.append(render_selected_state)
     # Apply later so takes precendence.
-    if editing and editor.is_editing(session, cell_position):
+    if editor.is_editing(session, cell_position):
         renders.append("editing-current")
         input_render = "editing"
 

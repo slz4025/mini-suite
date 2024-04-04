@@ -136,27 +136,23 @@ def update_port():
     return resp
 
 
-@app.route("/cell/<row>/<col>/highlight/<state>", methods=['PUT'])
+@app.route("/cell/<row>/<col>", methods=['PUT'])
 @errors.handler
-def cell_highlight(row, col, state):
+def cell_render(row, col):
     assert htmx is not None
 
     cell_position = selection.types.CellPosition(
         row_index=selection.types.RowIndex(int(row)),
         col_index=selection.types.ColIndex(int(col)),
     )
-    highlight = state == "on"
 
-    return port.render_cell(session, cell_position, editing=highlight)
+    return port.render_cell(session, cell_position)
 
 
 @app.route("/cell/<row>/<col>/update", methods=['PUT'])
 @errors.handler
 def cell_rerender(row, col):
     assert htmx is not None
-
-    # May come from:
-    # 1. A submission by the editor.
 
     cell_position = selection.types.CellPosition(
         row_index=selection.types.RowIndex(int(row)),
@@ -190,10 +186,6 @@ def cell_rerender(row, col):
 def cell_sync(row, col):
     assert htmx is not None
 
-    # May come from:
-    # 1. A focusin on the cell,
-    # 2. An update on the cell value.
-
     # Update cell.
     cell_position = selection.types.CellPosition(
         row_index=selection.types.RowIndex(int(row)),
@@ -204,9 +196,19 @@ def cell_sync(row, col):
         value = request.form[key]
         operations.update_cell(cell_position, value)
 
-    # Sync with editor.
+    prev_focused = editor.get_focused_cell_position(session)
     editor.set_focused_cell_position(session, cell_position)
-    return editor.render(session)
+
+    editor_html = editor.render(session)
+    resp = Response(editor_html)
+
+    if cell_position != prev_focused:
+        # change highlight
+        resp.headers['HX-Trigger'] = f"cell-{row}-{col},cell"\
+            + f"-{prev_focused.row_index.value}"\
+            + f"-{prev_focused.col_index.value}"
+
+    return resp
 
 
 @app.route("/editor/toggle", methods=['PUT'])

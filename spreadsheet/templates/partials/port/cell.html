@@ -1,18 +1,12 @@
 <td
   id="cell-{{ row }}-{{ col }}"
   class="{{ ' '.join(renders) }}"
+  hx-put="/cell/{{ row }}/{{ col }}"
+  hx-trigger="cell-{{ row }}-{{ col }} from:body"
+  hx-target="this"
+  hx-swap="outerHTML"
   style="width: 100%;"
 >
-  <!--
-    When a cell is focused on or edited,
-    its contents are:
-    1. stored in the sheet,
-    2. synced to the editor.
-
-    The command-palette owns rerendering of the cell or port.
-    Because its functions can only be interacted with one at a time,
-    we expect no races on the cell's rerendering.
-  -->
   <div
     class="selected-pointer"
     style="display: {{ 'inherit' if 'selected-bottomright' in renders else 'none' }};">

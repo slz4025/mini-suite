@@ -160,6 +160,7 @@ input.cell {
 }
 input.editing {
   color: var(--editing-color);
+  font-weight: bold;
 }
 input.selected {
   color: var(--selected-color);

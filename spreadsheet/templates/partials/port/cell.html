@@ -15,7 +15,7 @@
   <input
     type="text"
     class="cell {{ input_render }}"
-    hx-put="/cell/{{ row }}/{{ col }}/edit"
+    hx-put="/cell/{{ row }}/{{ col }}/sync"
     hx-target="#editor"
     hx-trigger="keyup changed"
     hx-swap="outerHTML"
@@ -75,7 +75,7 @@
       const row = "{{ row }}";
       const col = "{{ col }}";
 
-      htmx.ajax('PUT', `/cell/${row}/${col}/edit`, {
+      htmx.ajax('PUT', `/cell/${row}/${col}/focus`, {
         target: "#editor",
         swap: "outerHTML",
       });

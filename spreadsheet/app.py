@@ -182,35 +182,15 @@ def cell_rerender(row, col):
     return resp
 
 
-@app.route("/cell/<row>/<col>/edit", methods=['PUT'])
+@app.route("/cell/<row>/<col>/focus", methods=['PUT'])
 @errors.handler
-def cell_sync(row, col):
+def cell_focus(row, col):
     assert htmx is not None
 
-    # Update cell.
-    error = None
     cell_position = selection.types.CellPosition(
         row_index=selection.types.RowIndex(int(row)),
         col_index=selection.types.ColIndex(int(col)),
     )
-    key = f"input-cell-{row}-{col}"
-    if key in request.form:
-        value = request.form[key]
-        prev_value = operations.get_cell_formula(cell_position)
-        if computer.is_formula(prev_value):
-            error = errors.UserError(
-                "About to override underlying formula. "
-                "Use the editor to view the formula "
-                "and update the value instead."
-            )
-            notifications.set_error(session, error)
-        elif computer.is_formula(value):
-            error = errors.UserError(
-                "Cannot input a formula in the cell. Use the editor instead."
-            )
-            notifications.set_error(session, error)
-        else:
-            operations.update_cell(cell_position, value)
 
     prev_focused = editor.get_focused_cell_position(session)
     editor.set_focused_cell_position(session, cell_position)
@@ -224,9 +204,57 @@ def cell_sync(row, col):
             + f"-{prev_focused.row_index.value}"\
             + f"-{prev_focused.col_index.value}"
 
+    return resp
+
+
+# Update cell value from within cell.
+def update_cell(cell_position):
+    error = None
+
+    row = cell_position.row_index.value
+    col = cell_position.col_index.value
+    key = f"input-cell-{row}-{col}"
+
+    if key not in request.form:
+        return None
+
+    value = request.form[key]
+    prev_value = operations.get_cell_formula(cell_position)
+
+    if computer.is_formula(prev_value):
+        error = errors.UserError(
+            "About to override underlying formula. "
+            "Use the editor to view the formula "
+            "and update the value instead."
+        )
+        notifications.set_error(session, error)
+    elif computer.is_formula(value):
+        error = errors.UserError(
+            "Cannot input a formula in the cell. Use the editor instead."
+        )
+        notifications.set_error(session, error)
+    else:
+        operations.update_cell(cell_position, value)
+
+    return error
+
+
+@app.route("/cell/<row>/<col>/sync", methods=['PUT'])
+@errors.handler
+def cell_sync(row, col):
+    assert htmx is not None
+
+    cell_position = selection.types.CellPosition(
+        row_index=selection.types.RowIndex(int(row)),
+        col_index=selection.types.ColIndex(int(col)),
+    )
+
+    error = update_cell(cell_position)
+
+    editor_html = editor.render(session)
+    resp = Response(editor_html)
     if error is not None:
         resp.headers['HX-Trigger'] = "notification"
-
     return resp
 
 

@@ -196,7 +196,15 @@ def cell_sync(row, col):
     key = f"input-cell-{row}-{col}"
     if key in request.form:
         value = request.form[key]
-        if computer.is_formula(value):
+        prev_value = operations.get_cell_formula(cell_position)
+        if computer.is_formula(prev_value):
+            error = errors.UserError(
+                "About to override underlying formula. "
+                "Use the editor to view the formula "
+                "and update the value instead."
+            )
+            notifications.set_error(session, error)
+        elif computer.is_formula(value):
             error = errors.UserError(
                 "Cannot input a formula in the cell. Use the editor instead."
             )

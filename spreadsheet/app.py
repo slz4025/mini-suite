@@ -567,6 +567,50 @@ def files_export():
     return resp
 
 
+@app.route("/files/open", methods=['POST'])
+@errors.handler
+def files_open():
+    assert htmx is not None
+
+    error = None
+    try:
+        files.open_from(request)
+    except errors.UserError as e:
+        error = e
+
+    if error is None:
+        notifications.set_info(session, "Open file.")
+    else:
+        notifications.set_error(session, error)
+
+    port_html = port.render(session)
+    resp = Response(port_html)
+    resp.headers['HX-Trigger'] = "notification"
+    return resp
+
+
+@app.route("/files/save", methods=['POST'])
+@errors.handler
+def files_save():
+    assert htmx is not None
+
+    error = None
+    try:
+        files.save_to(request)
+    except errors.UserError as e:
+        error = e
+
+    if error is None:
+        notifications.set_info(session, "Saved file.")
+    else:
+        notifications.set_error(session, error)
+
+    null_html = render_null(session)
+    resp = Response(null_html)
+    resp.headers['HX-Trigger'] = "notification"
+    return resp
+
+
 @app.route("/settings/toggle", methods=['PUT'])
 @errors.handler
 def settings_toggler():

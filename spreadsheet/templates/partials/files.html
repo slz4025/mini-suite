@@ -34,4 +34,34 @@
       <input type="submit" value="⬎" id="files-export-submit" />
     </fieldset>
   </form>
+
+  <form
+    id="files-open"
+    hx-post="/files/open"
+    hx-target="#port"
+    hx-swap="innerHTML"
+    enctype="multipart/form-data"
+    >
+    <fieldset>
+      <legend>Open</legend>
+      <label for="files-open-file" hidden>File</label>
+      <input type="file" name="input" id="files-open-file" />
+      <input type="submit" value="⬏" id="files-open-submit" />
+    </fieldset>
+  </form>
+
+  <form
+    id="files-save"
+    hx-post="/files/save"
+    hx-target="#null"
+    hx-swap="outerHTML"
+    enctype="multipart/form-data"
+    >
+    <fieldset>
+      <legend>Save</legend>
+      <label for="files-save-filename" hidden>Filename</label>
+      <input type="text" name="input" id="files-save-filename" />
+      <input type="submit" value="⬎" id="files-save-submit" />
+    </fieldset>
+  </form>
 </div>

@@ -10,6 +10,17 @@ def is_formula(formula):
     return isinstance(formula, str) and formula.startswith("=")
 
 
+def evaluate(expression):
+    try:
+        value = eval(expression)
+    except Exception as e:
+        raise errors.UserError(
+            f"Evaluation of expression encountered error: {e}.\n"
+            f"Expression: {expression}"
+        )
+    return value
+
+
 def compute(cell_position, formula):
     if not is_formula(formula):
         value = formula
@@ -18,13 +29,7 @@ def compute(cell_position, formula):
         formula = compile_position_references(cell_position, formula)
         formula = compile_selections(formula)
         formula = compile_castings(formula)
-        try:
-            value = eval(formula)
-        except Exception as e:
-            raise errors.UserError(
-                f"Evaluation of formula encountered error: {e}.\n"
-                f"Formula: {formula}"
-            )
+        value = evaluate(formula)
     return value
 
 
@@ -66,26 +71,25 @@ def compile_position_references(cell_position, formula):
     return formula
 
 
-# allow computations
-index_regex = r"[0-9+-\/\*]+"
+expression_regex = r"[^\<\>\n\r]+"
 
 
 def compile_selections(formula):
     box_instances = re.finditer(
-            r"BOX\("
-            + r"(?P<row_start>{}):".format(index_regex)
-            + r"(?P<row_end>{}),".format(index_regex)
-            + r"(?P<col_start>{}):".format(index_regex)
-            + r"(?P<col_end>{})".format(index_regex)
-            + r"\)",
+            r"BOX\<"
+            + r"(?P<row_start>{}):".format(expression_regex)
+            + r"(?P<row_end>{}),".format(expression_regex)
+            + r"(?P<col_start>{}):".format(expression_regex)
+            + r"(?P<col_end>{})".format(expression_regex)
+            + r"\>",
             formula,
             )
 
     def box_replace(instance):
-        row_start = eval(instance.group("row_start"))
-        row_end = eval(instance.group("row_end"))
-        col_start = eval(instance.group("col_start"))
-        col_end = eval(instance.group("col_end"))
+        row_start = evaluate(instance.group("row_start"))
+        row_end = evaluate(instance.group("row_end"))
+        col_start = evaluate(instance.group("col_start"))
+        col_end = evaluate(instance.group("col_end"))
         sel = sel_types.Box(
             row_range=sel_types.RowRange(
                 start=sheet.Index(row_start),
@@ -108,16 +112,16 @@ def compile_selections(formula):
     )
 
     row_range_instances = re.finditer(
-            r"ROWS\("
-            + r"(?P<row_start>{}):".format(index_regex)
-            + r"(?P<row_end>{})".format(index_regex)
-            + r"\)",
+            r"ROWS\<"
+            + r"(?P<row_start>{}):".format(expression_regex)
+            + r"(?P<row_end>{})".format(expression_regex)
+            + r"\>",
             formula,
             )
 
     def row_range_replace(instance):
-        row_start = eval(instance.group("row_start"))
-        row_end = eval(instance.group("row_end"))
+        row_start = evaluate(instance.group("row_start"))
+        row_end = evaluate(instance.group("row_end"))
         sel = sel_types.RowRange(
             start=sheet.Index(row_start),
             end=sheet.Bound(row_end),
@@ -134,16 +138,16 @@ def compile_selections(formula):
     )
 
     col_range_instances = re.finditer(
-            r"COLS\("
-            + r"(?P<col_start>{}):".format(index_regex)
-            + r"(?P<col_end>{})".format(index_regex)
-            + r"\)",
+            r"COLS\<"
+            + r"(?P<col_start>{}):".format(expression_regex)
+            + r"(?P<col_end>{})".format(expression_regex)
+            + r"\>",
             formula,
             )
 
     def col_range_replace(instance):
-        col_start = eval(instance.group("col_start"))
-        col_end = eval(instance.group("col_end"))
+        col_start = evaluate(instance.group("col_start"))
+        col_end = evaluate(instance.group("col_end"))
         sel = sel_types.ColRange(
             start=sheet.Index(col_start),
             end=sheet.Bound(col_end),
@@ -163,12 +167,10 @@ def compile_selections(formula):
 
 
 def compile_castings(formula):
-    selection_regex = r"\[([0-9*-\.,\"\s])*\]"
-
     int_instances = re.finditer(
-            r"INT\("
-            + r"(?P<contents>{})".format(selection_regex)
-            + r"\)",
+            r"INT\<"
+            + r"(?P<contents>{})".format(expression_regex)
+            + r"\>",
             formula,
             )
 
@@ -184,9 +186,9 @@ def compile_castings(formula):
     )
 
     float_instances = re.finditer(
-            r"FLOAT\("
-            + r"(?P<contents>{})".format(selection_regex)
-            + r"\)",
+            r"FLOAT\<"
+            + r"(?P<contents>{})".format(expression_regex)
+            + r"\>",
             formula,
             )
 

@@ -3,6 +3,9 @@ function editing() {
   if (activeId == "editor-contents") {
     return true;
   }
+  else if (activeId == "value-contents") {
+    return true;
+  }
   else if (activeId.startsWith("input-cell-")) {
     return true;
   }

@@ -1,12 +1,20 @@
 <fieldset id="bulk-editor-operation-form">
   <legend>Input</legend>
+
+  {% if show_help %}
+  <p>
+    If you want to bulk-edit the formulas of the cells in the selection,
+    refer to 'EDITOR' to see detailed help.
+  </p>
+  {% endif %}
+
   <div class="inner">
     <label for="bulk-editor-value">Value</label>
-    <input
-      type="text"
-      id="bulk-editor-value"
+    <textarea
+      id="value-contents"
       name="value"
-      style="width: 100px;"
-    >
+      rows=5,
+      style="width: 100%;"
+      ></textarea>
   </div>
 </fieldset>

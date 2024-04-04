@@ -410,8 +410,10 @@ def render_erase_inputs(session):
 
 
 def render_value_inputs(session):
+    show_help = command_palette.get_show_help(session)
     return render_template(
             "partials/bulk_editor/value.html",
+            show_help=show_help,
             value="",
     )
 

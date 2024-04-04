@@ -10,12 +10,15 @@ def is_formula(formula):
     return isinstance(formula, str) and formula.startswith("=")
 
 
-def evaluate(expression):
+def evaluate(cell_position, expression):
     try:
         value = eval(expression)
     except Exception as e:
         raise errors.UserError(
-            f"Evaluation of expression encountered error: {e}.\n"
+            "Evaluation of expression at cell position "
+            f"({cell_position.row_index.value}, "
+            f"{cell_position.col_index.value}) "
+            f"encountered error: {e}.\n"
             f"Expression: {expression}"
         )
     return value
@@ -27,9 +30,9 @@ def compute(cell_position, formula):
     else:
         formula = formula.removeprefix("=")
         formula = compile_position_references(cell_position, formula)
-        formula = compile_selections(formula)
+        formula = compile_selections(cell_position, formula)
         formula = compile_castings(formula)
-        value = evaluate(formula)
+        value = evaluate(cell_position, formula)
     return value
 
 
@@ -74,7 +77,7 @@ def compile_position_references(cell_position, formula):
 expression_regex = r"[^\<\>\n\r]+"
 
 
-def compile_selections(formula):
+def compile_selections(cell_position, formula):
     box_instances = re.finditer(
             r"BOX\<"
             + r"(?P<row_start>{}):".format(expression_regex)
@@ -86,10 +89,10 @@ def compile_selections(formula):
             )
 
     def box_replace(instance):
-        row_start = evaluate(instance.group("row_start"))
-        row_end = evaluate(instance.group("row_end"))
-        col_start = evaluate(instance.group("col_start"))
-        col_end = evaluate(instance.group("col_end"))
+        row_start = evaluate(cell_position, instance.group("row_start"))
+        row_end = evaluate(cell_position, instance.group("row_end"))
+        col_start = evaluate(cell_position, instance.group("col_start"))
+        col_end = evaluate(cell_position, instance.group("col_end"))
         sel = sel_types.Box(
             row_range=sel_types.RowRange(
                 start=sheet.Index(row_start),
@@ -120,8 +123,8 @@ def compile_selections(formula):
             )
 
     def row_range_replace(instance):
-        row_start = evaluate(instance.group("row_start"))
-        row_end = evaluate(instance.group("row_end"))
+        row_start = evaluate(cell_position, instance.group("row_start"))
+        row_end = evaluate(cell_position, instance.group("row_end"))
         sel = sel_types.RowRange(
             start=sheet.Index(row_start),
             end=sheet.Bound(row_end),
@@ -146,8 +149,8 @@ def compile_selections(formula):
             )
 
     def col_range_replace(instance):
-        col_start = evaluate(instance.group("col_start"))
-        col_end = evaluate(instance.group("col_end"))
+        col_start = evaluate(cell_position, instance.group("col_start"))
+        col_end = evaluate(cell_position, instance.group("col_end"))
         sel = sel_types.ColRange(
             start=sheet.Index(col_start),
             end=sheet.Bound(col_end),

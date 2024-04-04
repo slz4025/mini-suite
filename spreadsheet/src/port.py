@@ -2,6 +2,7 @@ from flask import render_template
 
 import src.data.operations as operations
 import src.editor as editor
+import src.errors as errors
 import src.navigator as navigator
 import src.selection.state as sel_state
 import src.selection.types as sel_types
@@ -53,7 +54,12 @@ def make_render_selected(session):
     return render_selected
 
 
-def render_cell(session, cell_position, render_selected=None, compute=True):
+def render_cell(
+    session,
+    cell_position,
+    render_selected=None,
+    catch_failure=False,
+):
     sel_types.check_cell_position(cell_position)
 
     renders = []
@@ -69,10 +75,16 @@ def render_cell(session, cell_position, render_selected=None, compute=True):
         renders.append("editing-current")
         input_render = "editing"
 
-    if compute:
+    try:
         value = operations.get_cell_value(cell_position)
-    else:
-        value = operations.get_cell_formula(cell_position)
+    except errors.UserError as e:
+        if catch_failure:
+            # set as empty while report error
+            value = ""
+            renders.append("failure")
+        else:
+            raise e
+
     if value is None:
         value = ""
 
@@ -151,7 +163,7 @@ def render_row(
     ncols,
     bounds,
     render_selected,
-    compute=True,
+    catch_failure=False,
 ):
     header = render_row_header(
         session,
@@ -171,7 +183,7 @@ def render_row(
                 col_index=sel_types.ColIndex(col),
             ),
             render_selected=render_selected,
-            compute=compute,
+            catch_failure=catch_failure,
         )
         cells.append(cell)
 
@@ -216,7 +228,7 @@ def render_table(
     nrows,
     ncols,
     bounds,
-    compute=True,
+    catch_failure=False,
 ):
     render_selected = make_render_selected(session)
 
@@ -242,7 +254,7 @@ def render_table(
             ncols,
             bounds,
             render_selected,
-            compute=compute,
+            catch_failure=catch_failure,
         )
         tablerows.append(tablerow)
 
@@ -253,7 +265,7 @@ def render_table(
     )
 
 
-def render(session, compute=True):
+def render(session, catch_failure=False):
     upperleft = navigator.get_upperleft(session)
     nrows, ncols = navigator.get_dimensions(session)
     bounds = sheet.get_bounds()
@@ -264,6 +276,6 @@ def render(session, compute=True):
         nrows=nrows,
         ncols=ncols,
         bounds=bounds,
-        compute=compute,
+        catch_failure=catch_failure,
     )
     return table

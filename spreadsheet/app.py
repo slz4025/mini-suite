@@ -53,15 +53,17 @@ def render_null(session):
     return render_template("partials/null.html")
 
 
-def render_port(session):
-    error = None
+def render_port(session, error):
+    port_html = port.render(session, catch_failure=True)
+
+    # ensure any errors from port do not supercede existing error
     try:
-        port_html = port.render(session)
+        if not error:
+            port_html = port.render(session)
     except errors.UserError as e:
-        port_html = port.render(session, compute=False)
         error = e
 
-    if error is None:
+    if error is not None:
         notifications.set_error(session, error)
 
     resp = Response(port_html)
@@ -69,15 +71,21 @@ def render_port(session):
     return resp
 
 
-def render_cell(session, cell_position):
-    error = None
+def render_cell(session, cell_position, error):
+    cell_html = port.render_cell(
+        session,
+        cell_position,
+        catch_failure=True,
+    )
+
+    # ensure any errors from port do not supercede existing error
     try:
-        cell_html = port.render_cell(session, cell_position)
+        if not error:
+            cell_html = port.render_cell(session, cell_position)
     except errors.UserError as e:
-        cell_html = port.render_cell(session, cell_position, compute=False)
         error = e
 
-    if error is None:
+    if error is not None:
         notifications.set_error(session, error)
 
     resp = Response(cell_html)
@@ -163,7 +171,7 @@ def help_toggler():
 def update_port():
     assert htmx is not None
 
-    resp = render_port(session)
+    resp = render_port(session, None)
     resp.headers['HX-Trigger'] += "editor"
     return resp
 
@@ -178,7 +186,7 @@ def cell_render(row, col):
         col_index=selection.types.ColIndex(int(col)),
     )
 
-    return render_cell(session, cell_position)
+    return render_cell(session, cell_position, None)
 
 
 @app.route("/cell/<row>/<col>/update", methods=['PUT'])
@@ -207,7 +215,7 @@ def cell_rerender(row, col):
 
     # Re-render the entire port in case other cells depended on the
     # current cell's value.
-    return render_port(session)
+    return render_port(session, error)
 
 
 @app.route("/cell/<row>/<col>/focus", methods=['PUT'])
@@ -595,7 +603,7 @@ def files_import():
     else:
         notifications.set_error(session, error)
 
-    return render_port(session)
+    return render_port(session, error)
 
 
 @app.route("/files/export", methods=['POST'])
@@ -636,7 +644,7 @@ def files_open():
     else:
         notifications.set_error(session, error)
 
-    return render_port(session)
+    return render_port(session, error)
 
 
 @app.route("/files/save", methods=['POST'])
@@ -696,7 +704,7 @@ def navigator_dimensions():
     navigator.set_dimensions(session, nrows, ncols)
 
     notifications.set_info(session, "Updated view dimensions.")
-    return render_port(session)
+    return render_port(session, None)
 
 
 @app.route("/navigator/move-increments", methods=['PUT'])
@@ -709,7 +717,7 @@ def navigator_move_increments():
     navigator.set_move_increments(session, mrows, mcols)
 
     notifications.set_info(session, "Updated move increments.")
-    return render_port(session)
+    return render_port(session, None)
 
 
 if __name__ == "__main__":

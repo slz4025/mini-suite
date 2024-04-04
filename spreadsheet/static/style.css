@@ -15,6 +15,7 @@
   --error-color: #F0F0F0;
   --error-background-color: #8B0000;
 
+  --failure-background-color: #FF0000;
   --editing-background-color: #00FF00;
   --editing-color: #111111;
   --selected-background-color: #FFFF00;
@@ -304,6 +305,9 @@ td.selected-next-row {
 }
 td.selected-next-col {
   border-right: 1px solid var(--selected-pointer-color);
+}
+td.failure {
+  background-color: var(--failure-background-color);
 }
 /* define last so takes precendence */
 td.editing-current {

@@ -220,7 +220,6 @@ button.toggler {
   margin: 0;
   border: 1px solid var(--secondary-color);
 
-  background-color: var(--shade-color);
   cursor: pointer;
 }
 button#command-palette-toggler {
@@ -231,7 +230,6 @@ button#command-palette-toggler {
   margin: 0;
   border: 1px solid var(--secondary-color);
 
-  background-color: var(--shade-color);
   cursor: pointer;
 }
 

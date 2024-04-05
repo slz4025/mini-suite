@@ -2,7 +2,6 @@ from flask import render_template
 
 import src.entry as entry
 import src.selector as selector
-import src.settings as settings
 
 
 SHOW = None
@@ -62,11 +61,9 @@ def render_operation(session, operation):
 def render(session, show_io=True):
     show = get_show()
     entry_name = entry.get_name()
-    mode_button_html = settings.render_mode_button(session)
     return render_template(
             "partials/command_palette.html",
             show=show,
             show_io=show_io,
             current_entry=entry_name if entry_name is not None else '',
-            mode_button=mode_button_html,
             )

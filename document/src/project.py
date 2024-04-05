@@ -3,13 +3,13 @@ from flask import render_template, Response, redirect, send_from_directory
 
 import os
 
+from config import Config
 import src.block as block
 import src.command_palette as command_palette
 import src.entry as entry
 import src.errors as errors
 import src.notifications as notifications
 import src.selector as selector
-import src.settings as settings
 import src.wiki as wiki
 
 
@@ -41,7 +41,6 @@ def setup(wiki_path, one_off_file):
         raise Exception("Mode not specified.")
 
     notifications.init()
-    settings.init()
     command_palette.init()
 
 
@@ -67,7 +66,7 @@ def render_null(session):
 
 
 def render_body(session):
-    dark_mode = settings.get_dark_mode()
+    dark_mode = Config.DARK_MODE
     null = render_null(session)
     notification_banner_html = notifications.render(session)
     show_command_palette = command_palette.get_show()
@@ -141,13 +140,6 @@ def notification(session, show):
         notifications.reset()
 
     return notifications.render(session)
-
-
-def dark_mode(session, state):
-    dark_mode = state == "on"
-    settings.set_dark_mode(dark_mode)
-
-    return render_body(session)
 
 
 def command_palette_operation(session, operation):

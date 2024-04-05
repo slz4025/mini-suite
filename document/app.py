@@ -48,14 +48,6 @@ def get_one_off_file():
     return project.get_one_off_file(session)
 
 
-@app.route("/dark-mode/<state>", methods=['GET'])
-@errors.handler
-def dark_mode(state):
-    assert htmx is not None
-
-    return project.dark_mode(session, state)
-
-
 @app.route("/command-palette/io/<operation>", methods=['PUT'])
 @errors.handler
 def command_palette_operation(operation):

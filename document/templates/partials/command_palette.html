@@ -53,23 +53,16 @@
     <p class="help">Next block: [Shift+Down]</p>
   </div>
 
-  <div
-    id="command-palette-settings"
-    class="command-palette-section"
+  <button
+    id="command-palette-toggle-button"
+    hx-put="/command-palette/close"
+    hx-trigger="click"
+    hx-target="body"
+    hx-swap="outerHTML"
+    style="bottom: 0; right: 0;"
     >
-    {{ mode_button|safe }}
-  </div>
-
-    <button
-      id="command-palette-toggle-button"
-      hx-put="/command-palette/close"
-      hx-trigger="click"
-      hx-target="body"
-      hx-swap="outerHTML"
-      style="bottom: 0; right: 0;"
-      >
-      <span>⇱</span>
-    </button>
+    <span>⇱</span>
+  </button>
 </div>
 {% else %}
 <div id="command-palette" class="close">

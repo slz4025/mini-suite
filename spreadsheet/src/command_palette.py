@@ -5,7 +5,6 @@ import src.editor as editor
 import src.files as files
 import src.navigator as navigator
 import src.selection as selection
-import src.settings as settings
 
 
 def get_show(session):
@@ -71,15 +70,6 @@ def set_show_files(session, show_files):
     session["show-files"] = str(show_files)
 
 
-def get_show_settings(session):
-    show_settings = session["show-settings"] == 'True'
-    return show_settings
-
-
-def set_show_settings(session, show_settings):
-    session["show-settings"] = str(show_settings)
-
-
 def render(session):
     show_command_palette = get_show(session)
     show_help = get_show_help(session)
@@ -89,7 +79,6 @@ def render(session):
     bulk_editor_html = bulk_editor.render(session)
     navigator_html = navigator.render(session)
     files_html = files.render(session)
-    settings_html = settings.render(session)
 
     command_palette = render_template(
             "partials/command_palette.html",
@@ -100,7 +89,6 @@ def render(session):
             bulk_editor=bulk_editor_html,
             navigator=navigator_html,
             files=files_html,
-            settings=settings_html,
     )
     return command_palette
 
@@ -121,5 +109,3 @@ def init(session):
     set_show_navigator(session, show_navigator)
     show_files = False
     set_show_files(session, show_files)
-    show_settings = False
-    set_show_settings(session, show_settings)

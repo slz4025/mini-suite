@@ -85,18 +85,4 @@
     {% endif %}
   </button>
   {{ files|safe }}
-  <button
-      id="settings-toggler"
-      class="toggler"
-      hx-put="/settings/toggle"
-      hx-trigger="click"
-      hx-target="#settings"
-      hx-swap="outerHTML"
-  >
-    [⚙] SETTINGS
-    {% if show_help %}
-    [Ctrl+6]
-    {% endif %}
-  </button>
-  {{ settings|safe }}
 </div>

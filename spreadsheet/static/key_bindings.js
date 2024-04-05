@@ -20,9 +20,6 @@ window.addEventListener('keyup', function(event) {
       case '5':
         document.getElementById("files-toggler").click();
         break
-      case '6':
-        document.getElementById("settings-toggler").click();
-        break;
 
       // bulk edit
       case 'x':

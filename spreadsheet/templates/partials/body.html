@@ -1,29 +1,38 @@
-{{notification_banner|safe }}
-<div class="wrapper">
-  {{ command_palette|safe }}
-  <button
-      id="command-palette-toggler"
-      hx-put="/command-palette/toggle"
-      hx-trigger="click"
-      hx-target="body"
-      hx-swap="outerHTML"
-  >
-    <p style="writing-mode: vertical-rl; text-orientation: mixed;">
-      {{ 'COLLAPSE' if show_command_palette else 'EXPAND' }}
-    </p>
-  </button>
+<body>
+  {% if dark_mode %}
+  <link rel="stylesheet" type="text/css" href="/static/dark_variables.css">
+  {% else %}
+  <link rel="stylesheet" type="text/css" href="/static/light_variables.css">
+  {% endif %}
+  <link rel="stylesheet" type="text/css" href="/static/style.css">
 
-  {{ null|safe }}
+  {{notification_banner|safe }}
+  <div class="wrapper">
+    {{ command_palette|safe }}
+    <button
+        id="command-palette-toggler"
+        hx-put="/command-palette/toggle"
+        hx-trigger="click"
+        hx-target="body"
+        hx-swap="outerHTML"
+    >
+      <p style="writing-mode: vertical-rl; text-orientation: mixed;">
+        {{ 'COLLAPSE' if show_command_palette else 'EXPAND' }}
+      </p>
+    </button>
 
-  <div
-    id="port"
-    class="inner"
-    hx-put="/port"
-    hx-trigger="update-port from:body"
-    hx-target="this"
-    hx-swap="innerHTML"
-    style="width: {{ '78%' if show_command_palette else '98%' }};"
-  >
-    {{ data|safe }}
+    {{ null|safe }}
+
+    <div
+      id="port"
+      class="inner"
+      hx-put="/port"
+      hx-trigger="update-port from:body"
+      hx-target="this"
+      hx-swap="innerHTML"
+      style="width: {{ '78%' if show_command_palette else '98%' }};"
+    >
+      {{ data|safe }}
+    </div>
   </div>
-</div>
+</body>

@@ -17,11 +17,11 @@ import src.navigator as navigator
 import src.notifications as notifications
 import src.port as port
 import src.selection as selection
-import src.settings as settings
 
 import src.data.sheet as sheet
 import src.data.computer as computer
 import src.data.operations as operations
+
 
 app = Flask(__name__)
 htmx = HTMX(app)
@@ -94,6 +94,7 @@ def render_cell(session, cell_position, error):
 
 
 def render_body(session):
+    dark_mode = app.config["DARK_MODE"]
     null = render_null(session)
     notification_banner = notifications.render(session, False)
     show_command_palette = command_palette.get_show(session)
@@ -101,6 +102,7 @@ def render_body(session):
     port_html = port.render(session)
     body = render_template(
             "partials/body.html",
+            dark_mode=dark_mode,
             null=null,
             notification_banner=notification_banner,
             command_palette=command_palette_html,
@@ -120,17 +122,13 @@ def root():
     notifications.init(session)
     navigator.init(session)
 
-    # TODO: This should eventually be done for the user
-    # or for the user for the sheet.
-    settings.init(session)
-
     # TODO: This should eventually be done only on the creation of the sheet.
     sheet.init(DEBUG)
 
     body = render_body(session)
     return render_template(
         "index.html",
-        data=body,
+        body=body,
         )
 
 
@@ -669,31 +667,6 @@ def files_save():
     return resp
 
 
-@app.route("/settings/toggle", methods=['PUT'])
-@errors.handler
-def settings_toggler():
-    assert htmx is not None
-
-    show_settings = command_palette.get_show_settings(session)
-    command_palette.set_show_settings(session, not show_settings)
-
-    html = settings.render(session)
-    return html
-
-
-@app.route("/settings/render-mode/<render_mode>", methods=['PUT'])
-@errors.handler
-def render_mode(render_mode):
-    assert htmx is not None
-
-    settings.set(session, render_mode)
-
-    notifications.set_info(session, "Updated render mode.")
-    resp = Response()
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
-
-
 @app.route("/navigator/dimensions", methods=['PUT'])
 @errors.handler
 def navigator_dimensions():
@@ -721,4 +694,4 @@ def navigator_move_increments():
 
 
 if __name__ == "__main__":
-    serve(app, host='0.0.0.0', port=5000)
+    serve(app, host='0.0.0.0', port=app.config["PORT"])

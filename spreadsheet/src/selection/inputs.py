@@ -107,13 +107,13 @@ forms = {
         template="box.html",
         validate_and_parse=get_box,
     ),
-    modes.Mode.ROW: Form(
-        mode=modes.Mode.ROW,
+    modes.Mode.ROW_INDEX: Form(
+        mode=modes.Mode.ROW_INDEX,
         template="row_index.html",
         validate_and_parse=get_row_index,
     ),
-    modes.Mode.COLUMN: Form(
-        mode=modes.Mode.COLUMN,
+    modes.Mode.COLUMN_INDEX: Form(
+        mode=modes.Mode.COLUMN_INDEX,
         template="col_index.html",
         validate_and_parse=get_col_index,
     ),

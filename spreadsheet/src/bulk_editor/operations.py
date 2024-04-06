@@ -77,8 +77,8 @@ def allow_copy_with_selection(session, mode):
 
 def allow_paste_with_selection(session, mode):
     copy_to_paste = {
-        sel_modes.Mode.ROWS: sel_modes.Mode.ROW,
-        sel_modes.Mode.COLUMNS: sel_modes.Mode.COLUMN,
+        sel_modes.Mode.ROWS: sel_modes.Mode.ROW_INDEX,
+        sel_modes.Mode.COLUMNS: sel_modes.Mode.COLUMN_INDEX,
         sel_modes.Mode.BOX: sel_modes.Mode.CELL_POSITION,
     }
     copy_selection_mode = sel_state.get_buffer_mode(session)
@@ -106,8 +106,8 @@ def allow_delete_with_selection(session, mode):
 
 def allow_insert_with_selection(session, mode):
     selection_mode_options = [
-        sel_modes.Mode.ROW,
-        sel_modes.Mode.COLUMN,
+        sel_modes.Mode.ROW_INDEX,
+        sel_modes.Mode.COLUMN_INDEX,
     ]
     return mode in selection_mode_options
 

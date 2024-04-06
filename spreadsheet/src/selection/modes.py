@@ -5,8 +5,8 @@ import src.selection.types as types
 
 
 class Mode(Enum):
-    ROW = "Row"
-    COLUMN = "Column"
+    ROW_INDEX = "Row Index"
+    COLUMN_INDEX = "Column Index"
     CELL_POSITION = "Cell Position"
     ROWS = "Rows"
     COLUMNS = "Columns"
@@ -15,9 +15,9 @@ class Mode(Enum):
 
 def from_selection(sel):
     if isinstance(sel, types.RowIndex):
-        return Mode.ROW
+        return Mode.ROW_INDEX
     elif isinstance(sel, types.ColIndex):
-        return Mode.COLUMN
+        return Mode.COLUMN_INDEX
     elif isinstance(sel, types.CellPosition):
         return Mode.CELL_POSITION
     elif isinstance(sel, types.RowRange):
@@ -36,9 +36,9 @@ def from_selection(sel):
 def from_input(mode_str):
     match mode_str:
         case "Row":
-            return Mode.ROW
+            return Mode.ROW_INDEX
         case "Column":
-            return Mode.COLUMN
+            return Mode.COLUMN_INDEX
         case "Cell Position":
             return Mode.CELL_POSITION
         case "Rows":

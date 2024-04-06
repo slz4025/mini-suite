@@ -6,9 +6,6 @@ import sys
 import app
 
 
-DEFAULT_DIR = os.path.expanduser("~/.minisuite/documents")
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
             prog="document",

@@ -2,7 +2,7 @@ from flask import render_template
 
 import src.command_palette as command_palette
 import src.errors as errors
-import src.data.sheet as sheet
+import src.sheet as sheet
 import src.selection.state as sel_state
 import src.selection.types as sel_types
 

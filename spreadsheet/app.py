@@ -18,9 +18,8 @@ import src.notifications as notifications
 import src.port as port
 import src.selection as selection
 
-import src.data.sheet as sheet
-import src.data.computer as computer
-import src.data.operations as operations
+import src.sheet as sheet
+import src.computer as computer
 
 
 app = Flask(__name__)
@@ -202,7 +201,7 @@ def cell_rerender(row, col):
 
     error = None
     try:
-        operations.update_cell(cell_position, value)
+        computer.update_cell_value(cell_position, value)
     except (errors.UserError) as e:
         error = e
 
@@ -257,7 +256,7 @@ def update_cell(cell_position):
         return None
 
     value = request.form[key]
-    prev_value = operations.get_cell_formula(cell_position)
+    prev_value = sheet.get_cell_value(cell_position)
 
     if computer.is_formula(prev_value):
         error = errors.UserError(
@@ -272,7 +271,7 @@ def update_cell(cell_position):
         )
         notifications.set_error(session, error)
     else:
-        operations.update_cell(cell_position, value)
+        computer.update_cell_value(cell_position, value)
 
     return error
 

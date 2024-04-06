@@ -1,15 +1,33 @@
-import re
+# Regex-based compiler of macros.
 
-import src.data.sheet as sheet
-import src.data.operations as operations
+from dataclasses import dataclass
+import re
+from typing import List
+
 import src.errors as errors
+import src.sheet as sheet
 import src.selection.types as sel_types
 
 
-def is_formula(formula):
-    return isinstance(formula, str) and formula.startswith("=")
+expression_regex = r"[^\<\>\n\r]+"
 
 
+class Node:
+    def __init__(self, formula, dependencies):
+        self.formula: str = formula
+        self.dependencies: List[sel_types.CellPosition] = dependencies
+
+    def add_dependency(self, position):
+        index = len(self.dependencies)
+        self.dependencies.append(position)
+        return index
+
+    def get_dependency(self, index):
+        assert index >= 0 and index < len(self.dependencies)
+        return self.dependencies[index]
+
+
+# For compile-time evaluations, i.e. whatever is in macro.
 def evaluate(cell_position, expression):
     try:
         value = eval(expression)
@@ -21,18 +39,6 @@ def evaluate(cell_position, expression):
             f"encountered error: {e}.\n"
             f"Expression: {expression}"
         )
-    return value
-
-
-def compute(cell_position, formula):
-    if not is_formula(formula):
-        value = formula
-    else:
-        formula = formula.removeprefix("=")
-        formula = compile_position_references(cell_position, formula)
-        formula = compile_selections(cell_position, formula)
-        formula = compile_castings(formula)
-        value = evaluate(cell_position, formula)
     return value
 
 
@@ -52,7 +58,9 @@ def replace_instances(formula, instances, replace_instance):
     return formula
 
 
-def compile_position_references(cell_position, formula):
+def position_references(cell_position, node):
+    formula = node.formula
+
     curr_row_instances = re.finditer(r"CURR_ROW", formula)
 
     def curr_row_replace(instance):
@@ -71,13 +79,54 @@ def compile_position_references(cell_position, formula):
 
     formula = replace_instances(formula, curr_col_instances, curr_col_replace)
 
-    return formula
+    node.formula = formula
+    return node
 
 
-expression_regex = r"[^\<\>\n\r]+"
+def get_row_range_positions(sel):
+    sel = sel_types.check_and_set_row_range(sel)
+    bounds = sheet.get_bounds()
+
+    pos = []
+    for i in range(sel.start.value, sel.end.value):
+        for j in range(0, bounds.col.value):
+            pos.append(sel_types.CellPosition(
+                row_index=sel_types.RowIndex(i),
+                col_index=sel_types.ColIndex(j),
+            ))
+    return pos
 
 
-def compile_selections(cell_position, formula):
+def get_col_range_positions(sel):
+    sel = sel_types.check_and_set_col_range(sel)
+    bounds = sheet.get_bounds()
+
+    pos = []
+    for i in range(0, bounds.row.value):
+        for j in range(sel.start.value, sel.end.value):
+            pos.append(sel_types.CellPosition(
+                row_index=sel_types.RowIndex(i),
+                col_index=sel_types.ColIndex(j),
+            ))
+    return pos
+
+
+def get_box_positions(sel):
+    sel = sel_types.check_and_set_box(sel)
+
+    pos = []
+    for i in range(sel.row_range.start.value, sel.row_range.end.value):
+        for j in range(sel.col_range.start.value, sel.col_range.end.value):
+            pos.append(sel_types.CellPosition(
+                row_index=sel_types.RowIndex(i),
+                col_index=sel_types.ColIndex(j),
+            ))
+    return pos
+
+
+def selections(cell_position, node):
+    formula = node.formula
+
     box_instances = re.finditer(
             r"BOX\<"
             + r"(?P<row_start>{}):".format(expression_regex)
@@ -103,9 +152,15 @@ def compile_selections(cell_position, formula):
                 end=sheet.Bound(col_end),
             ),
         )
-        arr = operations.get_box_values(sel)
-        arr = [f"\"{e}\"" for e in arr]
-        compiled = "[{}]".format(",".join(arr))
+        pos = get_box_positions(sel)
+
+        expr_arr = []
+        for p in pos:
+            r = node.add_dependency(p)
+            expr = f"EVAL<{r}>"
+            expr_arr.append(expr)
+        compiled = "[{}]".format(",".join(expr_arr))
+
         return compiled
 
     formula = replace_instances(
@@ -135,9 +190,15 @@ def compile_selections(cell_position, formula):
                 end=sheet.Bound(col+1),
             ),
         )
-        arr = operations.get_box_values(sel)
-        arr = [f"\"{e}\"" for e in arr]
-        compiled = "[{}]".format(",".join(arr))
+        pos = get_box_positions(sel)
+
+        expr_arr = []
+        for p in pos:
+            r = node.add_dependency(p)
+            expr = f"EVAL<{r}>"
+            expr_arr.append(expr)
+        compiled = "[{}]".format(",".join(expr_arr))
+
         return compiled
 
     formula = replace_instances(
@@ -161,9 +222,15 @@ def compile_selections(cell_position, formula):
             start=sheet.Index(row_start),
             end=sheet.Bound(row_end),
         )
-        arr = operations.get_row_range_values(sel)
-        arr = [f"\"{e}\"" for e in arr]
-        compiled = "[{}]".format(",".join(arr))
+        pos = get_row_range_positions(sel)
+
+        expr_arr = []
+        for p in pos:
+            r = node.add_dependency(p)
+            expr = f"EVAL<{r}>"
+            expr_arr.append(expr)
+        compiled = "[{}]".format(",".join(expr_arr))
+
         return compiled
 
     formula = replace_instances(
@@ -185,9 +252,15 @@ def compile_selections(cell_position, formula):
             start=sheet.Index(row),
             end=sheet.Bound(row+1),
         )
-        arr = operations.get_row_range_values(sel)
-        arr = [f"\"{e}\"" for e in arr]
-        compiled = "[{}]".format(",".join(arr))
+        pos = get_row_range_positions(sel)
+
+        expr_arr = []
+        for p in pos:
+            r = node.add_dependency(p)
+            expr = f"EVAL<{r}>"
+            expr_arr.append(expr)
+        compiled = "[{}]".format(",".join(expr_arr))
+
         return compiled
 
     formula = replace_instances(
@@ -211,9 +284,15 @@ def compile_selections(cell_position, formula):
             start=sheet.Index(col_start),
             end=sheet.Bound(col_end),
         )
-        arr = operations.get_col_range_values(sel)
-        arr = [f"\"{e}\"" for e in arr]
-        compiled = "[{}]".format(",".join(arr))
+        pos = get_col_range_positions(sel)
+
+        expr_arr = []
+        for p in pos:
+            r = node.add_dependency(p)
+            expr = f"EVAL<{r}>"
+            expr_arr.append(expr)
+        compiled = "[{}]".format(",".join(expr_arr))
+
         return compiled
 
     formula = replace_instances(
@@ -235,9 +314,15 @@ def compile_selections(cell_position, formula):
             start=sheet.Index(col),
             end=sheet.Bound(col+1),
         )
-        arr = operations.get_col_range_values(sel)
-        arr = [f"\"{e}\"" for e in arr]
-        compiled = "[{}]".format(",".join(arr))
+        pos = get_col_range_positions(sel)
+
+        expr_arr = []
+        for p in pos:
+            r = node.add_dependency(p)
+            expr = f"EVAL<{r}>"
+            expr_arr.append(expr)
+        compiled = "[{}]".format(",".join(expr_arr))
+
         return compiled
 
     formula = replace_instances(
@@ -246,10 +331,11 @@ def compile_selections(cell_position, formula):
         col_replace,
     )
 
-    return formula
+    node.formula = formula
+    return node
 
 
-def compile_castings(formula):
+def castings(formula):
     int_instances = re.finditer(
             r"INT\<"
             + r"(?P<contents>{})".format(expression_regex)
@@ -286,4 +372,18 @@ def compile_castings(formula):
         float_replace,
     )
 
+    return formula
+
+
+# Compilation before DAG-evaluation.
+def pre_compile(cell_position, formula):
+    node = Node(formula=formula, dependencies=[])
+    node = position_references(cell_position, node)
+    node = selections(cell_position, node)
+    return node
+
+
+# Compilation after DAG-evaluation.
+def post_compile(cell_position, formula):
+    formula = castings(formula)
     return formula

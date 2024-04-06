@@ -3,7 +3,7 @@ from flask import render_template
 import src.errors as errors
 import src.command_palette as command_palette
 import src.navigator as navigator
-import src.data.operations as operations
+import src.sheet as sheet
 import src.selection.modes as sel_modes
 import src.selection.types as sel_types
 
@@ -35,7 +35,7 @@ def render(session, op=None):
     if editing:
         row = focused_cell.row_index.value
         col = focused_cell.col_index.value
-        data = operations.get_cell_formula(focused_cell)
+        data = sheet.get_cell_value(focused_cell)
 
     return render_template(
         "partials/editor.html",

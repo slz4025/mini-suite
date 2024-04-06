@@ -1,6 +1,6 @@
 import src.errors as errors
 import src.selection.types as types
-import src.data.sheet as sheet
+import src.sheet as sheet
 
 
 def is_row_header(cell_position):

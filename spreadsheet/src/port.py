@@ -1,12 +1,12 @@
 from flask import render_template
 
-import src.data.operations as operations
+import src.computer as computer
 import src.editor.state as ed_state
 import src.errors as errors
 import src.navigator as navigator
 import src.selection.state as sel_state
 import src.selection.types as sel_types
-import src.data.sheet as sheet
+import src.sheet as sheet
 
 
 def make_render_selected(session):
@@ -76,7 +76,7 @@ def render_cell(
         input_render = "editing"
 
     try:
-        value = operations.get_cell_value(cell_position)
+        value = computer.get_cell_computed(cell_position)
     except errors.UserError as e:
         if catch_failure:
             # set as empty while report error

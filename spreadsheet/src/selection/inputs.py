@@ -5,7 +5,7 @@ import src.form_helpers as form_helpers
 
 import src.selection.modes as modes
 import src.selection.types as types
-import src.data.sheet as sheet
+import src.sheet as sheet
 
 
 def get_row_index(inp):

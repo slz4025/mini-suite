@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Union
 
 import src.errors as errors
-import src.data.sheet as sheet
+import src.sheet as sheet
 
 
 class RowIndex(sheet.Index):

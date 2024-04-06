@@ -6,7 +6,7 @@ import pandas as pd
 from io import StringIO
 
 import src.command_palette as command_palette
-import src.data.sheet as sheet
+import src.sheet as sheet
 import src.errors as errors
 
 

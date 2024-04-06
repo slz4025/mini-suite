@@ -63,6 +63,10 @@ def get():
     return sheet
 
 
+def get_cell_value(cell_position):
+    return sheet[cell_position.row_index.value, cell_position.col_index.value]
+
+
 def set(data):
     global sheet
 

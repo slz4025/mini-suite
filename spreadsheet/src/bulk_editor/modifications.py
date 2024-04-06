@@ -9,7 +9,7 @@ from typing import Callable, Union
 
 import src.errors as errors
 import src.selection.types as sel_types
-import src.data.sheet as sheet
+import src.sheet as sheet
 
 
 class Axis(Enum):

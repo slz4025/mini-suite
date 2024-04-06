@@ -63,6 +63,9 @@ window.addEventListener('keyup', function(event) {
       case 'ArrowRight':
         document.getElementById("right-button").click();
         break;
+      case 's':
+        document.getElementById("files-save").click();
+        break;
       case 't':
         document.getElementById("navigator-target-button").click();
         break;

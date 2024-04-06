@@ -24,5 +24,11 @@ window.addEventListener('keyup', async function(event) {
         });
         break;
     }
+  } else if (event.ctrlKey) {
+    switch (event.key) {
+      case 's':
+        document.getElementById("save").click();
+        break;
+    }
   }
 });

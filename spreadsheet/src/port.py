@@ -1,7 +1,7 @@
 from flask import render_template
 
 import src.data.operations as operations
-import src.editor as editor
+import src.editor.state as ed_state
 import src.errors as errors
 import src.navigator as navigator
 import src.selection.state as sel_state
@@ -71,7 +71,7 @@ def render_cell(
         input_render = "selected"
     renders.append(render_selected_state)
     # Apply later so takes precendence.
-    if editor.is_editing(session, cell_position):
+    if ed_state.is_editing(session, cell_position):
         renders.append("editing-current")
         input_render = "editing"
 

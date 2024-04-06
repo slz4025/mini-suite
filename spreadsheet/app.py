@@ -226,8 +226,8 @@ def cell_focus(row, col):
         col_index=selection.types.ColIndex(int(col)),
     )
 
-    prev_focused = editor.get_focused_cell_position(session)
-    editor.set_focused_cell_position(session, cell_position)
+    prev_focused = editor.state.get_focused_cell_position(session)
+    editor.state.set_focused_cell_position(session, cell_position)
 
     editor_html = editor.render(session)
     resp = Response(editor_html)

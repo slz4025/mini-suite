@@ -232,9 +232,13 @@ def cell_focus(row, col):
     editor_html = editor.render(session)
     resp = Response(editor_html)
 
-    if cell_position != prev_focused:
+    if prev_focused is None:
+        # set highlight
+        resp.headers['HX-Trigger'] = f"cell-{row}-{col}"
+    elif not prev_focused.equals(cell_position):
         # change highlight
-        resp.headers['HX-Trigger'] = f"cell-{row}-{col},cell"\
+        resp.headers['HX-Trigger'] = f"cell-{row}-{col}"
+        resp.headers['HX-Trigger'] += ",cell"\
             + f"-{prev_focused.row_index.value}"\
             + f"-{prev_focused.col_index.value}"
 

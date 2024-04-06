@@ -307,6 +307,24 @@ def editor_toggler():
     return html
 
 
+@app.route("/editor/operations", methods=['PUT'])
+@errors.handler
+def editor_operations():
+    assert htmx is not None
+
+    return editor.operations.render(session)
+
+
+@app.route("/editor/operation/<op_name_str>", methods=['PUT'])
+@errors.handler
+def editor_operation(op_name_str):
+    assert htmx is not None
+
+    html = editor.render(session, op_name_str=op_name_str)
+    resp = Response(html)
+    return resp
+
+
 @app.route("/editor", methods=['PUT'])
 @errors.handler
 def editor_endpoint():
@@ -356,7 +374,9 @@ def update_selection(mode, sel, error, reset=False):
         notifications.set_info(session, "Selection {}.".format(
             "cleared" if reset else "registered"
         ))
-        # Rerender what operations are allowed based on selection.
+        # Rerender what editor operations are allowed based on selection.
+        resp.headers['HX-Trigger'] += ",editor-operations"
+        # Rerender what bulk-editor operations are allowed based on selection.
         resp.headers['HX-Trigger'] += ",bulk-editor"
         # Show selection in port.
         resp.headers['HX-Trigger'] += ",update-port"

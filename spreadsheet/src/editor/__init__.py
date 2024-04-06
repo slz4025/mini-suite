@@ -8,9 +8,10 @@ import src.selection.modes as sel_modes
 import src.selection.types as sel_types
 
 import src.editor.state as state
+import src.editor.operations as operations
 
 
-def render(session, op=None):
+def render(session, op_name_str=None):
     show_help = command_palette.get_show_help(session)
     show_editor = command_palette.get_show_editor(session)
 
@@ -35,13 +36,20 @@ def render(session, op=None):
     if editing:
         row = focused_cell.row_index.value
         col = focused_cell.col_index.value
-        data = sheet.get_cell_value(focused_cell)
 
+        if op_name_str is not None:
+            op_name = operations.from_input(op_name_str)
+            data = operations.get_formula_with_selection(session, op_name)
+        else:
+            data = sheet.get_cell_value(focused_cell)
+
+    operations_html = operations.render(session)
     return render_template(
         "partials/editor.html",
         show_help=show_help,
         show_editor=show_editor,
         editing=editing,
+        operations=operations_html,
         row=row if row is not None else "",
         col=col if col is not None else "",
         data=data if data is not None else "",

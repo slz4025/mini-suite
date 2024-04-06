@@ -114,6 +114,38 @@ def compile_selections(cell_position, formula):
         box_replace,
     )
 
+    cell_instances = re.finditer(
+            r"CELL\<"
+            + r"(?P<row>{}),".format(expression_regex)
+            + r"(?P<col>{})".format(expression_regex)
+            + r"\>",
+            formula,
+            )
+
+    def cell_replace(instance):
+        row = evaluate(cell_position, instance.group("row"))
+        col = evaluate(cell_position, instance.group("col"))
+        sel = sel_types.Box(
+            row_range=sel_types.RowRange(
+                start=sheet.Index(row),
+                end=sheet.Bound(row+1),
+            ),
+            col_range=sel_types.ColRange(
+                start=sheet.Index(col),
+                end=sheet.Bound(col+1),
+            ),
+        )
+        arr = operations.get_box_values(sel)
+        arr = [f"\"{e}\"" for e in arr]
+        compiled = "[{}]".format(",".join(arr))
+        return compiled
+
+    formula = replace_instances(
+        formula,
+        cell_instances,
+        cell_replace,
+    )
+
     row_range_instances = re.finditer(
             r"ROWS\<"
             + r"(?P<row_start>{}):".format(expression_regex)
@@ -140,6 +172,30 @@ def compile_selections(cell_position, formula):
         row_range_replace,
     )
 
+    row_instances = re.finditer(
+            r"ROW\<"
+            + r"(?P<row>{})".format(expression_regex)
+            + r"\>",
+            formula,
+            )
+
+    def row_replace(instance):
+        row = evaluate(cell_position, instance.group("row"))
+        sel = sel_types.RowRange(
+            start=sheet.Index(row),
+            end=sheet.Bound(row+1),
+        )
+        arr = operations.get_row_range_values(sel)
+        arr = [f"\"{e}\"" for e in arr]
+        compiled = "[{}]".format(",".join(arr))
+        return compiled
+
+    formula = replace_instances(
+        formula,
+        row_instances,
+        row_replace,
+    )
+
     col_range_instances = re.finditer(
             r"COLS\<"
             + r"(?P<col_start>{}):".format(expression_regex)
@@ -164,6 +220,30 @@ def compile_selections(cell_position, formula):
         formula,
         col_range_instances,
         col_range_replace,
+    )
+
+    col_instances = re.finditer(
+            r"COL\<"
+            + r"(?P<col>{})".format(expression_regex)
+            + r"\>",
+            formula,
+            )
+
+    def col_replace(instance):
+        col = evaluate(cell_position, instance.group("col"))
+        sel = sel_types.ColRange(
+            start=sheet.Index(col),
+            end=sheet.Bound(col+1),
+        )
+        arr = operations.get_col_range_values(sel)
+        arr = [f"\"{e}\"" for e in arr]
+        compiled = "[{}]".format(",".join(arr))
+        return compiled
+
+    formula = replace_instances(
+        formula,
+        col_instances,
+        col_replace,
     )
 
     return formula

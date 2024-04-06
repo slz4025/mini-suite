@@ -9,7 +9,8 @@ import src.form_helpers as form_helpers
 import src.selection.modes as sel_modes
 import src.selection.state as sel_state
 import src.selection.types as sel_types
-import src.data.operations as operations
+
+import src.bulk_editor.modifications as modifications
 
 
 class Name(Enum):
@@ -51,9 +52,9 @@ class Operation:
     allow_with_selection: Callable[[object, str], bool]
     validate_and_parse: Callable[
         [object, object],
-        List[operations.Modification],
+        List[modifications.Modification],
     ]
-    apply: Callable[[object, List[operations.Modification]], None]
+    apply: Callable[[object, List[modifications.Modification]], None]
     render: Callable[[object], str]
 
 
@@ -144,15 +145,15 @@ def validate_and_parse_cut(session, form):
 
     modifications = []
 
-    modification = operations.Modification(
-        operation=operations.Type.COPY,
+    modification = modifications.Modification(
+        operation=modifications.Type.COPY,
         input=sel,
     )
     modifications.append(modification)
 
-    inp = operations.ValueInput(selection=sel, value=None)
-    modification = operations.Modification(
-        operation=operations.Type.VALUE,
+    inp = modifications.ValueInput(selection=sel, value=None)
+    modification = modifications.Modification(
+        operation=modifications.Type.VALUE,
         input=inp,
     )
     modifications.append(modification)
@@ -172,8 +173,8 @@ def validate_and_parse_copy(session, form):
             "is not supported with copy operation."
         )
 
-    modification = operations.Modification(
-        operation=operations.Type.COPY,
+    modification = modifications.Modification(
+        operation=modifications.Type.COPY,
         input=sel,
     )
     return [modification]
@@ -229,8 +230,8 @@ def validate_and_parse_paste(session, form):
             "is not supported with paste operation."
         )
 
-    modification = operations.Modification(
-        operation=operations.Type.PASTE,
+    modification = modifications.Modification(
+        operation=modifications.Type.PASTE,
         input=sel,
     )
     return [modification]
@@ -248,8 +249,8 @@ def validate_and_parse_delete(session, form):
             "is not supported with delete operation."
         )
 
-    modification = operations.Modification(
-        operation=operations.Type.DELETE,
+    modification = modifications.Modification(
+        operation=modifications.Type.DELETE,
         input=sel,
     )
     return [modification]
@@ -271,12 +272,12 @@ def validate_and_parse_insert(session, form):
     form_helpers.validate_nonempty(number, name="number")
     number = form_helpers.parse_int(number, name="number")
 
-    inp = operations.InsertInput(
+    inp = modifications.InsertInput(
         selection=sel,
         number=number,
     )
-    modification = operations.Modification(
-        operation=operations.Type.INSERT,
+    modification = modifications.Modification(
+        operation=modifications.Type.INSERT,
         input=inp,
     )
     return [modification]
@@ -294,9 +295,9 @@ def validate_and_parse_erase(session, form):
             "is not supported with erase operation."
         )
 
-    inp = operations.ValueInput(selection=sel, value=None)
-    modification = operations.Modification(
-        operation=operations.Type.VALUE,
+    inp = modifications.ValueInput(selection=sel, value=None)
+    modification = modifications.Modification(
+        operation=modifications.Type.VALUE,
         input=inp,
     )
     return [modification]
@@ -318,9 +319,9 @@ def validate_and_parse_value(session, form):
     if value == "":
         raise errors.InputError("Field 'value' was not given.")
 
-    inp = operations.ValueInput(selection=sel, value=value)
-    modification = operations.Modification(
-        operation=operations.Type.VALUE,
+    inp = modifications.ValueInput(selection=sel, value=value)
+    modification = modifications.Modification(
+        operation=modifications.Type.VALUE,
         input=inp,
     )
     return [modification]
@@ -329,48 +330,48 @@ def validate_and_parse_value(session, form):
 def apply_cut(session, modifications):
     assert len(modifications) == 2
     copy_mod = modifications[0]
-    assert copy_mod.operation == operations.Type.COPY
+    assert copy_mod.operation == modifications.Type.COPY
     sel = copy_mod.input
 
     sel_state.set_buffer_mode(session, sel)
     for modification in modifications:
-        operations.apply_modification(modification)
+        modifications.apply_modification(modification)
 
 
 def apply_copy(session, modifications):
     assert len(modifications) == 1
     copy_mod = modifications[0]
-    assert copy_mod.operation == operations.Type.COPY
+    assert copy_mod.operation == modifications.Type.COPY
     sel = copy_mod.input
 
     sel_state.set_buffer_mode(session, sel)
     for modification in modifications:
-        operations.apply_modification(modification)
+        modifications.apply_modification(modification)
 
 
 def apply_paste(session, modifications):
     for modification in modifications:
-        operations.apply_modification(modification)
+        modifications.apply_modification(modification)
 
 
 def apply_delete(session, modifications):
     for modification in modifications:
-        operations.apply_modification(modification)
+        modifications.apply_modification(modification)
 
 
 def apply_insert(session, modifications):
     for modification in modifications:
-        operations.apply_modification(modification)
+        modifications.apply_modification(modification)
 
 
 def apply_erase(session, modifications):
     for modification in modifications:
-        operations.apply_modification(modification)
+        modifications.apply_modification(modification)
 
 
 def apply_value(session, modifications):
     for modification in modifications:
-        operations.apply_modification(modification)
+        modifications.apply_modification(modification)
 
 
 def render_cut_inputs(session):

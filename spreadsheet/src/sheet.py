@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import json
 import numpy as np
 from typing import Optional
 
@@ -49,7 +48,7 @@ def get_bounds():
 def init(debug=False):
     global sheet
 
-    maxrows = 10
+    maxrows = 30
     maxcols = 10
 
     sheet = np.empty((maxrows, maxcols), dtype=object)
@@ -71,10 +70,3 @@ def set(data):
     global sheet
 
     sheet = data
-
-
-def get_dump():
-    data = []
-    for row in range(sheet.shape[0]):
-        data.append(sheet[row].tolist())
-    return json.dumps(data)

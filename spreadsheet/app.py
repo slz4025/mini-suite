@@ -27,10 +27,6 @@ htmx = HTMX(app)
 app.config.from_object('config.Config')
 
 
-# Populate with fake data.
-DEBUG = True
-
-
 @app.route("/error")
 def unexpected_error():
     error_message = errors.get_message(session)
@@ -116,29 +112,15 @@ def render_body(session):
 def root():
     assert htmx is not None
 
-    # TODO: This should eventually be done for the user for the sheet.
     command_palette.init(session)
     notifications.init(session)
     navigator.init(session)
-
-    # TODO: This should eventually be done only on the creation of the sheet.
-    sheet.init(DEBUG)
 
     body = render_body(session)
     return render_template(
         "index.html",
         body=body,
         )
-
-
-@app.route("/data", methods=['GET'])
-@errors.handler
-def data():
-    assert htmx is not None
-
-    dump = sheet.get_dump()
-
-    return dump
 
 
 @app.route("/command-palette/toggle", methods=['PUT'])
@@ -608,25 +590,6 @@ def files_toggler():
     return html
 
 
-@app.route("/files/import", methods=['POST'])
-@errors.handler
-def files_import():
-    assert htmx is not None
-
-    error = None
-    try:
-        files.import_from(request)
-    except errors.UserError as e:
-        error = e
-
-    if error is None:
-        notifications.set_info(session, "Imported file.")
-    else:
-        notifications.set_error(session, error)
-
-    return render_port(session, error)
-
-
 @app.route("/files/export", methods=['POST'])
 @errors.handler
 def files_export():
@@ -649,40 +612,13 @@ def files_export():
     return resp
 
 
-@app.route("/files/open", methods=['POST'])
-@errors.handler
-def files_open():
-    assert htmx is not None
-
-    error = None
-    try:
-        files.open_from(request)
-    except errors.UserError as e:
-        error = e
-
-    if error is None:
-        notifications.set_info(session, "Open file.")
-    else:
-        notifications.set_error(session, error)
-
-    return render_port(session, error)
-
-
 @app.route("/files/save", methods=['POST'])
 @errors.handler
 def files_save():
     assert htmx is not None
 
-    error = None
-    try:
-        files.save_to(request)
-    except errors.UserError as e:
-        error = e
-
-    if error is None:
-        notifications.set_info(session, "Saved file.")
-    else:
-        notifications.set_error(session, error)
+    files.save()
+    notifications.set_info(session, "Saved file.")
 
     null_html = render_null(session)
     resp = Response(null_html)
@@ -716,5 +652,8 @@ def navigator_move_increments():
     return render_port(session, None)
 
 
-if __name__ == "__main__":
-    serve(app, host='0.0.0.0', port=app.config["PORT"])
+def start(port, path, debug):
+    files.setup(path, debug)
+
+    print(f"Serving on port {port}.")
+    serve(app, host='0.0.0.0', port=port)

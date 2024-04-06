@@ -5,20 +5,17 @@
 >
   <h2>FILES</h2>
 
-  <form
-    id="files-import"
-    hx-post="/files/import"
-    hx-target="#port"
-    hx-swap="innerHTML"
-    enctype="multipart/form-data"
-    >
-    <fieldset>
-      <legend>Import</legend>
-      <label for="files-import-file" hidden>File</label>
-      <input type="file" name="input" id="files-import-file" />
-      <input type="submit" value="⬏" id="files-import-submit" />
-    </fieldset>
-  </form>
+  <div class="inner">
+    <button
+      id="files-save"
+      class="icon"
+      hx-post="/files/save"
+      hx-trigger="click"
+      hx-target="#null"
+      hx-swap="outerHTML"
+      title="save"
+      ><span>💾</span></button>
+  </div>
 
   <form
     id="files-export"
@@ -32,36 +29,6 @@
       <label for="files-export-filename" hidden>Filename</label>
       <input type="text" name="input" id="files-export-filename" />
       <input type="submit" value="⬎" id="files-export-submit" />
-    </fieldset>
-  </form>
-
-  <form
-    id="files-open"
-    hx-post="/files/open"
-    hx-target="#port"
-    hx-swap="innerHTML"
-    enctype="multipart/form-data"
-    >
-    <fieldset>
-      <legend>Open</legend>
-      <label for="files-open-file" hidden>File</label>
-      <input type="file" name="input" id="files-open-file" />
-      <input type="submit" value="⬏" id="files-open-submit" />
-    </fieldset>
-  </form>
-
-  <form
-    id="files-save"
-    hx-post="/files/save"
-    hx-target="#null"
-    hx-swap="outerHTML"
-    enctype="multipart/form-data"
-    >
-    <fieldset>
-      <legend>Save</legend>
-      <label for="files-save-filename" hidden>Filename</label>
-      <input type="text" name="input" id="files-save-filename" />
-      <input type="submit" value="⬎" id="files-save-submit" />
     </fieldset>
   </form>
 </div>

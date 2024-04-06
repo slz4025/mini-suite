@@ -1,3 +1,5 @@
+import numpy as np
+
 import src.errors as errors
 import src.selection.types as sel_types
 import src.sheet as sheet
@@ -11,6 +13,18 @@ def is_formula(formula):
 
 def get_cell_computed(cell_position):
     return graph.compute(cell_position)
+
+
+def get_all_cells_computed():
+    bounds = sheet.get_bounds()
+    data = np.empty((bounds.row.value, bounds.col.value), dtype=object)
+    for row in range(bounds.row.value):
+        for col in range(bounds.col.value):
+            data[row, col] = get_cell_computed(sel_types.CellPosition(
+                row_index=sel_types.RowIndex(int(row)),
+                col_index=sel_types.ColIndex(int(col)),
+            ))
+    return data
 
 
 def update_cell_value(cell_position, value):

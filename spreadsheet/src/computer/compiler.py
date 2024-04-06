@@ -192,12 +192,10 @@ def selections(cell_position, node):
         )
         pos = get_box_positions(sel)
 
-        expr_arr = []
-        for p in pos:
-            r = node.add_dependency(p)
-            expr = f"EVAL<{r}>"
-            expr_arr.append(expr)
-        compiled = "[{}]".format(",".join(expr_arr))
+        assert len(pos) == 1
+        p = pos[0]
+        r = node.add_dependency(p)
+        compiled = f"EVAL<{r}>"
 
         return compiled
 
@@ -335,7 +333,7 @@ def selections(cell_position, node):
     return node
 
 
-def castings(formula):
+def castings(cell_position, formula):
     int_instances = re.finditer(
             r"INT\<"
             + r"(?P<contents>{})".format(expression_regex)
@@ -344,8 +342,11 @@ def castings(formula):
             )
 
     def int_replace(instance):
-        contents = instance.group("contents")
-        compiled = f"[int(float(e)) for e in {contents}]"
+        contents = evaluate(cell_position, instance.group("contents"))
+        if isinstance(contents, list):
+            compiled = f"[int(float(e)) for e in {contents}]"
+        else:
+            compiled = f"int(float({contents}))"
         return compiled
 
     formula = replace_instances(
@@ -362,8 +363,11 @@ def castings(formula):
             )
 
     def float_replace(instance):
-        contents = instance.group("contents")
-        compiled = f"[float(e) for e in {contents}]"
+        contents = evaluate(cell_position, instance.group("contents"))
+        if isinstance(contents, list):
+            compiled = f"[float(e) for e in {contents}]"
+        else:
+            compiled = f"float({contents})"
         return compiled
 
     formula = replace_instances(
@@ -385,5 +389,5 @@ def pre_compile(cell_position, formula):
 
 # Compilation after DAG-evaluation.
 def post_compile(cell_position, formula):
-    formula = castings(formula)
+    formula = castings(cell_position, formula)
     return formula

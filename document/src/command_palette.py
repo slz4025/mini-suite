@@ -16,8 +16,8 @@ def set_show(show):
     SHOW = show
 
 
-def init():
-    set_show(True)
+def init(show):
+    set_show(show)
 
 
 def render_open(session):

@@ -34,14 +34,15 @@ def setup(wiki_path, one_off_file):
         FILE_DIR = dir
         FILE_PATH = one_off_file
         MODE = Mode.FILE
+        command_palette.init(show=False)
     elif wiki_path is not None:
         wiki.set(wiki_path)
         MODE = Mode.WIKI
+        command_palette.init(show=True)
     else:
         raise Exception("Mode not specified.")
 
     notifications.init()
-    command_palette.init()
 
 
 def check_using_file():

@@ -9,6 +9,7 @@ import src.sheet as sheet
 import src.selection.types as sel_types
 
 
+num_regex = r"[0-9]+"
 expression_regex = r"[^\<\>\n\r]+"
 
 
@@ -61,7 +62,7 @@ def replace_instances(formula, instances, replace_instance):
 def position_references(cell_position, node):
     formula = node.formula
 
-    curr_row_instances = re.finditer(r"CURR_ROW", formula)
+    curr_row_instances = re.finditer(r"\<ROW\>", formula)
 
     def curr_row_replace(instance):
         row = cell_position.row_index.value
@@ -70,7 +71,7 @@ def position_references(cell_position, node):
 
     formula = replace_instances(formula, curr_row_instances, curr_row_replace)
 
-    curr_col_instances = re.finditer(r"CURR_COL", formula)
+    curr_col_instances = re.finditer(r"\<COL\>", formula)
 
     def curr_col_replace(instance):
         col = cell_position.col_index.value
@@ -127,10 +128,14 @@ def get_box_positions(sel):
 def selections(cell_position, node):
     formula = node.formula
 
+    # Compute box before row range and col range so compile properly.
+    # expressions should not have :
     box_instances = re.finditer(
-            r"BOX\<"
+            r"\<R#"
             + r"(?P<row_start>{}):".format(expression_regex)
-            + r"(?P<row_end>{}),".format(expression_regex)
+            + r"(?P<row_end>{})".format(expression_regex)
+            + r"\>"
+            + r"\<C#"
             + r"(?P<col_start>{}):".format(expression_regex)
             + r"(?P<col_end>{})".format(expression_regex)
             + r"\>",
@@ -169,9 +174,12 @@ def selections(cell_position, node):
         box_replace,
     )
 
+    # Compute cell before row index and col index so compile properly.
     cell_instances = re.finditer(
-            r"CELL\<"
-            + r"(?P<row>{}),".format(expression_regex)
+            r"\<R#"
+            + r"(?P<row>{})".format(expression_regex)
+            + r"\>"
+            + r"\<C#"
             + r"(?P<col>{})".format(expression_regex)
             + r"\>",
             formula,
@@ -205,8 +213,9 @@ def selections(cell_position, node):
         cell_replace,
     )
 
+    # expressions should not have :
     row_range_instances = re.finditer(
-            r"ROWS\<"
+            r"\<R#"
             + r"(?P<row_start>{}):".format(expression_regex)
             + r"(?P<row_end>{})".format(expression_regex)
             + r"\>",
@@ -238,7 +247,7 @@ def selections(cell_position, node):
     )
 
     row_instances = re.finditer(
-            r"ROW\<"
+            r"\<R#"
             + r"(?P<row>{})".format(expression_regex)
             + r"\>",
             formula,
@@ -267,8 +276,9 @@ def selections(cell_position, node):
         row_replace,
     )
 
+    # expressions should not have :
     col_range_instances = re.finditer(
-            r"COLS\<"
+            r"\<C#"
             + r"(?P<col_start>{}):".format(expression_regex)
             + r"(?P<col_end>{})".format(expression_regex)
             + r"\>",
@@ -300,7 +310,7 @@ def selections(cell_position, node):
     )
 
     col_instances = re.finditer(
-            r"COL\<"
+            r"\<C#"
             + r"(?P<col>{})".format(expression_regex)
             + r"\>",
             formula,
@@ -335,7 +345,7 @@ def selections(cell_position, node):
 
 def castings(cell_position, formula):
     int_instances = re.finditer(
-            r"INT\<"
+            r"\<INT#"
             + r"(?P<contents>{})".format(expression_regex)
             + r"\>",
             formula,
@@ -356,7 +366,7 @@ def castings(cell_position, formula):
     )
 
     float_instances = re.finditer(
-            r"FLOAT\<"
+            r"\<FLOAT#"
             + r"(?P<contents>{})".format(expression_regex)
             + r"\>",
             formula,

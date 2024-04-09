@@ -23,11 +23,11 @@ def get_show_operations(session):
 def get_selection_macro(session):
     sel = sel_state.get_selection(session)
     if isinstance(sel, sel_types.RowRange):
-        return "ROWS<{}:{}>".format(sel.start.value, sel.end.value)
+        return "<R#{}:{}>".format(sel.start.value, sel.end.value)
     elif isinstance(sel, sel_types.ColRange):
-        return "COLS<{}:{}>".format(sel.start.value, sel.end.value)
+        return "<C#{}:{}>".format(sel.start.value, sel.end.value)
     elif isinstance(sel, sel_types.Box):
-        return "BOX<{}:{},{}:{}>".format(
+        return "<R#{}:{}><C#{}:{}>".format(
             sel.row_range.start.value, sel.row_range.end.value,
             sel.col_range.start.value, sel.col_range.end.value,
         )
@@ -53,11 +53,11 @@ class Operation:
 all_operations = {
     Name.SUM: Operation(
         name=Name.SUM,
-        template="=sum(FLOAT<{sel_macro}>)",
+        template="=sum(<FLOAT#{sel_macro}>)",
     ),
     Name.AVERAGE: Operation(
         name=Name.AVERAGE,
-        template="=sum(FLOAT<{sel_macro}>) / len({sel_macro})",
+        template="=sum(<FLOAT#{sel_macro}>) / len({sel_macro})",
     ),
 }
 

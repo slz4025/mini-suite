@@ -21,33 +21,46 @@
     and update all other cells that depend on this cell.
     To express the value using a formula, type Python code
     within angle brackets.
-  <p>
   </p>
+  <p>
+    Refer to the index for:
+  </p>
+  <ul>
+    <li>current cell's row: <code>&lt;ROW&gt;</code>,</li>
+    <li>current cell's column: <code>&lt;COL&gt;</code>.</li>
+  </ul>
+  <p>
     Refer to a selection of other cells:
-      <code>ROW&lt;r&gt;</code>,
-      <code>COL&lt;c&gt;</code>,
-      <code>CELL&lt;r,c&gt;</code>,
-      <code>ROWS&lt;rs:re&gt;</code>,
-      <code>COLS&lt;cs:ce&gt;</code>,
-      <code>BOX&lt;rs:re,cs:ce&gt;</code>,
-    where
-      <code>r</code> = index of row,
-      <code>c</code> = index of col,
-      <code>rs</code> = inclusive-start index of row range,
-      <code>re</code> = exclusive-end index of row range,
-      <code>cs</code> = inclusive-start index of column range,
-      <code>ce</code> = exclusive-end index of column range.
   </p>
   <p>
-    To refer to the current cell's row index, use <code>CURR_ROW</code>.
-    To refer to the current cell's column index, use <code>CURR_COL</code>.
+  <ul>
+    <li>single row: <code>&lt;R#r&gt;</code>,</li>
+    <li>multiple rows: <code>&lt;R#rs:re&gt;</code>,</li>
+    <li>single column: <code>&lt;C#c&gt;</code>,</li>
+    <li>multiple columns: <code>&lt;C#cs:ce&gt;</code>,</li>
+    <li>single cell: <code>&lt;R#r&gt;&lt;C#c&gt;</code>,</li>
+    <li>box of cells: <code>&lt;R#rs:re&gt;&lt;C#cs:ce&gt;</code>,</li>
+  </ul>
+  <p>
+    where
   </p>
+  <ul>
+    <li><code>r</code> = expression for index of row,</li>
+    <li><code>c</code> = expression for index of col,</li>
+    <li><code>rs</code> = expression for inclusive-start index of row range,</li>
+    <li><code>re</code> = expression for exclusive-end index of row range,</li>
+    <li><code>cs</code> = expression for inclusive-start index of column range,</li>
+    <li><code>ce</code> = expression for exclusive-end index of column range.</li>
+  </ul>
   <p>
     Cast the values within the selection:
-      <code>INT&lt;sel&gt;</code>,
-      <code>FLOAT&lt;sel&gt;</code>,
-    where
-      <code>sel</code> is the selection.
+  </p>
+  <ol>
+    <li><code>&lt;INT#{sel}&gt;</code></li>,
+    <li><code>&lt;FLOAT#{sel}&gt;</code></li>,
+  </ol>
+  <p>
+    where <code>{sel}</code> is the selection.
   </p>
   {% endif %}
 

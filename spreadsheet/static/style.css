@@ -323,7 +323,13 @@ code {
   background-color: var(--main-color);
   color: var(--background-color);
 }
-
+ul {
+  margin: 0;
+  border: 0;
+  padding: 0 0.5rem;
+  list-style-type: square;
+  list-style-position: inside;
+}
 span {
 
 }

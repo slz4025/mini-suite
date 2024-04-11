@@ -1,6 +1,5 @@
 # Regex-based compiler of macros.
 
-from dataclasses import dataclass
 import re
 from typing import List
 

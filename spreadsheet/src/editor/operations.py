@@ -23,13 +23,13 @@ def get_show_operations(session):
 def get_selection_macro(session):
     sel = sel_state.get_selection(session)
     if isinstance(sel, sel_types.RowRange):
-        return "<R#{}:{}>".format(sel.start.value, sel.end.value)
+        return "<R#{}:{}>".format(sel.start.value, sel.end.value-1)
     elif isinstance(sel, sel_types.ColRange):
-        return "<C#{}:{}>".format(sel.start.value, sel.end.value)
+        return "<C#{}:{}>".format(sel.start.value, sel.end.value-1)
     elif isinstance(sel, sel_types.Box):
         return "<R#{}:{}><C#{}:{}>".format(
-            sel.row_range.start.value, sel.row_range.end.value,
-            sel.col_range.start.value, sel.col_range.end.value,
+            sel.row_range.start.value, sel.row_range.end.value-1,
+            sel.col_range.start.value, sel.col_range.end.value-1,
         )
     else:
         sel_mode = sel_modes.from_selection(sel)

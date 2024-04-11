@@ -150,11 +150,13 @@ def selections(cell_position, node):
         sel = sel_types.Box(
             row_range=sel_types.RowRange(
                 start=sheet.Index(row_start),
-                end=sheet.Bound(row_end),
+                # make exclusive
+                end=sheet.Bound(row_end+1),
             ),
             col_range=sel_types.ColRange(
                 start=sheet.Index(col_start),
-                end=sheet.Bound(col_end),
+                # make exclusive
+                end=sheet.Bound(col_end+1),
             ),
         )
         pos = get_box_positions(sel)
@@ -227,7 +229,8 @@ def selections(cell_position, node):
         row_end = evaluate(cell_position, instance.group("row_end"))
         sel = sel_types.RowRange(
             start=sheet.Index(row_start),
-            end=sheet.Bound(row_end),
+            # make exclusive
+            end=sheet.Bound(row_end+1),
         )
         pos = get_row_range_positions(sel)
 
@@ -290,7 +293,8 @@ def selections(cell_position, node):
         col_end = evaluate(cell_position, instance.group("col_end"))
         sel = sel_types.ColRange(
             start=sheet.Index(col_start),
-            end=sheet.Bound(col_end),
+            # make exclusive
+            end=sheet.Bound(col_end+1),
         )
         pos = get_col_range_positions(sel)
 

@@ -53,7 +53,8 @@ def get_row_range(inp):
     name = "row end"
     end = form_helpers.extract(inp, "row-end", name=name)
     end = None if end == "" else sheet.Bound(
-        form_helpers.parse_int(end, name=name)
+        # make exclusive
+        form_helpers.parse_int(end, name=name)+1
     )
 
     sel = types.RowRange(start=start, end=end)
@@ -71,7 +72,8 @@ def get_col_range(inp):
     name = "column end"
     end = form_helpers.extract(inp, "col-end", name=name)
     end = None if end == "" else sheet.Bound(
-        form_helpers.parse_int(end, name=name)
+        # make exclusive
+        form_helpers.parse_int(end, name=name)+1
     )
 
     sel = types.ColRange(start=start, end=end)
@@ -158,15 +160,19 @@ def render(session, mode, sel=None):
             col_index = sel.col_index.value
         elif isinstance(sel, types.RowRange):
             row_start = sel.start.value
-            row_end = sel.end.value
+            # make inclusive
+            row_end = sel.end.value - 1
         elif isinstance(sel, types.ColRange):
             col_start = sel.start.value
-            col_end = sel.end.value
+            # make inclusive
+            col_end = sel.end.value - 1
         elif isinstance(sel, types.Box):
             row_start = sel.row_range.start.value
-            row_end = sel.row_range.end.value
+            # make inclusive
+            row_end = sel.row_range.end.value - 1
             col_start = sel.col_range.start.value
-            col_end = sel.col_range.end.value
+            # make inclusive
+            col_end = sel.col_range.end.value - 1
         else:
             sel_type = type(sel)
             raise errors.UnknownOptionError(

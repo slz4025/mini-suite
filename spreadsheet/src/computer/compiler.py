@@ -346,52 +346,6 @@ def selections(cell_position, node):
     return node
 
 
-def castings(cell_position, formula):
-    int_instances = re.finditer(
-            r"\<INT#"
-            + r"(?P<contents>{})".format(expression_regex)
-            + r"\>",
-            formula,
-            )
-
-    def int_replace(instance):
-        contents = evaluate(cell_position, instance.group("contents"))
-        if isinstance(contents, list):
-            compiled = f"[int(float(e)) for e in {contents}]"
-        else:
-            compiled = f"int(float({contents}))"
-        return compiled
-
-    formula = replace_instances(
-        formula,
-        int_instances,
-        int_replace,
-    )
-
-    float_instances = re.finditer(
-            r"\<FLOAT#"
-            + r"(?P<contents>{})".format(expression_regex)
-            + r"\>",
-            formula,
-            )
-
-    def float_replace(instance):
-        contents = evaluate(cell_position, instance.group("contents"))
-        if isinstance(contents, list):
-            compiled = f"[float(e) for e in {contents}]"
-        else:
-            compiled = f"float({contents})"
-        return compiled
-
-    formula = replace_instances(
-        formula,
-        float_instances,
-        float_replace,
-    )
-
-    return formula
-
-
 # Compilation before DAG-evaluation.
 def pre_compile(cell_position, formula):
     node = Node(formula=formula, dependencies=[])
@@ -402,5 +356,4 @@ def pre_compile(cell_position, formula):
 
 # Compilation after DAG-evaluation.
 def post_compile(cell_position, formula):
-    formula = castings(cell_position, formula)
     return formula

@@ -12,6 +12,22 @@ def is_formula(formula):
     return isinstance(formula, str) and formula.startswith("=")
 
 
+# Cast value to string if not basic type.
+# If user insists on the value being a string,
+# which is much more unlikely,
+# they should input the value as a
+# a string in a formula, e.g. ="4.0".
+def cast(value):
+    if isinstance(value, bool):
+        return value
+    elif isinstance(value, int):
+        return value
+    elif isinstance(value, float):
+        return value
+    else:
+        return f"\"{value}\""
+
+
 def evaluate_dependencies(cell_position, node):
     formula = node.formula
 
@@ -26,7 +42,9 @@ def evaluate_dependencies(cell_position, node):
         register = int(instance.group("register"))
         pos = node.get_dependency(register)
         value = try_compute(pos)
-        return str(value)
+        # Put value in string to put in formula.
+        compiled_value = str(cast(value))
+        return compiled_value
 
     formula = compiler.replace_instances(
         formula,

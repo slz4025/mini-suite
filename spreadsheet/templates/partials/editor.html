@@ -32,7 +32,6 @@
   <p>
     Refer to a selection of other cells:
   </p>
-  <p>
   <ul>
     <li>single row: <code>&lt;R#r&gt;</code>,</li>
     <li>multiple rows: <code>&lt;R#rs:re&gt;</code>,</li>
@@ -44,7 +43,7 @@
   <p>
     where
   </p>
-  <ul>
+  <ul style="padding-bottom: 0.5rem;">
     <li><code>r</code> = expression for index of row,</li>
     <li><code>c</code> = expression for index of col,</li>
     <li><code>rs</code> = expression for inclusive-start index of row range,</li>
@@ -52,16 +51,6 @@
     <li><code>cs</code> = expression for inclusive-start index of column range,</li>
     <li><code>ce</code> = expression for inclusive-end index of column range.</li>
   </ul>
-  <p>
-    Cast the values within the selection:
-  </p>
-  <ol>
-    <li><code>&lt;INT#{sel}&gt;</code></li>,
-    <li><code>&lt;FLOAT#{sel}&gt;</code></li>,
-  </ol>
-  <p>
-    where <code>{sel}</code> is the selection.
-  </p>
   {% endif %}
 
   {% if editing %}

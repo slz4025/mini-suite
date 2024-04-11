@@ -53,11 +53,12 @@ class Operation:
 all_operations = {
     Name.SUM: Operation(
         name=Name.SUM,
-        template="=sum(<FLOAT#{sel_macro}>)",
+        template="=sum({sel_macro})",
     ),
     Name.AVERAGE: Operation(
         name=Name.AVERAGE,
-        template="=sum(<FLOAT#{sel_macro}>) / len({sel_macro})",
+        template="=sum([float(e) for e in {sel_macro}]) "
+        + "/ float(len({sel_macro}))",
     ),
 }
 

@@ -39,15 +39,7 @@ def apply_delete(sel):
     end = None
     axis = None
 
-    if isinstance(sel, sel_types.RowIndex):
-        start = sel.value
-        end = start+1
-        axis = Axis.ROW
-    elif isinstance(sel, sel_types.ColIndex):
-        start = sel.value
-        end = start+1
-        axis = Axis.COLUMN
-    elif isinstance(sel, sel_types.RowRange):
+    if isinstance(sel, sel_types.RowRange):
         start = sel.start.value
         end = sel.end.value
         axis = Axis.ROW

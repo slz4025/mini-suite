@@ -1,6 +1,10 @@
 from dataclasses import dataclass
+from flask import render_template
+import os
 from typing import Callable
 
+import src.command_palette as command_palette
+import src.errors as errors
 import src.form_helpers as form_helpers
 
 import src.selection.modes as modes
@@ -132,3 +136,56 @@ def validate_and_parse(inp):
     form = forms[mode]
     selection = form.validate_and_parse(inp)
     return selection
+
+
+def render(session, mode, sel=None):
+    show_help = command_palette.get_show_help(session)
+
+    row_index = ""
+    col_index = ""
+    row_start = ""
+    row_end = ""
+    col_start = ""
+    col_end = ""
+
+    if sel is not None:
+        if isinstance(sel, types.RowIndex):
+            row_index = sel.value
+        elif isinstance(sel, types.ColIndex):
+            col_index = sel.value
+        elif isinstance(sel, types.CellPosition):
+            row_index = sel.row_index.value
+            col_index = sel.col_index.value
+        elif isinstance(sel, types.RowRange):
+            row_start = sel.start.value
+            row_end = sel.end.value
+        elif isinstance(sel, types.ColRange):
+            col_start = sel.start.value
+            col_end = sel.end.value
+        elif isinstance(sel, types.Box):
+            row_start = sel.row_range.start.value
+            row_end = sel.row_range.end.value
+            col_start = sel.col_range.start.value
+            col_end = sel.col_range.end.value
+        else:
+            sel_type = type(sel)
+            raise errors.UnknownOptionError(
+                f"Unknown selection type: {sel_type}."
+            )
+
+    form = forms[mode]
+    template_path = os.path.join(
+        "partials/selection",
+        form.template,
+    )
+    html = render_template(
+        template_path,
+        show_help=show_help,
+        row_index=row_index,
+        col_index=col_index,
+        row_start=row_start,
+        row_end=row_end,
+        col_start=col_start,
+        col_end=col_end,
+    )
+    return html

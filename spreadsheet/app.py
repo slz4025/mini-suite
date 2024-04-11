@@ -338,7 +338,7 @@ def selection_inputs():
 
     mode_str = request.args["mode"]
     mode = selection.modes.from_input(mode_str)
-    return selection.render_inputs(session, mode)
+    return selection.inputs.render(session, mode)
 
 
 def update_selection(mode, sel, error, reset=False):

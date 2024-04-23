@@ -57,8 +57,8 @@ function get_position(id) {
   return [row, col];
 }
 
-function valid_selection(end_row, end_col) {
-  const start_cell_id = get_cell_id(selection_start_row, selection_start_col);
+function valid_selection(start_row, start_col, end_row, end_col) {
+  const start_cell_id = get_cell_id(start_row, start_col);
   const end_cell_id = get_cell_id(end_row, end_col);
 
   if (
@@ -94,7 +94,6 @@ function compute_cells_to_update(end_row, end_col) {
   const effective_end_row = Math.max(start_row, end_row);
   const effective_start_col = Math.min(start_col, end_col);
   const effective_end_col = Math.max(start_col, end_col);
-
 
   const prev_set = new Set();
   for (let i = prev_effective_start_row; i <= prev_effective_end_row; i++) {
@@ -137,15 +136,18 @@ async function select_cells(arr) {
 const request_buffer = [];
 
 function request_change_selection(end_row, end_col) {
-  if (!selection_start_row || !selection_start_col) {
+  const [start_row, start_col] = get_selection_start();
+  const [sel_end_row, sel_end_col] = get_selection_end();
+
+  if (start_row == undefined || start_col == undefined) {
     return;
   }
 
-  if (end_row == selection_end_row && end_col == selection_end_col) {
+  if (end_row == sel_end_row && end_col == sel_end_col) {
     return;
   }
 
-  if (!valid_selection(end_row, end_col)) {
+  if (!valid_selection(start_row, start_col, end_row, end_col)) {
     return;
   }
 

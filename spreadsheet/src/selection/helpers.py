@@ -82,3 +82,66 @@ def compute_from_endpoints(start, end):
             )
 
     return sel
+
+
+def compute_updated_selection(sel, direction):
+    bounds = sheet.get_bounds()
+    max_row = bounds.row.value
+    max_col = bounds.col.value
+
+    if sel is None:
+        return None
+    elif isinstance(sel, types.Box):
+        start_row = sel.row_range.start.value
+        start_col = sel.col_range.start.value
+        end_row = sel.row_range.end.value
+        end_col = sel.col_range.end.value
+        match direction:
+            case 'up':
+                end_row = max(0, end_row - 1)
+            case 'down':
+                end_row = min(max_row, end_row + 1)
+            case 'left':
+                end_col = max(0, end_col - 1)
+            case 'right':
+                end_col = min(max_col, end_col + 1)
+            case _:
+                raise errors.UnknownOptionError(
+                    f"Unexpected direction: {direction}."
+                )
+        return types.Box(
+            row_range=types.RowRange(
+                start=sheet.Index(start_row),
+                end=sheet.Bound(end_row),
+            ),
+            col_range=types.ColRange(
+                start=sheet.Index(start_col),
+                end=sheet.Bound(end_col),
+            ),
+        )
+    elif isinstance(sel, types.RowRange):
+        start_row = sel.start.value
+        end_row = sel.end.value
+        match direction:
+            case 'up':
+                end_row = max(0, end_row - 1)
+            case 'down':
+                end_row = min(max_row, end_row + 1)
+        return types.RowRange(
+            start=sheet.Index(start_row),
+            end=sheet.Bound(end_row),
+        )
+    elif isinstance(sel, types.ColRange):
+        start_col = sel.start.value
+        end_col = sel.end.value
+        match direction:
+            case 'left':
+                end_col = max(0, end_col - 1)
+            case 'right':
+                end_col = min(max_col, end_col + 1)
+        return types.ColRange(
+            start=sheet.Index(start_col),
+            end=sheet.Bound(end_col),
+        )
+    else:
+        return None

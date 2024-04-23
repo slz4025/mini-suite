@@ -15,6 +15,16 @@ def compute_from_endpoints(start, end):
     return mode, sel
 
 
+def compute_updated_selection(session, direction):
+    sel = state.get_selection(session)
+    updated_sel = helpers.compute_updated_selection(sel, direction)
+    if updated_sel is None:
+        return None, None
+
+    mode = modes.from_selection(updated_sel)
+    return mode, updated_sel
+
+
 def validate_and_parse(session, inp):
     sel = inputs.validate_and_parse(inp)
     mode = modes.from_selection(sel)
@@ -45,6 +55,20 @@ def render(session):
         mode = saved_mode
         selection = state.get_selection(session)
 
+    show_adjustments = saved_mode in [
+        modes.Mode.BOX,
+        modes.Mode.ROWS,
+        modes.Mode.COLUMNS
+    ]
+    show_row_adjustments = saved_mode in [
+        modes.Mode.BOX,
+        modes.Mode.ROWS,
+    ]
+    show_col_adjustments = saved_mode in [
+        modes.Mode.BOX,
+        modes.Mode.COLUMNS,
+    ]
+
     inp = inputs.render(session, mode, selection)
 
     return render_template(
@@ -55,4 +79,7 @@ def render(session):
             mode=mode.value,
             input=inp,
             show_clear=has_selection,
+            show_adjustments=show_adjustments,
+            show_row_adjustments=show_row_adjustments,
+            show_col_adjustments=show_col_adjustments,
     )

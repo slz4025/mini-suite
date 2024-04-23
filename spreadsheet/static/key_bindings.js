@@ -100,6 +100,21 @@ window.addEventListener('keyup', function(event) {
       if (element) {
         element.focus();
       }
+    } else if (event.shiftKey) {
+      switch (event.key) {
+        case 'ArrowUp':
+          document.getElementById("up-selection-button")?.click();
+          break;
+        case 'ArrowDown':
+          document.getElementById("down-selection-button")?.click();
+          break;
+        case 'ArrowLeft':
+          document.getElementById("left-selection-button")?.click();
+          break;
+        case 'ArrowRight':
+          document.getElementById("right-selection-button")?.click();
+          break;
+      }
     } else {
       switch (event.key) {
         case 'Delete':

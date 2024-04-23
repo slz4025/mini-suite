@@ -63,5 +63,73 @@
           style="font-size: 0.8rem; margin: 0.25rem;"
           ><span>🗑</span></button>
     </div>
+
+    {% if show_adjustments %}
+    <div class="inner">
+      {% if show_row_adjustments %}
+      <button
+        id="up-selection-button"
+        class="icon"
+        hx-put="/selection/move/up"
+        hx-trigger="click"
+        hx-target="#selection"
+        hx-swap="outerHTML"
+        style="width: {{ 'auto' if show_help else '' }};"
+      >
+        <span>⮝</span>
+        {% if show_help %}
+          <span>[Shift+Up]</span>
+        {% endif %}
+      </button>
+
+      <button
+        id="down-selection-button"
+        class="icon"
+        hx-put="/selection/move/down"
+        hx-trigger="click"
+        hx-target="#selection"
+        hx-swap="outerHTML"
+        style="width: {{ 'auto' if show_help else '' }};"
+      >
+        <span>⮟</span>
+        {% if show_help %}
+          <span>[Shift+Down]</span>
+        {% endif %}
+      </button>
+      {% endif %}
+
+      {% if show_col_adjustments %}
+      <button
+        id="left-selection-button"
+        class="icon"
+        hx-put="/selection/move/left"
+        hx-trigger="click"
+        hx-target="#selection"
+        hx-swap="outerHTML"
+        style="width: {{ 'auto' if show_help else '' }};"
+      >
+        <span>⮜</span>
+        {% if show_help %}
+          <span>[Shift+Left]</span>
+        {% endif %}
+      </button>
+
+      <button
+        id="right-selection-button"
+        class="icon"
+        hx-put="/selection/move/right"
+        hx-trigger="click"
+        hx-target="#selection"
+        hx-swap="outerHTML"
+        style="width: {{ 'auto' if show_help else '' }};"
+      >
+        <span>⮞</span>
+        {% if show_help %}
+          <span>[Shift+Right]</span>
+        {% endif %}
+      </button>
+      {% endif %}
+    </div>
+    {% endif %}
   </form>
 </div>

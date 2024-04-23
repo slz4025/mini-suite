@@ -399,6 +399,29 @@ def selection_end(start_row, start_col, end_row, end_col):
     return resp
 
 
+@app.route("/selection/move/<direction>", methods=['PUT'])
+@errors.handler
+def selection_move(direction):
+    assert htmx is not None
+
+    mode = None
+    sel = None
+    error = None
+    try:
+        mode, sel = selection.compute_updated_selection(session, direction)
+    except (errors.NotSupportedError) as e:
+        error = e
+
+    if sel is not None:
+        resp = update_selection(mode, sel, error)
+    else:
+        resp = Response()
+
+    html = selection.render(session)
+    resp.response = html
+    return resp
+
+
 @app.route("/selection", methods=['POST', 'DELETE'])
 @errors.handler
 def selection_endpoint():

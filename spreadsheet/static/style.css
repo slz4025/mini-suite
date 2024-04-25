@@ -15,7 +15,7 @@
   --editing-color: #111111;
   --selected-background-color: #FFFF00;
   --selected-color: #111111;
-  --selected-pointer-color: #FF00FF;
+  --selected-pointer-color: #00FFFF;
 
   --main-ff: monospace;
 }
@@ -271,10 +271,10 @@ th.col {
 }
 
 th.selected-next-row {
-  border-bottom: 1px solid var(--selected-pointer-color);
+  border-bottom: 2px solid var(--selected-pointer-color);
 }
 th.selected-next-col {
-  border-right: 1px solid var(--selected-pointer-color);
+  border-right: 2px solid var(--selected-pointer-color);
 }
 
 td {
@@ -294,10 +294,10 @@ td.selected-current {
   background-color: var(--selected-background-color);
 }
 td.selected-next-row {
-  border-bottom: 1px solid var(--selected-pointer-color);
+  border-bottom: 2px solid var(--selected-pointer-color);
 }
 td.selected-next-col {
-  border-right: 1px solid var(--selected-pointer-color);
+  border-right: 2px solid var(--selected-pointer-color);
 }
 td.failure {
   background-color: var(--failure-background-color);

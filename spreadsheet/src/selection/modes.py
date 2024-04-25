@@ -5,8 +5,8 @@ import src.selection.types as types
 
 
 class Mode(Enum):
-    ROW_INDEX = "Row Index"
-    COLUMN_INDEX = "Column Index"
+    ROW_INDEX = "Row"
+    COLUMN_INDEX = "Column"
     CELL_POSITION = "Cell Position"
     ROWS = "Rows"
     COLUMNS = "Columns"

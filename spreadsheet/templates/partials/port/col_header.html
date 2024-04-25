@@ -3,6 +3,7 @@
   class="col {{ ' '.join(renders) }}"
 >
   <div
+    id="header-col-{{ index }}-pointer"
     class="selected-pointer"
     style="display: {{ 'inherit' if 'selected-bottomright' in renders else 'none' }};">
   </div>
@@ -14,32 +15,23 @@
       const row = "-1";
       const col = "{{ index }}";
 
-      set_selection_start(row, col);
+      begin_selection(row, col);
     });
     document.querySelector(
       `#header-col-${ {{ index }} }`
     ).addEventListener("mousemove", (event) => {
       const row = "-1";
       const col = "{{ index }}";
+
       request_change_selection(row, col);
     })
     document.querySelector(
       `#header-col-${ {{ index }} }`
     ).addEventListener("mouseup", (event) => {
-      const [start_row, start_col] = get_selection_start();
-      const end_row = "-1";
-      const end_col = "{{ index }}";
+      const row = "-1";
+      const col = "{{ index }}";
 
-      htmx.ajax(
-        'PUT',
-        `/selection/start/${start_row}/${start_col}/end/${end_row}/${end_col}`,
-        {
-          target: "#selection",
-          swap: "outerHTML",
-        }
-      );
-
-      reset_selection_start();
+      finalize_selection(row, col);
     });
   </script>
 </th>

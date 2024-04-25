@@ -341,29 +341,43 @@ def selection_inputs():
     return selection.inputs.render(session, mode)
 
 
-def update_selection(mode, sel, error, reset=False):
+def update_selection(
+    mode,
+    sel,
+    error,
+    notify=False,
+    reset=False,
+    update_port=False,
+):
     resp = Response()
-    resp.headers['HX-Trigger'] = "notification"
+    resp.headers['HX-Trigger'] = ""
 
     if error is not None:
+        resp.headers['HX-Trigger'] += ",notification"
         notifications.set_error(session, error)
-    else:
-        if reset:
-            selection.reset(session)
-        else:
-            selection.save(session, mode, sel)
+        return resp
 
+    if reset:
+        selection.reset(session)
+    else:
+        selection.save(session, mode, sel)
+
+    if notify:
+        resp.headers['HX-Trigger'] += ",notification"
         notifications.set_info(session, "Selection {}.".format(
             "cleared" if reset else "registered"
         ))
-        # Rerender what editor operations are allowed based on selection.
-        resp.headers['HX-Trigger'] += ",editor-operations"
-        # Rerender what bulk-editor operations are allowed based on selection.
-        resp.headers['HX-Trigger'] += ",bulk-editor"
-        # Show selection in port.
+
+    # Show selection in port.
+    if update_port:
         resp.headers['HX-Trigger'] += ",update-port"
-        # Update showing navigator target feature.
-        resp.headers['HX-Trigger'] += ",navigator-target"
+
+    # Rerender what editor operations are allowed based on selection.
+    resp.headers['HX-Trigger'] += ",editor-operations"
+    # Rerender what bulk-editor operations are allowed based on selection.
+    resp.headers['HX-Trigger'] += ",bulk-editor"
+    # Update showing navigator target feature.
+    resp.headers['HX-Trigger'] += ",navigator-target"
 
     return resp
 
@@ -373,7 +387,7 @@ def update_selection(mode, sel, error, reset=False):
     methods=['PUT'],
 )
 @errors.handler
-def selection_end(start_row, start_col, end_row, end_col):
+def selection_start_end(start_row, start_col, end_row, end_col):
     assert htmx is not None
 
     start = selection.types.CellPosition(
@@ -440,7 +454,14 @@ def selection_endpoint():
         case 'DELETE':
             reset = True
 
-    resp = update_selection(mode, sel, error, reset=reset)
+    resp = update_selection(
+        mode,
+        sel,
+        error,
+        notify=True,
+        reset=reset,
+        update_port=True,
+    )
     html = selection.render(session)
     resp.response = html
     return resp

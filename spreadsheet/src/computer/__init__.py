@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Any, Dict
 
 import src.errors as errors
 import src.selection.types as sel_types
@@ -11,8 +12,14 @@ def is_formula(formula):
     return graph.is_formula(formula)
 
 
-def get_cell_computed(cell_position):
-    return graph.compute(cell_position)
+cache: Dict[sel_types.CellPosition, Any] = {}
+
+
+def get_cell_computed(cell_position, use_cache=False):
+    if cell_position not in cache or not use_cache:
+        value = graph.compute(cell_position)
+        cache[cell_position] = value
+    return cache[cell_position]
 
 
 def get_all_cells_computed():

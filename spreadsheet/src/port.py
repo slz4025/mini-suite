@@ -58,6 +58,7 @@ def render_cell(
     session,
     cell_position,
     render_selected=None,
+    compute=True,
     catch_failure=False,
 ):
     sel_types.check_cell_position(cell_position)
@@ -76,7 +77,10 @@ def render_cell(
         input_render = "editing"
 
     try:
-        value = computer.get_cell_computed(cell_position)
+        value = computer.get_cell_computed(
+            cell_position,
+            use_cache=not compute,
+        )
     except errors.UserError as e:
         if catch_failure:
             # set as empty while report error
@@ -163,6 +167,7 @@ def render_row(
     ncols,
     bounds,
     render_selected,
+    compute=True,
     catch_failure=False,
 ):
     header = render_row_header(
@@ -183,6 +188,7 @@ def render_row(
                 col_index=sel_types.ColIndex(col),
             ),
             render_selected=render_selected,
+            compute=compute,
             catch_failure=catch_failure,
         )
         cells.append(cell)
@@ -228,6 +234,7 @@ def render_table(
     nrows,
     ncols,
     bounds,
+    compute=True,
     catch_failure=False,
 ):
     render_selected = make_render_selected(session)
@@ -254,6 +261,7 @@ def render_table(
             ncols,
             bounds,
             render_selected,
+            compute=compute,
             catch_failure=catch_failure,
         )
         tablerows.append(tablerow)
@@ -265,7 +273,7 @@ def render_table(
     )
 
 
-def render(session, catch_failure=False):
+def render(session, compute=True, catch_failure=False):
     upperleft = navigator.get_upperleft(session)
     nrows, ncols = navigator.get_dimensions(session)
     bounds = sheet.get_bounds()
@@ -276,6 +284,7 @@ def render(session, catch_failure=False):
         nrows=nrows,
         ncols=ncols,
         bounds=bounds,
+        compute=compute,
         catch_failure=catch_failure,
     )
     return table

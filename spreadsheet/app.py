@@ -48,12 +48,12 @@ def render_null(session):
     return render_template("partials/null.html")
 
 
-def render_port(session, error):
-    port_html = port.render(session, catch_failure=True)
+def render_port(session, error, compute=True):
+    port_html = port.render(session, compute=compute, catch_failure=True)
 
     # ensure any errors from port do not supercede existing error
     try:
-        if not error:
+        if compute and not error:
             port_html = port.render(session)
     except errors.UserError as e:
         error = e
@@ -150,7 +150,9 @@ def help_toggler():
 def update_port():
     assert htmx is not None
 
-    resp = render_port(session, None)
+    no_compute = "no-compute" in request.args
+
+    resp = render_port(session, None, compute=not no_compute)
     resp.headers['HX-Trigger'] += "editor"
     return resp
 
@@ -370,7 +372,7 @@ def update_selection(
 
     # Show selection in port.
     if update_port:
-        resp.headers['HX-Trigger'] += ",update-port"
+        resp.headers['HX-Trigger'] += ",no-compute-update-port"
 
     # Rerender what editor operations are allowed based on selection.
     resp.headers['HX-Trigger'] += ",editor-operations"
@@ -427,7 +429,7 @@ def selection_move(direction):
         error = e
 
     if sel is not None:
-        resp = update_selection(mode, sel, error)
+        resp = update_selection(mode, sel, error, update_port=True)
     else:
         resp = Response()
 

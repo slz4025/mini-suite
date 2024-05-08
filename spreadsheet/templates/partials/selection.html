@@ -46,7 +46,7 @@
 
     {{ input|safe }}
 
-    <div class="inner" style="margin-bottom: 0; display: flex; align-items: top;">
+    <div class="inner" style="display: flex;">
       <input
         type="submit"
         value="↵"
@@ -65,7 +65,7 @@
     </div>
 
     {% if show_adjustments %}
-    <div class="inner">
+    <div class="inner" style="margin-bottom: 0;">
       {% if show_row_adjustments %}
       <button
         id="up-selection-button"

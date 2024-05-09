@@ -583,7 +583,7 @@ def navigator_target():
             except errors.NotSupportedError as e:
                 error = e
 
-            resp.headers['HX-Trigger'] += "notification"
+            resp.headers['HX-Trigger'] = "notification"
             if error is not None:
                 notifications.set_error(session, error)
             else:
@@ -591,7 +591,7 @@ def navigator_target():
                     session,
                     "Targeting cell position in port.",
                 )
-                resp.headers['HX-Trigger'] = ",update-port"
+                resp.headers['HX-Trigger'] += ",update-port"
 
     navigator_target_html = navigator.render_target(session)
     resp.response = navigator_target_html

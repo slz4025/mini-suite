@@ -155,12 +155,22 @@ def move_upperleft(session, method):
 
 def render_target(session):
     show_help = command_palette.get_show_help(session)
-    show_target = get_selection_for_target(session) is not None
+    target = get_selection_for_target(session)
+
+    show_target = False
+    row = None
+    col = None
+    if target is not None:
+        show_target = True
+        row = target.row_index.value
+        col = target.col_index.value
 
     return render_template(
             "partials/navigator/target.html",
             show_help=show_help,
             show_target=show_target,
+            row=row,
+            col=col,
     )
 
 

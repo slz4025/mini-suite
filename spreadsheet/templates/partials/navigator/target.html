@@ -1,21 +1,23 @@
-<div
+<span
   id="navigator-target"
   hx-put="/navigator/target"
   hx-trigger="navigator-target from:body"
   hx-target="this"
   hx-swap="outerHTML"
-  class="inner"
-  style="display: {{ 'inherit' if show_target else 'none' }};"
+  style="display: {{ 'inline' if show_target else 'none' }};"
 >
   <button 
     id="navigator-target-button"
+    class="icon"
     hx-post="/navigator/target"
+    hx-trigger="click"
     hx-target="#navigator-target"
     hx-swap="outerHTML"
+    style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
   >
-    Target Cell Position
+    ⌖
     {% if show_help %}
-      <span>[Ctrl+t]</span>
+    <span>Target Cell ({{ row }}, {{ col }}) [Ctrl+t]</span>
     {% endif %}
   </button>
-</div>
+</span>

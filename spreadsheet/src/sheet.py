@@ -48,8 +48,8 @@ def get_bounds():
 def init(debug=False):
     global sheet
 
-    maxrows = 30
-    maxcols = 10
+    maxrows = 60
+    maxcols = 30
 
     sheet = np.empty((maxrows, maxcols), dtype=object)
     if debug:

@@ -189,6 +189,7 @@ def cell_rerender(row, col):
     except (errors.UserError) as e:
         error = e
 
+    # Add notification trigger in `render_port`.
     if error is not None:
         notifications.set_error(session, error)
     else:
@@ -681,6 +682,7 @@ def navigator_dimensions():
     ncols = int(request.form['ncols'])
     navigator.set_dimensions(session, nrows, ncols)
 
+    # Add notification trigger in `render_port`.
     notifications.set_info(session, "Updated view dimensions.")
     return render_port(session, None)
 
@@ -696,7 +698,9 @@ def navigator_move_increments():
 
     notifications.set_info(session, "Updated move increments.")
     html = navigator.render(session)
-    return html
+    resp = Response(html)
+    resp.headers['HX-Trigger'] = "notification"
+    return resp
 
 
 def start(port, path, debug):

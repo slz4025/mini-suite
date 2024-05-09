@@ -95,13 +95,14 @@ def render_cell(resp, session, cell_position):
     return cell_html
 
 
-def render_body(session):
+def render_body(resp, session):
     dark_mode = app.config["DARK_MODE"]
     null = render_null(session)
-    notification_banner = notifications.render(session, False)
     show_command_palette = command_palette.get_show(session)
     command_palette_html = command_palette.render(session)
-    port_html = port.render(session)
+    port_html = render_port(resp, session)
+    # render last in case set any notifications from previous steps
+    notification_banner = notifications.render(session, False)
     body = render_template(
             "partials/body.html",
             dark_mode=dark_mode,
@@ -123,11 +124,14 @@ def root():
     notifications.init(session)
     navigator.init(session)
 
-    body = render_body(session)
-    return render_template(
+    resp = Response()
+    body = render_body(resp, session)
+    body_html = render_template(
         "index.html",
         body=body,
         )
+    resp.set_data(body_html)
+    return resp
 
 
 @app.route("/command-palette/toggle", methods=['PUT'])

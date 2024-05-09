@@ -93,7 +93,6 @@ function render_reset_selection() {
   const cells = get_cells();
   cells.forEach((cell) => {
     cell.style.border = "";
-    cell.style["background-color"] = "";
     cell.classList.remove("selected-next-row");
     cell.classList.remove("selected-next-col");
     cell.classList.remove("selected-current");
@@ -126,12 +125,8 @@ function render_selection() {
   }
   const selection_cells = [...curr_set];
 
-  const style = getComputedStyle(document.documentElement);
-  const selected_finalized_state =
-    style.getPropertyValue('--selected-background-color');
-
   selection_cells.forEach((cell) => {
-    cell.style["background-color"] = selected_finalized_state;
+    cell.classList.add("selected-current");
   });
 }
 

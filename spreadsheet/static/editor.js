@@ -27,18 +27,13 @@ function render_reset_focus() {
   // when reopen frontend.
   const cells = get_cells();
   cells.forEach((cell) => {
-    cell.style["background-color"] = "";
     cell.classList.remove("editing-current");
   });
 }
 
 function render_focus(row, col) {
-  const style = getComputedStyle(document.documentElement);
-  const editing_state =
-    style.getPropertyValue('--editing-background-color');
-
   const e = document.querySelector(`#${get_cell_id(row, col)}`);
-  e.style["background-color"] = editing_state;
+  e.classList.add("editing-current");
 }
 
 // acts like a queue

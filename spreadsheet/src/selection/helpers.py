@@ -98,11 +98,11 @@ def compute_updated_selection(sel, direction):
         end_col = sel.col_range.end.value
         match direction:
             case 'up':
-                end_row = max(0, end_row - 1)
+                end_row = max(start_row + 1, end_row - 1)
             case 'down':
                 end_row = min(max_row, end_row + 1)
             case 'left':
-                end_col = max(0, end_col - 1)
+                end_col = max(start_col + 1, end_col - 1)
             case 'right':
                 end_col = min(max_col, end_col + 1)
             case _:
@@ -124,7 +124,7 @@ def compute_updated_selection(sel, direction):
         end_row = sel.end.value
         match direction:
             case 'up':
-                end_row = max(0, end_row - 1)
+                end_row = max(start_row + 1, end_row - 1)
             case 'down':
                 end_row = min(max_row, end_row + 1)
         return types.RowRange(
@@ -136,7 +136,7 @@ def compute_updated_selection(sel, direction):
         end_col = sel.end.value
         match direction:
             case 'left':
-                end_col = max(0, end_col - 1)
+                end_col = max(start_col + 1, end_col - 1)
             case 'right':
                 end_col = min(max_col, end_col + 1)
         return types.ColRange(

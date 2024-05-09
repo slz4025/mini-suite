@@ -3,12 +3,21 @@
   style="display: {{ 'inherit' if show_command_palette else 'none' }};"
 >
   <button
-      id="help-toggler"
-      class="toggler"
-      hx-put="/help/toggle"
-      hx-trigger="click"
-      hx-target="#command-palette"
-      hx-swap="outerHTML"
+    id="files-save"
+    class="command"
+    hx-post="/files/save"
+    hx-trigger="click"
+    hx-target="#null"
+    hx-swap="outerHTML"
+    ><span>[💾] SAVE</span></button>
+
+  <button
+    id="help-toggler"
+    class="command"
+    hx-put="/help/toggle"
+    hx-trigger="click"
+    hx-target="#command-palette"
+    hx-swap="outerHTML"
   >
     [?] HELP
     {% if show_help %}
@@ -16,12 +25,12 @@
     {% endif %}
   </button>
   <button
-      id="editor-toggler"
-      class="toggler"
-      hx-put="/editor/toggle"
-      hx-trigger="click"
-      hx-target="#editor"
-      hx-swap="outerHTML"
+    id="editor-toggler"
+    class="command"
+    hx-put="/editor/toggle"
+    hx-trigger="click"
+    hx-target="#editor"
+    hx-swap="outerHTML"
   >
     EDITOR
     {% if show_help %}
@@ -30,12 +39,12 @@
   </button>
   {{ editor|safe }}
   <button
-      id="selection-toggler"
-      class="toggler"
-      hx-put="/selection/toggle"
-      hx-trigger="click"
-      hx-target="#selection"
-      hx-swap="outerHTML"
+    id="selection-toggler"
+    class="command"
+    hx-put="/selection/toggle"
+    hx-trigger="click"
+    hx-target="#selection"
+    hx-swap="outerHTML"
   >
     SELECTION
     {% if show_help %}
@@ -44,12 +53,12 @@
   </button>
   {{ selection|safe }}
   <button
-      id="bulk-editor-toggler"
-      class="toggler"
-      hx-put="/bulk-editor/toggle"
-      hx-trigger="click"
-      hx-target="#bulk-editor"
-      hx-swap="outerHTML"
+    id="bulk-editor-toggler"
+    class="command"
+    hx-put="/bulk-editor/toggle"
+    hx-trigger="click"
+    hx-target="#bulk-editor"
+    hx-swap="outerHTML"
   >
     BULK-EDITOR
     {% if show_help %}
@@ -58,12 +67,12 @@
   </button>
   {{ bulk_editor|safe }}
   <button
-      id="navigator-toggler"
-      class="toggler"
-      hx-put="/navigator/toggle"
-      hx-trigger="click"
-      hx-target="#navigator"
-      hx-swap="outerHTML"
+    id="navigator-toggler"
+    class="command"
+    hx-put="/navigator/toggle"
+    hx-trigger="click"
+    hx-target="#navigator"
+    hx-swap="outerHTML"
   >
     NAVIGATOR
     {% if show_help %}
@@ -71,18 +80,4 @@
     {% endif %}
   </button>
   {{ navigator|safe }}
-  <button
-      id="files-toggler"
-      class="toggler"
-      hx-put="/files/toggle"
-      hx-trigger="click"
-      hx-target="#files"
-      hx-swap="outerHTML"
-  >
-    FILES
-    {% if show_help %}
-    [Ctrl+5]
-    {% endif %}
-  </button>
-  {{ files|safe }}
 </div>

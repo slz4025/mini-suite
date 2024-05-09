@@ -17,9 +17,6 @@ window.addEventListener('keyup', function(event) {
       case '4':
         document.getElementById("navigator-toggler").click();
         break;
-      case '5':
-        document.getElementById("files-toggler").click();
-        break
 
       // bulk edit
       case 'x':

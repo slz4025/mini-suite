@@ -624,28 +624,6 @@ def files_toggler():
     return html
 
 
-@app.route("/files/export", methods=['POST'])
-@errors.handler
-def files_export():
-    assert htmx is not None
-
-    error = None
-    try:
-        files.export_to(request)
-    except errors.UserError as e:
-        error = e
-
-    if error is None:
-        notifications.set_info(session, "Exported file.")
-    else:
-        notifications.set_error(session, error)
-
-    null_html = render_null(session)
-    resp = Response(null_html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
-
-
 @app.route("/files/save", methods=['POST'])
 @errors.handler
 def files_save():

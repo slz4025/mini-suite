@@ -11,9 +11,6 @@ import src.errors as errors
 
 
 FILE_PATH = None
-DOWNLOADS_DIR = os.path.expanduser("~/Downloads")
-if not os.path.exists(DOWNLOADS_DIR):
-    os.makedirs(DOWNLOADS_DIR)
 
 
 def setup(filepath, debug):
@@ -61,24 +58,3 @@ def save():
     converted = safe_format(data)
 
     np.savetxt(FILE_PATH, converted, delimiter=",", fmt="%s")
-
-
-def export_to(request):
-    filename = request.form["input"]
-    if filename == '':
-        raise errors.UserError("Filename not given.")
-
-    data = computer.get_all_cells_computed()
-    converted = safe_format(data)
-
-    filepath = os.path.join(DOWNLOADS_DIR, f"{filename}.csv")
-    np.savetxt(filepath, converted, delimiter=",", fmt="%s")
-
-
-def render(session):
-    show_files = command_palette.get_show_files(session)
-
-    return render_template(
-        "partials/files.html",
-        show_files=show_files,
-    )

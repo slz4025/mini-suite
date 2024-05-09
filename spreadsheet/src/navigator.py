@@ -199,7 +199,7 @@ def init(session):
     )
     set_upperleft(session, upperleft)
 
-    nrows = 30
+    nrows = 15
     ncols = 15
     set_dimensions(session, nrows, ncols)
 

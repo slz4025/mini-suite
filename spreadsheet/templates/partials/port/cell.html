@@ -13,7 +13,7 @@
     style="display: {{ 'inherit' if 'selected-bottomright' in renders else 'none' }};">
   </div>
   <label for="input-cell-{{ row }}-{{ col }}" hidden></label>
-  <input
+  <textarea
     type="text"
     class="cell {{ input_render }}"
     hx-put="/cell/{{ row }}/{{ col }}/sync"
@@ -22,9 +22,8 @@
     hx-swap="outerHTML"
     id="input-cell-{{ row }}-{{ col }}"
     name="input-cell-{{ row }}-{{ col }}"
-    value="{{ data }}"
-    style="width: 100%;"
-  >
+    style="width: 100%; height: 100%;"
+    >{{ data }}</textarea>
   <script>
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`

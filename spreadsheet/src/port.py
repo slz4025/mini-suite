@@ -167,6 +167,7 @@ def render_row(
     ncols,
     bounds,
     render_selected,
+    min_height="100",
     compute=True,
     catch_failure=False,
 ):
@@ -197,6 +198,7 @@ def render_row(
             "partials/port/row.html",
             header=header,
             data="\n".join(cells),
+            height=f"{min_height}%",
     )
 
 
@@ -225,6 +227,7 @@ def render_table_header(
             "partials/port/row.html",
             header=corner,
             data="\n".join(header),
+            height="1rem",
     )
 
 
@@ -261,6 +264,7 @@ def render_table(
             ncols,
             bounds,
             render_selected,
+            min_height=100.0 / float(nrows + 1),
             compute=compute,
             catch_failure=catch_failure,
         )

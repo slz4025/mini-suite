@@ -40,6 +40,7 @@ div {
 div.wrapper {
   position: absolute;
   top: 7.5%;
+  bottom: 0;
   z-index: 0;
 
   margin: 0;
@@ -88,7 +89,7 @@ div.selected-pointer {
 div#command-palette {
   float: left;
   width: 20%;
-  height: 100vh;
+  height: 100%;
 
   margin: 0;
   border: 0;
@@ -96,7 +97,7 @@ div#command-palette {
 }
 div#port {
   float: left;
-  height: 100vh;
+  height: 100%;
 
   margin: 0;
   border: 0;
@@ -111,13 +112,6 @@ fieldset {
   margin-top: 0;
   margin-left: 0;
   margin-right: 0;
-}
-textarea {
-  width: 100%;
-  background-color: transparent;
-  border: 0.1rem solid var(--secondary-color);
-
-  color: var(--main-color);
 }
 input {
   width: 100%;
@@ -141,7 +135,6 @@ input[type='submit']:active {
   background-color: var(--main-color);
   color: var(--invert-color);
 }
-
 input[type=file]::file-selector-button {
   background-color: transparent;
   color: var(--main-color);
@@ -149,21 +142,28 @@ input[type=file]::file-selector-button {
   border: 0.1rem solid var(--secondary-color);
   height: 100%;
 }
-input.cell {
+textarea {
+  width: 100%;
+  background-color: transparent;
+  border: 0.1rem solid var(--secondary-color);
+
+  color: var(--main-color);
+}
+textarea.cell {
   padding: 0.25rem;
   border: 0;
 
   /* when not focused, use same cursor as parent */
   cursor: crosshair;
 }
-input.editing {
+textarea.editing {
   color: var(--editing-color);
   font-weight: bold;
 }
-input.selected {
+textarea.selected {
   color: var(--selected-color);
 }
-input.cell:focus {
+textarea.cell:focus {
   /* allow text selection; parent cell disables it */
   user-select: all;
 
@@ -222,7 +222,7 @@ button.command {
 button#command-palette-toggler {
   float: left;
   width: 2%;
-  height: 100vh;
+  height: 100%;
 
   margin: 0;
   border: 1px solid var(--secondary-color);
@@ -232,10 +232,14 @@ button#command-palette-toggler {
 
 table {
   width: 100%;
+  height: 100%;
   table-layout: fixed;
   border-spacing: 0;
   border: 1px solid var(--secondary-color);
   margin: 0;
+}
+tbody {
+  height: 100%;
 }
 tr:nth-child(even) {
   background-color: var(--shade-color);

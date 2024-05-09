@@ -48,44 +48,51 @@ def render_null(session):
     return render_template("partials/null.html")
 
 
-def render_port(session, error, compute=True):
+def add_event(resp, event):
+    if 'HX-Trigger' not in resp.headers:
+        resp.headers['HX-Trigger'] = ""
+    events = resp.headers['HX-Trigger'].split(",")
+    if event not in events:
+        resp.headers['HX-Trigger'] += "," + event
+
+
+def notify_info(resp, session, message):
+    add_event(resp, "notification")
+    notifications.set_info(session, message)
+
+
+def notify_error(resp, session, error):
+    add_event(resp, "notification")
+    notifications.set_error(session, error)
+
+
+def render_port(resp, session, compute=True, show_errors=True):
+    add_event(resp, "editor")
     port_html = port.render(session, compute=compute, catch_failure=True)
 
-    # ensure any errors from port do not supercede existing error
     try:
-        if compute and not error:
+        if compute and show_errors:
             port_html = port.render(session)
     except errors.UserError as e:
-        error = e
+        notify_error(resp, session, e)
 
-    if error is not None:
-        notifications.set_error(session, error)
-
-    resp = Response(port_html)
-    resp.headers['HX-Trigger'] = "editor,notification"
-    return resp
+    return port_html
 
 
-def render_cell(session, cell_position, error):
+def render_cell(resp, session, cell_position):
     cell_html = port.render_cell(
         session,
         cell_position,
         catch_failure=True,
     )
 
-    # ensure any errors from port do not supercede existing error
     try:
-        if not error:
-            cell_html = port.render_cell(session, cell_position)
+        cell_html = port.render_cell(session, cell_position)
     except errors.UserError as e:
-        error = e
+        notify_error(resp, session, e)
 
-    if error is not None:
-        notifications.set_error(session, error)
-
-    resp = Response(cell_html)
-    resp.headers['HX-Trigger'] = "editor,notification"
-    return resp
+    add_event(resp, "editor")
+    return cell_html
 
 
 def render_body(session):
@@ -152,8 +159,9 @@ def update_port():
 
     no_compute = "no-compute" in request.args
 
-    resp = render_port(session, None, compute=not no_compute)
-    resp.headers['HX-Trigger'] += "editor"
+    resp = Response()
+    port_html = render_port(resp, session, compute=not no_compute)
+    resp.set_data(port_html)
     return resp
 
 
@@ -167,7 +175,10 @@ def cell_render(row, col):
         col_index=selection.types.ColIndex(int(col)),
     )
 
-    return render_cell(session, cell_position, None)
+    resp = Response()
+    cell_html = render_cell(resp, session, cell_position)
+    resp.set_data(cell_html)
+    return resp
 
 
 @app.route("/cell/<row>/<col>/update", methods=['PUT'])
@@ -183,21 +194,19 @@ def cell_update(row, col):
     key = f"input-cell-{row}-{col}"
     value = request.form[key]
 
-    error = None
+    resp = Response()
+
     try:
         computer.update_cell_value(cell_position, value)
+        notify_info(resp, session, "Updated cell value successfully.")
     except (errors.UserError) as e:
-        error = e
-
-    # Add notification trigger in `render_port`.
-    if error is not None:
-        notifications.set_error(session, error)
-    else:
-        notifications.set_info(session, "Updated cell value successfully.")
+        notify_error(resp, session, e)
 
     # Re-render the entire port in case other cells depended on the
     # current cell's value.
-    return render_port(session, error)
+    port_html = render_port(resp, session, show_errors=False)
+    resp.set_data(port_html)
+    return resp
 
 
 @app.route("/cell/<row>/<col>/focus", methods=['PUT'])
@@ -217,15 +226,13 @@ def cell_focus(row, col):
 
 
 # Update cell value from within cell.
-def update_cell(cell_position):
-    error = None
-
+def update_cell(resp, request, session, cell_position):
     row = cell_position.row_index.value
     col = cell_position.col_index.value
-    key = f"input-cell-{row}-{col}"
 
+    key = f"input-cell-{row}-{col}"
     if key not in request.form:
-        return None
+        return
 
     value = request.form[key]
     prev_value = sheet.get_cell_value(cell_position)
@@ -236,16 +243,14 @@ def update_cell(cell_position):
             "Use the editor to view the formula "
             "and update the value instead."
         )
-        notifications.set_error(session, error)
+        notify_error(resp, session, error)
     elif computer.is_formula(value):
         error = errors.UserError(
             "Cannot input a formula in the cell. Use the editor instead."
         )
-        notifications.set_error(session, error)
+        notify_error(resp, session, error)
     else:
         computer.update_cell_value(cell_position, value)
-
-    return error
 
 
 @app.route("/cell/<row>/<col>/sync", methods=['PUT'])
@@ -258,12 +263,12 @@ def cell_sync(row, col):
         col_index=selection.types.ColIndex(int(col)),
     )
 
-    error = update_cell(cell_position)
+    resp = Response()
+
+    update_cell(resp, request, session, cell_position)
 
     editor_html = editor.render(session)
-    resp = Response(editor_html)
-    if error is not None:
-        resp.headers['HX-Trigger'] = "notification"
+    resp.set_data(editor_html)
     return resp
 
 
@@ -332,44 +337,33 @@ def selection_inputs():
 
 
 def update_selection(
+    resp,
     mode,
     sel,
-    error,
     notify=False,
     reset=False,
     update_port=False,
 ):
-    resp = Response()
-    resp.headers['HX-Trigger'] = ""
-
-    if error is not None:
-        resp.headers['HX-Trigger'] += ",notification"
-        notifications.set_error(session, error)
-        return resp
-
     if reset:
         selection.reset(session)
     else:
         selection.save(session, mode, sel)
 
     if notify:
-        resp.headers['HX-Trigger'] += ",notification"
-        notifications.set_info(session, "Selection {}.".format(
+        notify_info(resp, session, "Selection {}.".format(
             "cleared" if reset else "registered"
         ))
 
     # Show selection in port.
     if update_port:
-        resp.headers['HX-Trigger'] += ",no-compute-update-port"
+        add_event(resp, "no-compute-update-port")
 
     # Rerender what editor operations are allowed based on selection.
-    resp.headers['HX-Trigger'] += ",editor-operations"
+    add_event(resp, "editor-operations")
     # Rerender what bulk-editor operations are allowed based on selection.
-    resp.headers['HX-Trigger'] += ",bulk-editor"
+    add_event(resp, "bulk-editor")
     # Update showing navigator target feature.
-    resp.headers['HX-Trigger'] += ",navigator-target"
-
-    return resp
+    add_event(resp, "navigator-target")
 
 
 @app.route(
@@ -389,17 +383,17 @@ def selection_start_end(start_row, start_col, end_row, end_col):
         col_index=selection.types.ColIndex(int(end_col)),
     )
 
-    mode = None
-    sel = None
-    error = None
+    resp = Response()
+
     try:
         mode, sel = selection.compute_from_endpoints(start, end)
-    except (errors.NotSupportedError) as e:
-        error = e
 
-    resp = update_selection(mode, sel, error)
-    html = selection.render(session)
-    resp.response = html
+        update_selection(resp, mode, sel)
+    except (errors.NotSupportedError) as e:
+        notify_error(resp, session, e)
+
+    selection_html = selection.render(session)
+    resp.set_data(selection_html)
     return resp
 
 
@@ -408,21 +402,17 @@ def selection_start_end(start_row, start_col, end_row, end_col):
 def selection_move(direction):
     assert htmx is not None
 
-    mode = None
-    sel = None
-    error = None
+    resp = Response()
+
     try:
         mode, sel = selection.compute_updated_selection(session, direction)
+
+        update_selection(mode, sel, update_port=True)
     except (errors.NotSupportedError) as e:
-        error = e
+        notify_error(resp, session, e)
 
-    if sel is not None:
-        resp = update_selection(mode, sel, error, update_port=True)
-    else:
-        resp = Response()
-
-    html = selection.render(session)
-    resp.response = html
+    selection_html = selection.render(session)
+    resp.set_data(selection_html)
     return resp
 
 
@@ -431,29 +421,34 @@ def selection_move(direction):
 def selection_endpoint():
     assert htmx is not None
 
-    mode = None
-    sel = None
-    error = None
+    resp = Response()
+
     match request.method:
         case 'POST':
-            reset = False
             try:
                 mode, sel = selection.validate_and_parse(session, request.form)
-            except (errors.UserError, errors.OutOfBoundsError) as e:
-                error = e
-        case 'DELETE':
-            reset = True
 
-    resp = update_selection(
-        mode,
-        sel,
-        error,
-        notify=True,
-        reset=reset,
-        update_port=True,
-    )
-    html = selection.render(session)
-    resp.response = html
+                update_selection(
+                    resp,
+                    mode,
+                    sel,
+                    notify=True,
+                    update_port=True,
+                )
+            except (errors.UserError, errors.OutOfBoundsError) as e:
+                notify_error(resp, session, e)
+        case 'DELETE':
+            update_selection(
+                resp,
+                None,
+                None,
+                notify=True,
+                reset=True,
+                update_port=True,
+            )
+
+    selection_html = selection.render(session)
+    resp.set_data(selection_html)
     return resp
 
 
@@ -480,39 +475,25 @@ def bulk_editor_operation():
     return bulk_editor.operations.render(session, name_str)
 
 
-def apply_operation(name, modifications, error):
-    resp = Response()
-
-    if error is None:
-        bulk_editor.apply(session, name, modifications)
-
-    resp.headers['HX-Trigger'] = "notification"
-    if error is not None:
-        notifications.set_error(session, error)
-    else:
-        notifications.set_info(session, "Bulk operation complete.")
-        resp.headers['HX-Trigger'] += ",update-port"
-
-    return resp
-
-
 @app.route("/bulk-editor/apply/<name_str>", methods=['POST'])
 @errors.handler
 def bulk_editor_apply(name_str):
     assert htmx is not None
 
-    error = None
-    name = None
-    modifications = None
+    resp = Response()
+
     try:
         name = bulk_editor.operations.from_input(name_str)
         modifications = bulk_editor.get_modifications(session, name)
-    except (errors.NotSupportedError, errors.DoesNotExistError) as e:
-        error = e
 
-    resp = apply_operation(name, modifications, error)
-    html = bulk_editor.render(session)
-    resp.response = html
+        bulk_editor.apply(session, name, modifications)
+        add_event(resp, "update-port")
+        notify_info(resp, session, "Bulk operation complete.")
+    except (errors.NotSupportedError, errors.DoesNotExistError) as e:
+        notify_error(resp, session, e)
+
+    bulk_editor_html = bulk_editor.render(session)
+    resp.set_data(bulk_editor_html)
     return resp
 
 
@@ -521,25 +502,24 @@ def bulk_editor_apply(name_str):
 def bulk_editor_endpoint():
     assert htmx is not None
 
+    resp = Response()
+
     match request.method:
-        case 'PUT':
-            resp = Response()
         case 'POST':
-            error = None
-            name = None
-            modifications = None
             try:
                 name, modifications = bulk_editor.validate_and_parse(
                     session,
                     request.form,
                 )
+
+                bulk_editor.apply(session, name, modifications)
+                add_event(resp, "update-port")
+                notify_info(resp, session, "Bulk operation complete.")
             except (errors.UserError) as e:
-                error = e
+                notify_error(resp, session, e)
 
-            resp = apply_operation(name, modifications, error)
-
-    html = bulk_editor.render(session)
-    resp.response = html
+    bulk_editor_html = bulk_editor.render(session)
+    resp.set_data(bulk_editor_html)
     return resp
 
 
@@ -575,26 +555,19 @@ def navigator_target():
     assert htmx is not None
 
     resp = Response()
+
     match request.method:
         case 'POST':
-            error = None
             try:
                 navigator.set_target(session)
-            except errors.NotSupportedError as e:
-                error = e
 
-            resp.headers['HX-Trigger'] = "notification"
-            if error is not None:
-                notifications.set_error(session, error)
-            else:
-                notifications.set_info(
-                    session,
-                    "Targeting cell position in port.",
-                )
-                resp.headers['HX-Trigger'] += ",update-port"
+                add_event(resp, "update-port")
+                notify_info(resp, session, "Targeted cell position.")
+            except errors.NotSupportedError as e:
+                notify_error(resp, session, e)
 
     navigator_target_html = navigator.render_target(session)
-    resp.response = navigator_target_html
+    resp.set_data(navigator_target_html)
     return resp
 
 
@@ -605,10 +578,12 @@ def navigator_move(method):
 
     navigator.move_upperleft(session, method)
 
-    notifications.set_info(session, "Moved port.")
+    resp = Response()
+    add_event(resp, "update-port")
+    notify_info(resp, session, "Moved port.")
+
     navigator_html = navigator.render(session)
-    resp = Response(navigator_html)
-    resp.headers['HX-Trigger'] = "update-port,notification"
+    resp.set_data(navigator_html)
     return resp
 
 
@@ -630,11 +605,13 @@ def files_save():
     assert htmx is not None
 
     files.save()
-    notifications.set_info(session, "Saved file.")
+
+    resp = Response()
+
+    notify_info(resp, session, "Saved file.")
 
     null_html = render_null(session)
-    resp = Response(null_html)
-    resp.headers['HX-Trigger'] = "notification"
+    resp.set_data(null_html)
     return resp
 
 
@@ -647,9 +624,13 @@ def navigator_dimensions():
     ncols = int(request.form['ncols'])
     navigator.set_dimensions(session, nrows, ncols)
 
-    # Add notification trigger in `render_port`.
-    notifications.set_info(session, "Updated view dimensions.")
-    return render_port(session, None)
+    resp = Response()
+
+    notify_info(resp, session, "Updated view dimensions.")
+
+    port_html = render_port(resp, session)
+    resp.set_data(port_html)
+    return resp
 
 
 @app.route("/navigator/move-increments", methods=['PUT'])
@@ -661,10 +642,12 @@ def navigator_move_increments():
     mcols = int(request.form['mcols'])
     navigator.set_move_increments(session, mrows, mcols)
 
-    notifications.set_info(session, "Updated move increments.")
-    html = navigator.render(session)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
+    resp = Response()
+
+    notify_info(resp, session, "Updated move increments.")
+
+    navigator_html = navigator.render(session)
+    resp.set_data(navigator_html)
     return resp
 
 

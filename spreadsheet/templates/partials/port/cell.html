@@ -68,10 +68,7 @@
       const row = "{{ row }}";
       const col = "{{ col }}";
 
-      htmx.ajax('PUT', `/cell/${row}/${col}/focus`, {
-        target: "#editor",
-        swap: "outerHTML",
-      });
+      request_change_focus(row, col);
     });
   </script>
 </td>

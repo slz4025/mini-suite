@@ -210,23 +210,10 @@ def cell_focus(row, col):
         col_index=selection.types.ColIndex(int(col)),
     )
 
-    prev_focused = editor.state.get_focused_cell_position(session)
     editor.state.set_focused_cell_position(session, cell_position)
 
-    editor_html = editor.render(session)
-    resp = Response(editor_html)
-
-    if prev_focused is None:
-        # set highlight
-        resp.headers['HX-Trigger'] = f"cell-{row}-{col}"
-    elif not prev_focused.equals(cell_position):
-        # change highlight
-        resp.headers['HX-Trigger'] = f"cell-{row}-{col}"
-        resp.headers['HX-Trigger'] += ",cell"\
-            + f"-{prev_focused.row_index.value}"\
-            + f"-{prev_focused.col_index.value}"
-
-    return resp
+    html = editor.render(session)
+    return html
 
 
 # Update cell value from within cell.

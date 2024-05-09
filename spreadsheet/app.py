@@ -695,7 +695,8 @@ def navigator_move_increments():
     navigator.set_move_increments(session, mrows, mcols)
 
     notifications.set_info(session, "Updated move increments.")
-    return render_port(session, None)
+    html = navigator.render(session)
+    return html
 
 
 def start(port, path, debug):

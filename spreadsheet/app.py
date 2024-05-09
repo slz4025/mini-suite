@@ -172,7 +172,7 @@ def cell_render(row, col):
 
 @app.route("/cell/<row>/<col>/update", methods=['PUT'])
 @errors.handler
-def cell_rerender(row, col):
+def cell_update(row, col):
     assert htmx is not None
 
     cell_position = selection.types.CellPosition(

@@ -143,22 +143,22 @@ def validate_and_parse_cut(session, form):
             "is not supported with cut operation."
         )
 
-    modifications = []
+    mods = []
 
     modification = modifications.Modification(
         operation=modifications.Type.COPY,
         input=sel,
     )
-    modifications.append(modification)
+    mods.append(modification)
 
     inp = modifications.ValueInput(selection=sel, value=None)
     modification = modifications.Modification(
         operation=modifications.Type.VALUE,
         input=inp,
     )
-    modifications.append(modification)
+    mods.append(modification)
 
-    return modifications
+    return mods
 
 
 def validate_and_parse_copy(session, form):
@@ -327,50 +327,50 @@ def validate_and_parse_value(session, form):
     return [modification]
 
 
-def apply_cut(session, modifications):
-    assert len(modifications) == 2
-    copy_mod = modifications[0]
+def apply_cut(session, mods):
+    assert len(mods) == 2
+    copy_mod = mods[0]
     assert copy_mod.operation == modifications.Type.COPY
     sel = copy_mod.input
 
     sel_state.set_buffer_mode(session, sel)
-    for modification in modifications:
-        modifications.apply_modification(modification)
+    for modification in mods:
+        modfications.apply_modification(modification)
 
 
-def apply_copy(session, modifications):
-    assert len(modifications) == 1
-    copy_mod = modifications[0]
+def apply_copy(session, mods):
+    assert len(mods) == 1
+    copy_mod = mods[0]
     assert copy_mod.operation == modifications.Type.COPY
     sel = copy_mod.input
 
     sel_state.set_buffer_mode(session, sel)
-    for modification in modifications:
+    for modification in mods:
         modifications.apply_modification(modification)
 
 
-def apply_paste(session, modifications):
-    for modification in modifications:
+def apply_paste(session, mods):
+    for modification in mods:
         modifications.apply_modification(modification)
 
 
-def apply_delete(session, modifications):
-    for modification in modifications:
+def apply_delete(session, mods):
+    for modification in mods:
         modifications.apply_modification(modification)
 
 
-def apply_insert(session, modifications):
-    for modification in modifications:
+def apply_insert(session, mods):
+    for modification in mods:
         modifications.apply_modification(modification)
 
 
-def apply_erase(session, modifications):
-    for modification in modifications:
+def apply_erase(session, mods):
+    for modification in mods:
         modifications.apply_modification(modification)
 
 
-def apply_value(session, modifications):
-    for modification in modifications:
+def apply_value(session, mods):
+    for modification in mods:
         modifications.apply_modification(modification)
 
 

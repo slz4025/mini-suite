@@ -216,8 +216,11 @@ button.command {
 
   margin: 0;
   border: 1px solid var(--secondary-color);
+  padding-left: 1rem;
+  padding-right: 1rem;
 
   cursor: pointer;
+  text-align: left;
 }
 button#command-palette-toggler {
   float: left;

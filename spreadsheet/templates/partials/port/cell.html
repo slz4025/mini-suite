@@ -28,7 +28,7 @@
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("mousedown", (event) => {
-      if (!event.ctrlKey) {
+      if (!event.shiftKey) {
         // prevent focus into input
         event.preventDefault();
 
@@ -41,7 +41,7 @@
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("mousemove", (event) => {
-      if (!event.ctrlKey) {
+      if (!event.shiftKey) {
         const row = "{{ row }}";
         const col = "{{ col }}";
 
@@ -51,7 +51,7 @@
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("mouseup", (event) => {
-      if (!event.ctrlKey) {
+      if (!event.shiftKey) {
         const row = "{{ row }}";
         const col = "{{ col }}";
 
@@ -62,7 +62,7 @@
     document.querySelector(
       `#input-cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("focusin", (event) => {
-      // requires ctrl+key if also clicking to bypass selection mode
+      // requires shift+click if also clicking to bypass selection mode
 
       const row = "{{ row }}";
       const col = "{{ col }}";

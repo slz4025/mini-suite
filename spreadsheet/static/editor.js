@@ -14,6 +14,18 @@ function editing() {
   }
 }
 
+function get_focused_cell() {
+  const activeId = document.activeElement.id;
+  if (activeId.startsWith("input-cell-")) {
+    var arr = activeId.split('-');
+    const row = Number(arr[2]);
+    const col = Number(arr[3]);
+    return [row, col];
+  } else {
+    return undefined;
+  }
+}
+
 function update_editor(row, col) {
     htmx.ajax('PUT', `/cell/${row}/${col}/focus`, {
       target: "#editor",

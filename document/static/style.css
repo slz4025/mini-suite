@@ -4,6 +4,21 @@
   -webkit-box-sizing: border-box;
 }
 
+@font-face {
+  font-family: 'dejavu';
+  src: url('./DejaVuSans.ttf');
+}
+
+:root {
+  --main-ff: dejavu;
+  --display-ff: serif;
+
+  --info-color: #0F0F0F;
+  --info-background-color: #00B800;
+  --error-color: #F0F0F0;
+  --error-background-color: #8B0000;
+}
+
 body {
   background-color: var(--background-color);
   margin: 0;

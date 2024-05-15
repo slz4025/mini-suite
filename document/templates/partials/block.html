@@ -15,7 +15,9 @@
       hx-trigger="click"
       hx-target="#block-{{id}}-form"
       hx-swap="outerHTML"
-      >🖻</button>
+      >
+      <span>✱</span>
+    </button>
     <button
       title="add link"
       hx-put="/block/{{id}}/inputs/link"
@@ -23,7 +25,7 @@
       hx-target="#block-{{id}}-form"
       hx-swap="outerHTML"
       >
-      🔗
+      <span>◥</span>
     </button>
       {% endif %}
       <button
@@ -33,7 +35,7 @@
         hx-swap="outerHTML"
         title="insert below"
         >
-        <span>➕</span>
+        <span>✚</span>
       </button>
   <button
     hx-put="/block/{{id}}/delete"
@@ -42,7 +44,7 @@
     hx-swap="outerHTML"
     title="delete"
     >
-    <span>❌</span>
+    <span>✖</span>
   </button>
   </div>
   <form id="block-{{id}}-form" class="block" style="display: none;"></form>

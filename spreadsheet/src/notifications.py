@@ -54,8 +54,20 @@ def set_info(session, message):
 
 def render(session, show):
     notification = get(session)
+
+    match (notification.mode):
+      case Mode.NONE:
+        icon = "😌"
+      case Mode.INFO:
+        icon = "😀"
+      case Mode.WARN:
+        icon = "😮"
+      case Mode.ERROR:
+        icon = "😦"
+
     return render_template(
         "partials/notification_banner.html",
+        icon=icon,
         message=notification.message,
         mode=notification.mode.value,
         show=show,

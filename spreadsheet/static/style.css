@@ -4,6 +4,11 @@
   -webkit-box-sizing: border-box;
 }
 
+@font-face {
+  font-family: 'dejavu';
+  src: url('./DejaVuSans.ttf');
+}
+
 :root {
   --info-color: #0F0F0F;
   --info-background-color: #00B800;
@@ -19,7 +24,7 @@
 
   --selected-trial-color: #FF00FF;
 
-  --main-ff: monospace;
+  --main-ff: dejavu;
 }
 
 body {

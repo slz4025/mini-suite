@@ -167,7 +167,6 @@ textarea.cell {
 }
 textarea.editing {
   color: var(--editing-color);
-  font-weight: bold;
 }
 textarea.selected {
   color: var(--selected-color);

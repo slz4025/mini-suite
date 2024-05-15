@@ -67,6 +67,21 @@ window.addEventListener('keyup', function(event) {
         document.getElementById("navigator-target-button").click();
         break;
     }
+  } else if (event.shiftKey) {
+    switch (event.key) {
+      case 'ArrowUp':
+        document.getElementById("up-selection-button")?.click();
+        break;
+      case 'ArrowDown':
+        document.getElementById("down-selection-button")?.click();
+        break;
+      case 'ArrowLeft':
+        document.getElementById("left-selection-button")?.click();
+        break;
+      case 'ArrowRight':
+        document.getElementById("right-selection-button")?.click();
+        break;
+    }
   } else {
     const activeId = document.activeElement.id;
     if (activeId.startsWith("input-cell-")) {
@@ -96,21 +111,6 @@ window.addEventListener('keyup', function(event) {
       const element = document.getElementById(nextId)
       if (element) {
         element.focus();
-      }
-    } else if (event.shiftKey) {
-      switch (event.key) {
-        case 'ArrowUp':
-          document.getElementById("up-selection-button")?.click();
-          break;
-        case 'ArrowDown':
-          document.getElementById("down-selection-button")?.click();
-          break;
-        case 'ArrowLeft':
-          document.getElementById("left-selection-button")?.click();
-          break;
-        case 'ArrowRight':
-          document.getElementById("right-selection-button")?.click();
-          break;
       }
     } else {
       switch (event.key) {

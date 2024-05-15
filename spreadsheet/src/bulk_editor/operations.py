@@ -335,7 +335,7 @@ def apply_cut(session, mods):
 
     sel_state.set_buffer_mode(session, sel)
     for modification in mods:
-        modfications.apply_modification(modification)
+        modifications.apply_modification(modification)
 
 
 def apply_copy(session, mods):

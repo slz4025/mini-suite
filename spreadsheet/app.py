@@ -414,7 +414,7 @@ def selection_move(direction):
     try:
         mode, sel = selection.compute_updated_selection(session, direction)
 
-        update_selection(mode, sel, update_port=True)
+        update_selection(resp, mode, sel, update_port=True)
     except (errors.NotSupportedError) as e:
         notify_error(resp, session, e)
 

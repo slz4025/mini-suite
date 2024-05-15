@@ -48,6 +48,18 @@ window.addEventListener('keyup', function(event) {
       case 'h':
         document.getElementById("home-button").click();
         break;
+      case 't':
+        document.getElementById("navigator-target-button").click();
+        break;
+
+      // save
+      case 's':
+        document.getElementById("files-save").click();
+        break;
+    }
+  } else if (event.shiftKey) {
+    switch (event.key) {
+      // view
       case 'ArrowUp':
         document.getElementById("up-button").click();
         break;
@@ -60,25 +72,18 @@ window.addEventListener('keyup', function(event) {
       case 'ArrowRight':
         document.getElementById("right-button").click();
         break;
-      case 's':
-        document.getElementById("files-save").click();
-        break;
-      case 't':
-        document.getElementById("navigator-target-button").click();
-        break;
-    }
-  } else if (event.shiftKey) {
-    switch (event.key) {
-      case 'ArrowUp':
+
+      // selection
+      case 'W':
         document.getElementById("up-selection-button")?.click();
         break;
-      case 'ArrowDown':
+      case 'S':
         document.getElementById("down-selection-button")?.click();
         break;
-      case 'ArrowLeft':
+      case 'A':
         document.getElementById("left-selection-button")?.click();
         break;
-      case 'ArrowRight':
+      case 'D':
         document.getElementById("right-selection-button")?.click();
         break;
     }

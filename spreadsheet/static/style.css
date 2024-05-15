@@ -150,8 +150,12 @@ textarea {
   color: var(--main-color);
 }
 textarea.cell {
-  padding: 0.25rem;
+  margin: 0;
   border: 0;
+  padding: 0.25rem;
+
+  height: 100%;
+  resize: none;
 
   /* when not focused, use same cursor as parent */
   cursor: crosshair;
@@ -242,7 +246,11 @@ table {
   margin: 0;
 }
 tbody {
-  height: 100%;
+  /* Setting the below
+   * will cause the textareas in the table cells
+   * to not fill up the height of the table cells
+   * in Firefox on MacOS. */
+  /* height: 100%; */
 }
 tr:nth-child(even) {
   background-color: var(--shade-color);

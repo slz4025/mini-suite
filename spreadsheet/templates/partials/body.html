@@ -23,15 +23,6 @@
 
     {{ null|safe }}
 
-    <!-- Captures no-compute port update requests. -->
-    <div
-      hx-put="/port?no-compute"
-      hx-trigger="no-compute-update-port from:body"
-      hx-target="#port"
-      hx-swap="innerHTML"
-      style="display: none"
-    ></div>
-
     <div
       id="port"
       class="inner"

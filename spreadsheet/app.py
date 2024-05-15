@@ -66,12 +66,12 @@ def notify_error(resp, session, error):
     notifications.set_error(session, error)
 
 
-def render_port(resp, session, compute=True, show_errors=True):
+def render_port(resp, session, show_errors=True):
     add_event(resp, "editor")
-    port_html = port.render(session, compute=compute, catch_failure=True)
+    port_html = port.render(session, catch_failure=True)
 
     try:
-        if compute and show_errors:
+        if show_errors:
             port_html = port.render(session)
     except errors.UserError as e:
         notify_error(resp, session, e)
@@ -164,10 +164,8 @@ def help_toggler():
 def update_port():
     assert htmx is not None
 
-    no_compute = "no-compute" in request.args
-
     resp = Response()
-    port_html = render_port(resp, session, compute=not no_compute)
+    port_html = render_port(resp, session)
     resp.set_data(port_html)
     return resp
 
@@ -363,7 +361,7 @@ def update_selection(
 
     # Show selection in port.
     if update_port:
-        add_event(resp, "no-compute-update-port")
+        add_event(resp, "update-port")
 
     # Rerender what editor operations are allowed based on selection.
     add_event(resp, "editor-operations")

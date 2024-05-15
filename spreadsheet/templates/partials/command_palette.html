@@ -9,7 +9,14 @@
     hx-trigger="click"
     hx-target="#null"
     hx-swap="outerHTML"
-    ><span>💾 SAVE</span></button>
+  >
+    <span>
+      💾 SAVE
+      {% if show_help %}
+      [Ctrl+S]
+      {% endif %}
+    </span>
+  </button>
 
   <button
     id="help-toggler"
@@ -19,10 +26,12 @@
     hx-target="#command-palette"
     hx-swap="outerHTML"
   >
-    ? HELP
-    {% if show_help %}
-    [Ctrl+0]
-    {% endif %}
+    <span>
+      ? HELP
+      {% if show_help %}
+      [Ctrl+0]
+      {% endif %}
+    </span>
   </button>
   <button
     id="editor-toggler"
@@ -32,10 +41,12 @@
     hx-target="#editor"
     hx-swap="outerHTML"
   >
-    ✎ EDITOR
-    {% if show_help %}
-    [Ctrl+1]
-    {% endif %}
+    <span>
+      ✎ EDITOR
+      {% if show_help %}
+      [Ctrl+1]
+      {% endif %}
+    </span>
   </button>
   {{ editor|safe }}
   <button
@@ -46,10 +57,12 @@
     hx-target="#selection"
     hx-swap="outerHTML"
   >
-    ✛ SELECTION
-    {% if show_help %}
-    [Ctrl+2]
-    {% endif %}
+    <span>
+      ✛ SELECTION
+      {% if show_help %}
+      [Ctrl+2]
+      {% endif %}
+    </span>
   </button>
   {{ selection|safe }}
   <button
@@ -60,10 +73,12 @@
     hx-target="#bulk-editor"
     hx-swap="outerHTML"
   >
-    ⊂ BULK-EDITOR
-    {% if show_help %}
-    [Ctrl+3]
-    {% endif %}
+    <span>
+      ⊂ BULK-EDITOR
+      {% if show_help %}
+      [Ctrl+3]
+      {% endif %}
+    </span>
   </button>
   {{ bulk_editor|safe }}
   <button
@@ -74,10 +89,12 @@
     hx-target="#navigator"
     hx-swap="outerHTML"
   >
-    ✥ NAVIGATOR
-    {% if show_help %}
-    [Ctrl+4]
-    {% endif %}
+    <span>
+      ✥ NAVIGATOR
+      {% if show_help %}
+      [Ctrl+4]
+      {% endif %}
+    </span>
   </button>
   {{ navigator|safe }}
 </div>

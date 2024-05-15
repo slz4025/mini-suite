@@ -126,11 +126,11 @@ def root():
 
     resp = Response()
     body = render_body(resp, session)
-    body_html = render_template(
+    html = render_template(
         "index.html",
         body=body,
         )
-    resp.set_data(body_html)
+    resp.set_data(html)
     return resp
 
 
@@ -142,7 +142,10 @@ def command_palette_toggle():
     show_command_palette = command_palette.get_show(session)
     command_palette.set_show(session, not show_command_palette)
 
-    return render_body(session)
+    resp = Response()
+    body_html = render_body(resp, session)
+    resp.set_data(body_html)
+    return resp
 
 
 @app.route("/help/toggle", methods=['PUT'])

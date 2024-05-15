@@ -82,7 +82,7 @@ def render(session):
 
 
 def init(session):
-    show = True
+    show = False
     set_show(session, show)
 
     show_help = False

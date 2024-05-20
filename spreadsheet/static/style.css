@@ -172,9 +172,6 @@ textarea.selected {
   color: var(--selected-color);
 }
 textarea.cell:focus {
-  /* allow text selection; parent cell disables it */
-  user-select: all;
-
   /* when focused, indicate editing */
   cursor: text;
 }
@@ -263,9 +260,6 @@ th {
   /* let selected-bottomright pointer be position absolute to parent (this) */
   position: relative;
 
-  /* prevent text selection, which interferes with cell selection */
-  user-select: none;
-
   border: 1px solid var(--secondary-color);
   padding: 0.25rem;
 }
@@ -301,9 +295,6 @@ th.selected-next-col {
 td {
   /* let selected-bottomright pointer be position absolute to parent (this) */
   position: relative;
-
-  /* prevent text selection, which interferes with cell selection */
-  user-select: none;
 
   /* indicate selection is the main action */
   cursor: crosshair;

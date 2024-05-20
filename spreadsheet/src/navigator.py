@@ -1,5 +1,7 @@
 from flask import render_template
 
+from config import Config
+
 import src.command_palette as command_palette
 import src.errors as errors
 import src.sheet as sheet
@@ -203,6 +205,6 @@ def init(session):
     ncols = 15
     set_dimensions(session, nrows, ncols)
 
-    mrows = 5
-    mcols = 5
+    mrows = Config.MOVE_INCR_ROWS
+    mcols = Config.MOVE_INCR_COLS
     set_move_increments(session, mrows, mcols)

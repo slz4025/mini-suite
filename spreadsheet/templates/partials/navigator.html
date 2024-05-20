@@ -100,42 +100,6 @@
   </div>
 
   <form
-    id="navigator-move-increments"
-    hx-put="/navigator/move-increments"
-    hx-target="#navigator"
-    hx-swap="outerHTML"
-    enctype="multipart/form-data"
-  >
-    <fieldset>
-      <legend>Move Increments</legend>
-
-      <div class="inner" style="margin-bottom: 0;">
-        <label for="navigator-move-increments-rows">Rows</label>
-        <input
-          id="navigator-move-increments-rows-number"
-          type="number"
-          step=1
-          value="{{ mrows }}"
-          name="mrows"
-          style="width: 50px;"
-        >
-
-        <label for="navigator-move-increments-rows">Columns</label>
-        <input
-          id="navigator-move-increments-cols-number"
-          type="number"
-          step=1
-          value="{{ mcols }}"
-          name="mcols"
-          style="width: 50px;"
-        >
-
-        <input type="submit" value="↵" id="navigator-move-increments-submit"/>
-      </div>
-    </fieldset>
-  </form>
-
-  <form
     id="navigator-dimensions"
     hx-put="/navigator/dimensions"
     hx-target="#port"
@@ -146,25 +110,29 @@
       <legend>Dimensions</legend>
 
       <div class="inner" style="margin-bottom: 0;">
-        <label for="navigator-dimensions-rows">Rows</label>
-        <input
-          id="navigator-dimensions-rows-number"
-          type="number"
-          step=1
-          value="{{ nrows }}"
-          name="nrows"
-          style="width: 50px;"
-        >
+        <div class="inner">
+          <label for="navigator-dimensions-rows">Rows</label>
+          <input
+            id="navigator-dimensions-rows-number"
+            type="number"
+            step=1
+            value="{{ nrows }}"
+            name="nrows"
+            style="width: 50px;"
+          >
+        </div>
 
-        <label for="navigator-dimensions-rows">Columns</label>
-        <input
-          id="navigator-dimensions-cols-number"
-          type="number"
-          step=1
-          value="{{ ncols }}"
-          name="ncols"
-          style="width: 50px;"
-        >
+        <div class="inner">
+          <label for="navigator-dimensions-rows">Columns</label>
+          <input
+            id="navigator-dimensions-cols-number"
+            type="number"
+            step=1
+            value="{{ ncols }}"
+            name="ncols"
+            style="width: 50px;"
+          >
+        </div>
 
         <input type="submit" value="↵" id="navigator-dimensions-submit"/>
       </div>

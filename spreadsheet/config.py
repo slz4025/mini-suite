@@ -4,3 +4,5 @@ class Config(object):
 
     # SETTINGS
     DARK_MODE = False
+    MOVE_INCR_ROWS = 5
+    MOVE_INCR_COLS = 5

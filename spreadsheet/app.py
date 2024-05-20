@@ -637,24 +637,6 @@ def navigator_dimensions():
     return resp
 
 
-@app.route("/navigator/move-increments", methods=['PUT'])
-@errors.handler
-def navigator_move_increments():
-    assert htmx is not None
-
-    mrows = int(request.form['mrows'])
-    mcols = int(request.form['mcols'])
-    navigator.set_move_increments(session, mrows, mcols)
-
-    resp = Response()
-
-    notify_info(resp, session, "Updated move increments.")
-
-    navigator_html = navigator.render(session)
-    resp.set_data(navigator_html)
-    return resp
-
-
 def start(port, path, debug):
     files.setup(path, debug)
 

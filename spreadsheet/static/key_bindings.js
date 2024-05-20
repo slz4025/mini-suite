@@ -111,6 +111,7 @@ window.addEventListener('keyup', function(event) {
       }
     } else {
       switch (event.key) {
+        // On a Mac, this is done via Fn+Backspace (which might say "delete").
         case 'Delete':
           htmx.ajax('POST', `/bulk-editor/apply/Delete`, {
             target: `#bulk-editor`,

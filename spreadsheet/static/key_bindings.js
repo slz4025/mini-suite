@@ -1,22 +1,25 @@
-window.addEventListener('keyup', function(event) {
+window.addEventListener('keydown', function(event) {
   const focused_cell = get_focused_cell();
   if (focused_cell != undefined) {
     const [row, col] = focused_cell;
 
     // The native behavior is that
-    // Tab goes right and Shift-Tab goes left.
+    // Tab goes right or next
+    // and Shift-Tab goes left or previous.
     // We therefore only encode the desired behavior
     // for Enter (down) and Shift-Enter (up).
     let nextId;
     if (event.shiftKey) {
       switch (event.key) {
         case 'Enter':
+          event.preventDefault();
           nextId = `input-cell-${row-1}-${col}`;
           break;
       }
     } else {
       switch (event.key) {
         case 'Enter':
+          event.preventDefault();
           nextId = `input-cell-${row+1}-${col}`;
           break;
       }

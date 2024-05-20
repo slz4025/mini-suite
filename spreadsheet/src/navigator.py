@@ -201,8 +201,8 @@ def init(session):
     )
     set_upperleft(session, upperleft)
 
-    nrows = 15
-    ncols = 15
+    nrows = Config.DIM_ROWS
+    ncols = Config.DIM_COLS
     set_dimensions(session, nrows, ncols)
 
     mrows = Config.MOVE_INCR_ROWS

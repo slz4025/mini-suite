@@ -2,7 +2,7 @@ from flask import render_template
 
 import src.bulk_editor as bulk_editor
 import src.editor as editor
-import src.navigator as navigator
+import src.port_viewer as port_viewer
 import src.selection as selection
 
 
@@ -51,13 +51,13 @@ def set_show_bulk_editor(session, show_bulk_editor):
     session["show-bulk-editor"] = str(show_bulk_editor)
 
 
-def get_show_navigator(session):
-    show_navigator = session["show-navigator"] == 'True'
-    return show_navigator
+def get_show_port_viewer(session):
+    show_port_viewer = session["show-port-viewer"] == 'True'
+    return show_port_viewer
 
 
-def set_show_navigator(session, show_navigator):
-    session["show-navigator"] = str(show_navigator)
+def set_show_port_viewer(session, show_port_viewer):
+    session["show-port-viewer"] = str(show_port_viewer)
 
 
 def render(session):
@@ -67,7 +67,7 @@ def render(session):
     editor_html = editor.render(session)
     selection_html = selection.render(session)
     bulk_editor_html = bulk_editor.render(session)
-    navigator_html = navigator.render(session)
+    port_viewer_html = port_viewer.render(session)
 
     command_palette = render_template(
             "partials/command_palette.html",
@@ -76,7 +76,7 @@ def render(session):
             editor=editor_html,
             selection=selection_html,
             bulk_editor=bulk_editor_html,
-            navigator=navigator_html,
+            port_viewer=port_viewer_html,
     )
     return command_palette
 
@@ -93,5 +93,5 @@ def init(session):
     set_show_selection(session, show_selection)
     show_bulk_editor = False
     set_show_bulk_editor(session, show_bulk_editor)
-    show_navigator = False
-    set_show_navigator(session, show_navigator)
+    show_port_viewer = False
+    set_show_port_viewer(session, show_port_viewer)

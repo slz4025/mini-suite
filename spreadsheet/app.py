@@ -13,7 +13,7 @@ import src.command_palette as command_palette
 import src.editor as editor
 import src.errors as errors
 import src.files as files
-import src.navigator as navigator
+import src.port_viewer as port_viewer
 import src.notifications as notifications
 import src.port as port
 import src.selection as selection
@@ -121,7 +121,7 @@ def root():
 
     command_palette.init(session)
     notifications.init(session)
-    navigator.init(session)
+    port_viewer.init(session)
 
     resp = Response()
     body = render_body(resp, session)
@@ -366,8 +366,8 @@ def update_selection(
     add_event(resp, "editor-operations")
     # Rerender what bulk-editor operations are allowed based on selection.
     add_event(resp, "bulk-editor")
-    # Update showing navigator target feature.
-    add_event(resp, "navigator-target")
+    # Update showing port-viewer target feature.
+    add_event(resp, "port-viewer-target")
 
 
 @app.route(
@@ -541,21 +541,21 @@ def notification(show):
     return notifications.render(session, show_notifications)
 
 
-@app.route("/navigator/toggle", methods=['PUT'])
+@app.route("/port-viewer/toggle", methods=['PUT'])
 @errors.handler
-def navigator_toggler():
+def port_viewer_toggler():
     assert htmx is not None
 
-    show_navigator = command_palette.get_show_navigator(session)
-    command_palette.set_show_navigator(session, not show_navigator)
+    show_port_viewer = command_palette.get_show_port_viewer(session)
+    command_palette.set_show_port_viewer(session, not show_port_viewer)
 
-    html = navigator.render(session)
+    html = port_viewer.render(session)
     return html
 
 
-@app.route("/navigator/target", methods=['PUT', 'POST'])
+@app.route("/port-viewer/target", methods=['PUT', 'POST'])
 @errors.handler
-def navigator_target():
+def port_viewer_target():
     assert htmx is not None
 
     resp = Response()
@@ -563,31 +563,31 @@ def navigator_target():
     match request.method:
         case 'POST':
             try:
-                navigator.set_target(session)
+                port_viewer.set_target(session)
 
                 add_event(resp, "update-port")
                 notify_info(resp, session, "Targeted cell position.")
             except errors.NotSupportedError as e:
                 notify_error(resp, session, e)
 
-    navigator_target_html = navigator.render_target(session)
-    resp.set_data(navigator_target_html)
+    port_viewer_target_html = port_viewer.render_target(session)
+    resp.set_data(port_viewer_target_html)
     return resp
 
 
-@app.route("/navigator/move/<method>", methods=['PUT'])
+@app.route("/port-viewer/move/<method>", methods=['PUT'])
 @errors.handler
-def navigator_move(method):
+def port_viewer_move(method):
     assert htmx is not None
 
-    navigator.move_upperleft(session, method)
+    port_viewer.move_upperleft(session, method)
 
     resp = Response()
     add_event(resp, "update-port")
     notify_info(resp, session, "Moved port.")
 
-    navigator_html = navigator.render(session)
-    resp.set_data(navigator_html)
+    port_viewer_html = port_viewer.render(session)
+    resp.set_data(port_viewer_html)
     return resp
 
 
@@ -619,14 +619,14 @@ def files_save():
     return resp
 
 
-@app.route("/navigator/dimensions", methods=['PUT'])
+@app.route("/port-viewer/dimensions", methods=['PUT'])
 @errors.handler
-def navigator_dimensions():
+def port_viewer_dimensions():
     assert htmx is not None
 
     nrows = int(request.form['nrows'])
     ncols = int(request.form['ncols'])
-    navigator.set_dimensions(session, nrows, ncols)
+    port_viewer.set_dimensions(session, nrows, ncols)
 
     resp = Response()
 

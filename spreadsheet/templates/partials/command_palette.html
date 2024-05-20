@@ -82,19 +82,19 @@
   </button>
   {{ bulk_editor|safe }}
   <button
-    id="navigator-toggler"
+    id="port-viewer-toggler"
     class="command"
-    hx-put="/navigator/toggle"
+    hx-put="/port-viewer/toggle"
     hx-trigger="click"
-    hx-target="#navigator"
+    hx-target="#port-viewer"
     hx-swap="outerHTML"
   >
     <span>
-      ❖ NAVIGATOR
+      ❖ PORT-VIEWER
       {% if show_help %}
       [Ctrl+4]
       {% endif %}
     </span>
   </button>
-  {{ navigator|safe }}
+  {{ port_viewer|safe }}
 </div>

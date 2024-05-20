@@ -3,7 +3,7 @@ from flask import render_template
 import src.computer as computer
 import src.editor.state as ed_state
 import src.errors as errors
-import src.navigator as navigator
+import src.port_viewer as port_viewer
 import src.selection.state as sel_state
 import src.selection.types as sel_types
 import src.sheet as sheet
@@ -272,8 +272,8 @@ def render_table(
 
 
 def render(session, catch_failure=False):
-    upperleft = navigator.get_upperleft(session)
-    nrows, ncols = navigator.get_dimensions(session)
+    upperleft = port_viewer.get_upperleft(session)
+    nrows, ncols = port_viewer.get_dimensions(session)
     bounds = sheet.get_bounds()
 
     table = render_table(

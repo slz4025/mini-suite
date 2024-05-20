@@ -86,6 +86,8 @@ def compute_formula(cell_position, formula):
 visited: Set[sel_types.CellPosition] = set()
 
 
+# This function will begin a tree of computation like so:
+# try_compute -> compute_formula -> evaluate_dependencies -> try_compute(dep)
 def try_compute(cell_position):
     global visited
 

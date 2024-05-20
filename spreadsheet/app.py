@@ -67,7 +67,6 @@ def notify_error(resp, session, error):
 
 
 def render_port(resp, session, show_errors=True):
-    add_event(resp, "editor")
     port_html = port.render(session, catch_failure=True)
 
     try:

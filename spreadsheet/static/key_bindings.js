@@ -48,28 +48,22 @@ window.addEventListener('keyup', function(event) {
 
         // bulk edit
         case 'x':
-          if (!editing()) {
-            htmx.ajax('POST', `/bulk-editor/apply/Cut`, {
-              target: `#bulk-editor`,
-              swap: "outerHTML",
-            });
-          }
+          htmx.ajax('POST', `/bulk-editor/apply/Cut`, {
+            target: `#bulk-editor`,
+            swap: "outerHTML",
+          });
           break;
         case 'c':
-          if (!editing()) {
-            htmx.ajax('POST', `/bulk-editor/apply/Copy`, {
-              target: `#bulk-editor`,
-              swap: "outerHTML",
-            });
-          }
+          htmx.ajax('POST', `/bulk-editor/apply/Copy`, {
+            target: `#bulk-editor`,
+            swap: "outerHTML",
+          });
           break;
         case 'v':
-          if (!editing()) {
-            htmx.ajax('POST', `/bulk-editor/apply/Paste`, {
-              target: `#bulk-editor`,
-              swap: "outerHTML",
-            });
-          }
+          htmx.ajax('POST', `/bulk-editor/apply/Paste`, {
+            target: `#bulk-editor`,
+            swap: "outerHTML",
+          });
           break;
 
         // view

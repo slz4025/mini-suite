@@ -8,6 +8,34 @@ import src.sheet as sheet
 import src.computer.graph as graph
 
 
+# This dynamically computes cells when they are in view or are updated.
+# In computing a cell, we therefore always compute its dependencies.
+# In updating a cell, we must recompute its dependents, which are
+# likely to have different values. Since our current sheet data structure,
+# a numpy array of underlying values, does not easily allow for computation
+# of dependents, we just end up recomputing all viewable cells that are
+# likely to depend on the updated cell, or all viewable formulas.
+# 
+# This method is therefore not efficient for a sheet with lots of
+# computationally-expensive, deeply nested, multi-dependency formulas.
+# However, we are operating under the assumption that this tool will
+# mainly be used for managing tabular data and simple formulas.
+# Given a reasonably sized port, fetches should still have minimal latency.
+#
+# If this assumption changes, we can consider using a data structure,
+# like an array of objects that store the underlying value, pointers
+# to the dependencies, pointers to the  dependents, and computed value.
+# This data structure has the following advantages:
+# - caching of cell values, allowing fetches to be fast,
+# - more efficient updating of the DAG of cell dependencies when a single
+#   cell or group of cells change,
+# - efficient modification to the sheet when inserting or deleting rows
+#   and columns.
+# Initialization of the cache can take place when first importing the
+# spreadsheet or at the time of load, the latter likely being better
+# if the spreadsheet is large and complicated.
+
+
 def is_formula(formula):
     return graph.is_formula(formula)
 

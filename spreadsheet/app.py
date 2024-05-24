@@ -9,6 +9,8 @@ from flask_htmx import HTMX
 import json
 from waitress import serve
 
+from settings import Settings
+
 import src.bulk_editor as bulk_editor
 import src.command_palette as command_palette
 import src.editor as editor
@@ -96,7 +98,7 @@ def render_cell(resp, session, cell_position):
 
 
 def render_body(resp, session):
-    dark_mode = app.config["DARK_MODE"]
+    dark_mode = Settings.DARK_MODE
     null = render_null(session)
     show_command_palette = command_palette.get_show(session)
     command_palette_html = command_palette.render(session)

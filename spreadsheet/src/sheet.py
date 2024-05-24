@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import numpy as np
 from typing import Optional
 
-from config import Config
+from settings import Settings
 
 
 sheet = None
@@ -50,8 +50,8 @@ def get_bounds():
 def init(debug=False):
     global sheet
 
-    maxrows = Config.DIM_SHEET_ROWS
-    maxcols = Config.DIM_SHEET_COLS
+    maxrows = Settings.DIM_SHEET_ROWS
+    maxcols = Settings.DIM_SHEET_COLS
 
     sheet = np.empty((maxrows, maxcols), dtype=object)
     if debug:

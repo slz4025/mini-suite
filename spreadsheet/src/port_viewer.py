@@ -1,6 +1,6 @@
 from flask import render_template
 
-from config import Config
+from settings import Settings
 
 import src.command_palette as command_palette
 import src.errors as errors
@@ -201,10 +201,10 @@ def init(session):
     )
     set_upperleft(session, upperleft)
 
-    nrows = Config.DIM_PORT_ROWS
-    ncols = Config.DIM_PORT_COLS
+    nrows = Settings.DIM_PORT_ROWS
+    ncols = Settings.DIM_PORT_COLS
     set_dimensions(session, nrows, ncols)
 
-    mrows = Config.MOVE_INCR_ROWS
-    mcols = Config.MOVE_INCR_COLS
+    mrows = Settings.MOVE_INCR_ROWS
+    mcols = Settings.MOVE_INCR_COLS
     set_move_increments(session, mrows, mcols)

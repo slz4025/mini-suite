@@ -75,20 +75,23 @@ def render_cell(
         renders.append("editing-current")
         input_render = "editing"
 
-    try:
-        value = computer.get_cell_computed(
-            cell_position,
-        )
-    except errors.UserError as e:
-        if catch_failure:
-            # set as empty while report error
-            value = ""
-            renders.append("failure")
-        else:
-            raise e
+    if ed_state.is_editing(session, cell_position):
+        value = sheet.get_cell_value(cell_position)
+    else:
+        try:
+            value = computer.get_cell_computed(
+                cell_position,
+            )
+        except errors.UserError as e:
+            if catch_failure:
+                # set as empty while report error
+                value = ""
+                renders.append("failure")
+            else:
+                raise e
 
-    if value is None:
-        value = ""
+        if value is None:
+            value = ""
 
     return render_template(
             "partials/port/cell.html",

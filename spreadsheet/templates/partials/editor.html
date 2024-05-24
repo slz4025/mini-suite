@@ -58,8 +58,8 @@
 
   <form
     hx-put="/cell/{{ row }}/{{ col }}/update"
-    hx-target="#port"
-    hx-swap="innerHTML"
+    hx-target="#cell-{{ row }}-{{ col }}"
+    hx-swap="outerHTML"
     enctype="multipart/form-data"
   >
     <textarea

@@ -6,6 +6,7 @@ from flask import (
     Response,
 )
 from flask_htmx import HTMX
+import json
 from waitress import serve
 
 import src.bulk_editor as bulk_editor
@@ -185,6 +186,50 @@ def cell_render(row, col):
     return resp
 
 
+@app.route("/cell/<row>/<col>/focus", methods=['PUT', 'GET'])
+@errors.handler
+def cell_focus(row, col):
+    assert htmx is not None
+
+    cell_position = selection.types.CellPosition(
+        row_index=selection.types.RowIndex(int(row)),
+        col_index=selection.types.ColIndex(int(col)),
+    )
+
+    prev_focused_cell_position = editor.state.get_focused_cell_position(session)
+
+    editor.state.set_focused_cell_position(session, cell_position)
+
+    resp = Response()
+
+    # Re-render former focused cell to show computed value.
+    if prev_focused_cell_position is not None and prev_focused_cell_position != cell_position:
+        row = prev_focused_cell_position.row_index.value
+        col = prev_focused_cell_position.col_index.value
+        add_event(resp, f"cell-{row}-{col}")
+
+    add_event(resp, 'editor')
+
+    cell_html = render_cell(resp, session, cell_position)
+    resp.set_data(cell_html)
+    return resp
+
+
+def update_cell(resp, session, cell_position, value):
+    try:
+        computer.update_cell_value(cell_position, value)
+        dep_cells = computer.get_potential_dependents(session)
+        for dc in dep_cells:
+            if dc == cell_position:
+                continue
+            row = dc.row_index.value
+            col = dc.col_index.value
+            add_event(resp, f"cell-{row}-{col}")
+        notify_info(resp, session, "Updated cell value successfully.")
+    except (errors.UserError) as e:
+        notify_error(resp, session, e)
+
+
 @app.route("/cell/<row>/<col>/update", methods=['PUT'])
 @errors.handler
 def cell_update(row, col):
@@ -200,61 +245,11 @@ def cell_update(row, col):
 
     resp = Response()
 
-    try:
-        computer.update_cell_value(cell_position, value)
-        notify_info(resp, session, "Updated cell value successfully.")
-    except (errors.UserError) as e:
-        notify_error(resp, session, e)
+    update_cell(resp, session, cell_position, value)
 
-    # Re-render the entire port in case other cells depended on the
-    # current cell's value.
-    port_html = render_port(resp, session, show_errors=False)
-    resp.set_data(port_html)
+    cell_html = render_cell(resp, session, cell_position)
+    resp.set_data(cell_html)
     return resp
-
-
-@app.route("/cell/<row>/<col>/focus", methods=['PUT'])
-@errors.handler
-def cell_focus(row, col):
-    assert htmx is not None
-
-    cell_position = selection.types.CellPosition(
-        row_index=selection.types.RowIndex(int(row)),
-        col_index=selection.types.ColIndex(int(col)),
-    )
-
-    editor.state.set_focused_cell_position(session, cell_position)
-
-    html = editor.render(session)
-    return html
-
-
-# Update cell value from within cell.
-def update_cell(resp, request, session, cell_position):
-    row = cell_position.row_index.value
-    col = cell_position.col_index.value
-
-    key = f"input-cell-{row}-{col}"
-    if key not in request.form:
-        return
-
-    value = request.form[key]
-    prev_value = sheet.get_cell_value(cell_position)
-
-    if computer.is_formula(prev_value):
-        error = errors.UserError(
-            "About to override underlying formula. "
-            "Use the editor to view the formula "
-            "and update the value instead."
-        )
-        notify_error(resp, session, error)
-    elif computer.is_formula(value):
-        error = errors.UserError(
-            "Cannot input a formula in the cell. Use the editor instead."
-        )
-        notify_error(resp, session, error)
-    else:
-        computer.update_cell_value(cell_position, value)
 
 
 @app.route("/cell/<row>/<col>/sync", methods=['PUT'])
@@ -267,9 +262,16 @@ def cell_sync(row, col):
         col_index=selection.types.ColIndex(int(col)),
     )
 
+    row = cell_position.row_index.value
+    col = cell_position.col_index.value
+    key = f"input-cell-{row}-{col}"
+    if key not in request.form:
+        return
+    value = request.form[key]
+
     resp = Response()
 
-    update_cell(resp, request, session, cell_position)
+    update_cell(resp, session, cell_position, value)
 
     editor_html = editor.render(session)
     resp.set_data(editor_html)

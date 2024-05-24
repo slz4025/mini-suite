@@ -1,6 +1,9 @@
 import src.selection.types as sel_types
 
 
+# The focused cell is the cell that displays its underlying value.
+
+
 def get_focused_cell_position(session):
     if "focused-cell-position" not in session:
         return None

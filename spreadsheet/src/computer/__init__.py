@@ -2,6 +2,7 @@ import numpy as np
 from typing import Any, Dict
 
 import src.errors as errors
+import src.port_viewer as port_viewer
 import src.selection.types as sel_types
 import src.sheet as sheet
 
@@ -55,6 +56,30 @@ def get_all_cells_computed():
                 col_index=sel_types.ColIndex(int(col)),
             ))
     return data
+
+
+def get_potential_dependents(session):
+    upperleft = port_viewer.get_upperleft(session)
+    nrows, ncols = port_viewer.get_dimensions(session)
+    bounds = sheet.get_bounds()
+
+    viewable_formulas = []
+    for row in range(
+        upperleft.row_index.value,
+        min(upperleft.row_index.value+nrows, bounds.row.value)
+    ):
+        for col in range(
+            upperleft.col_index.value,
+            min(upperleft.col_index.value+ncols, bounds.col.value)
+        ):
+            cell_position = sel_types.CellPosition(
+                row_index=sel_types.RowIndex(row),
+                col_index=sel_types.ColIndex(col),
+            )
+            value = sheet.get_cell_value(cell_position)
+            if is_formula(value):
+                viewable_formulas.append(cell_position)
+    return viewable_formulas
 
 
 def update_cell_value(cell_position, value):

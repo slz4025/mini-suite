@@ -26,11 +26,11 @@ function get_focused_cell() {
   }
 }
 
-function update_editor(row, col) {
-    htmx.ajax('PUT', `/cell/${row}/${col}/focus`, {
-      target: "#editor",
-      swap: "outerHTML",
-    });
+async function update_focus(row, col) {
+  htmx.ajax('PUT', `/cell/${row}/${col}/focus`, {
+    target: `#cell-${row}-${col}`,
+    swap: "outerHTML",
+  });
 }
 
 function render_reset_focus() {
@@ -58,7 +58,7 @@ function request_change_focus(row, col) {
   edit_request_buffer.push([row, col]);
 };
 
-function _change_editor() {
+async function _change_editor() {
   let request = undefined;
   while (edit_request_buffer.length > 0) {
     request = edit_request_buffer.shift();
@@ -69,7 +69,7 @@ function _change_editor() {
   }
 
   const [row, col] = request;
-  update_editor(row, col);
+  await update_focus(row, col);
 }
 // Interval should be about the duration it takes to return from the backend.
-setInterval("_change_editor()", 500);
+setInterval("_change_editor()", 100);

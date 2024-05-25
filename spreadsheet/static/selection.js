@@ -81,6 +81,11 @@ function render_reset_selection() {
     pointer.style.display = "none";
   });
 
+  const corner_header = get_corner_header();
+  corner_header.style.border = "";
+  corner_header.classList.remove("selected-next-row");
+  corner_header.classList.remove("selected-next-col");
+
   const row_headers = get_row_headers();
   const col_headers = get_col_headers();
   const headers = row_headers.concat(col_headers);

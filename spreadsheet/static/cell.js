@@ -40,6 +40,11 @@ function get_cell_type(id) {
   }
 }
 
+function get_corner_header() {
+  const e = document.querySelector('#header-corner');
+  return e;
+}
+
 function get_row_headers() {
   const query = document.querySelectorAll('[id^="header-row-"]');
   return [...query];

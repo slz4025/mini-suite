@@ -1,3 +1,28 @@
+// Should be the only one with the 'editing-current' class.
+var focused_cell = undefined;
+function get_focused_cell() {
+  return focused_cell;
+}
+function set_focused_cell(fc) {
+  if (fc === undefined) {
+    // Remove class from previous.
+    if (focused_cell !== undefined) {
+      const [row, col] = focused_cell;
+      const id = get_cell_id(row, col);
+      const e = document.querySelector(`#${id}`);
+      e.classList.remove("editing-current");
+    }
+  } else {
+    // Add class to new.
+    const [row, col] = fc;
+    const id = get_cell_id(row, col);
+    const e = document.querySelector(`#${id}`);
+    e.classList.add("editing-current");
+  }
+
+  focused_cell = fc;
+}
+
 // Find the cell we intend to edit.
 // This is based on the 'editing-current' class that we update immediately on the frontend.
 function get_focused_cell() {
@@ -44,9 +69,13 @@ async function update_focus(row, col) {
 }
 
 function render_reset_focus() {
-  // Reset all visible cells so don't have to record
-  // last focused cell nor retrieve it from the backend
-  // when reopen frontend.
+  // Reset if stored on frontend.
+  set_focused_cell(undefined);
+
+  // Reset if not stored on frontend.
+  // This happens if we reopen the frontend
+  // but still have the backend running
+  // and maintaining state.
   const cells = get_cells();
   cells.forEach((cell) => {
     cell.classList.remove("editing-current");
@@ -54,8 +83,7 @@ function render_reset_focus() {
 }
 
 function render_focus(row, col) {
-  const e = document.querySelector(`#${get_cell_id(row, col)}`);
-  e.classList.add("editing-current");
+  set_focused_cell([row, col]);
 }
 
 // acts like a queue

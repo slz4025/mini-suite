@@ -153,6 +153,7 @@ textarea {
   border: 0.1rem solid var(--secondary-color);
 
   color: var(--main-color);
+  font-family: monospace;
 }
 textarea.cell {
   margin: 0;

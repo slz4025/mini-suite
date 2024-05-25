@@ -25,6 +25,8 @@
   --selected-trial-color: #FF00FF;
 
   --main-ff: dejavu;
+  --code-ff: monospace;
+  --md-ff: serif;
 }
 
 body {
@@ -153,7 +155,7 @@ textarea {
   border: 0.1rem solid var(--secondary-color);
 
   color: var(--main-color);
-  font-family: monospace;
+  font-family: var(--code-ff);
 }
 textarea.cell {
   margin: 0;
@@ -320,31 +322,36 @@ td.editing-current {
   background-color: var(--editing-background-color);
 }
 
-h1 {
+h1.command-palette {
   font-size: 1rem;
-}
-h2 {
-  font-size: inherit;
   font-weight: bold;
   margin: 0;
   margin-bottom: 1rem;
+  color: var(--main-color);
+  font-family: var(--main-ff);
 }
-p {
+p.command-palette {
   margin: 0.5rem 0;
+  color: var(--main-color);
+  font-family: var(--main-ff);
 }
-code {
+code.command-palette {
+  font-family: var(--code-ff);
   background-color: var(--main-color);
   color: var(--background-color);
 }
-ul {
+ul.command-palette {
   margin: 0;
   border: 0;
   padding: 0 0.5rem;
   list-style-type: square;
   list-style-position: inside;
+  color: var(--main-color);
+  font-family: var(--main-ff);
 }
-span {
-
+li.command-palette {
+  color: var(--main-color);
+  font-family: var(--main-ff);
 }
 
 #notification-banner {
@@ -371,4 +378,27 @@ span {
 #notification-banner.error {
   color: var(--error-color);
   background-color: var(--error-background-color);
+}
+
+/* Markdown rendering */
+h1 {
+  font-family: var(--md-ff);
+}
+h2 {
+  font-family: var(--md-ff);
+}
+p {
+  font-family: var(--md-ff);
+}
+code {
+  font-family: var(--code-ff);
+}
+ul {
+  font-family: var(--md-ff);
+}
+ol {
+  font-family: var(--md-ff);
+}
+li {
+  font-family: var(--md-ff);
 }

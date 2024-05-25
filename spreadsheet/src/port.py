@@ -100,8 +100,8 @@ def render_cell(
             else:
                 raise e
 
-        if value is None:
-            value = ""
+    if value is None:
+        value = ""
 
     row = cell_position.row_index.value
     col = cell_position.col_index.value

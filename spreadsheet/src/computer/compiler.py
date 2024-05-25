@@ -352,6 +352,9 @@ def selections(cell_position, node):
 # they should input the value as a
 # a string in a formula, e.g. ="4.0".
 def cast(value):
+    if value == "":
+        return None
+
     if value == "False":
         return False
     if value == "True":
@@ -371,13 +374,17 @@ def cast(value):
 
 
 def dump_value(value):
-    if isinstance(value, bool):
-        return f"{value}"
+    if value == None:
+        return "None"
+    elif value == True:
+        return "True"
+    elif value == False:
+        return "False"
     elif isinstance(value, int):
         return f"{value}"
     elif isinstance(value, float):
         return f"{value}"
-    else:
+    else: # treat as string
         return f"\"{value}\""
 
 

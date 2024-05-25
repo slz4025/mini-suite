@@ -227,9 +227,10 @@ def update_cell(resp, session, cell_position, value):
             row = dc.row_index.value
             col = dc.col_index.value
             add_event(resp, f"cell-{row}-{col}")
-        notify_info(resp, session, "Updated cell value successfully.")
+        return True
     except (errors.UserError) as e:
         notify_error(resp, session, e)
+        return False
 
 
 @app.route("/cell/<row>/<col>/update", methods=['PUT'])
@@ -247,7 +248,9 @@ def cell_update(row, col):
 
     resp = Response()
 
-    update_cell(resp, session, cell_position, value)
+    success = update_cell(resp, session, cell_position, value)
+    if success:
+        notify_info(resp, session, "Updated cell value successfully.")
 
     cell_html = render_cell(resp, session, cell_position)
     resp.set_data(cell_html)
@@ -273,7 +276,12 @@ def cell_sync(row, col):
 
     resp = Response()
 
-    update_cell(resp, session, cell_position, value)
+    success = update_cell(resp, session, cell_position, value)
+    if success:
+        # Clear errors, most likely caused by updating cell.
+        # Note that this may clear unrelated errors too.
+        add_event(resp, "notification")
+        notifications.reset(session)
 
     editor_html = editor.render(session)
     resp.set_data(editor_html)

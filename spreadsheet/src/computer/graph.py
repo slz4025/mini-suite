@@ -56,7 +56,7 @@ def evaluate(cell_position, formula):
     return value
 
 
-def compute_formula(cell_position, underlying_value):
+def compute_formula(cell_position, formula):
     node = compiler.pre_compile(cell_position, formula)
     formula_with_evaluated_deps = evaluate_dependencies(cell_position, node)
     formula_post_compile = compiler.post_compile(cell_position, formula_with_evaluated_deps)

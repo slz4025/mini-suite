@@ -76,7 +76,16 @@ def render_cell(
         input_render = "editing"
 
     editing = ed_state.is_editing(session, cell_position)
+
     if editing:
+        # trigger error on rendering for edit if computation is invalid
+        if not catch_failure:
+            try:
+                computer.get_cell_computed(
+                    cell_position,
+                )
+            except errors.UserError as e:
+                raise e
         value = sheet.get_cell_value(cell_position)
     else:
         try:

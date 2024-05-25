@@ -75,7 +75,8 @@ def render_cell(
         renders.append("editing-current")
         input_render = "editing"
 
-    if ed_state.is_editing(session, cell_position):
+    editing = ed_state.is_editing(session, cell_position)
+    if editing:
         value = sheet.get_cell_value(cell_position)
     else:
         try:
@@ -93,10 +94,14 @@ def render_cell(
         if value is None:
             value = ""
 
+    row = cell_position.row_index.value
+    col = cell_position.col_index.value
+
     return render_template(
             "partials/port/cell.html",
-            row=cell_position.row_index.value,
-            col=cell_position.col_index.value,
+            row=row,
+            col=col,
+            editing=editing,
             data=value,
             renders=renders,
             input_render=input_render if input_render is not None else '',

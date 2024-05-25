@@ -1,3 +1,22 @@
+// Find the cell we intend to edit.
+// This is based on the 'editing-current' class that we update immediately on the frontend.
+function get_focused_cell() {
+  const cells = get_cells();
+  const focused_cells = cells.filter((cell) => {
+    return cell.classList.contains('editing-current');
+  });
+  if (focused_cells.length === 0) {
+    return undefined;
+  } else {
+    const focused_cell = focused_cells[0];
+    // A cell has an id like 'cell-<row>-<col>'.
+    var arr = focused_cell.id.split('-');
+    const row = Number(arr[1]);
+    const col = Number(arr[2]);
+    return [row, col];
+  }
+}
+
 function editing() {
   const activeId = document.activeElement.id;
   if (activeId == "editor-contents") {
@@ -6,7 +25,7 @@ function editing() {
   else if (activeId == "value-contents") {
     return true;
   }
-  else if (activeId.startsWith("input-cell-")) {
+  else if (get_focused_cell() !== undefined) {
     return true;
   }
   else {
@@ -14,23 +33,14 @@ function editing() {
   }
 }
 
-function get_focused_cell() {
-  const activeId = document.activeElement.id;
-  if (activeId.startsWith("input-cell-")) {
-    var arr = activeId.split('-');
-    const row = Number(arr[2]);
-    const col = Number(arr[3]);
-    return [row, col];
-  } else {
-    return undefined;
-  }
-}
-
 async function update_focus(row, col) {
-  htmx.ajax('PUT', `/cell/${row}/${col}/focus`, {
+  await htmx.ajax('PUT', `/cell/${row}/${col}/focus`, {
     target: `#cell-${row}-${col}`,
     swap: "outerHTML",
   });
+
+  const e = document.querySelector(`#input-cell-${row}-${col}`);
+  e.focus();
 }
 
 function render_reset_focus() {

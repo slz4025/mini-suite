@@ -1,6 +1,7 @@
 <td
   id="cell-{{ row }}-{{ col }}"
   class="{{ ' '.join(renders) }}"
+  tabindex="0"
   hx-put="/cell/{{ row }}/{{ col }}"
   hx-trigger="cell-{{ row }}-{{ col }} from:body"
   hx-target="this"
@@ -12,10 +13,12 @@
     class="selected-pointer"
     style="display: {{ 'inherit' if 'selected-bottomright' in renders else 'none' }};">
   </div>
+  {% if editing %}
   <label for="input-cell-{{ row }}-{{ col }}" hidden></label>
   <textarea
     type="text"
     class="cell {{ input_render }}"
+    tabindex="-1"
     hx-put="/cell/{{ row }}/{{ col }}/sync"
     hx-target="#editor"
     hx-trigger="keyup changed"
@@ -24,12 +27,15 @@
     name="input-cell-{{ row }}-{{ col }}"
     style="width: 100%; height: 100%;"
     >{{ data }}</textarea>
+  {% else %}
+  {{ data|safe }}
+  {% endif %}
   <script>
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("mousedown", (event) => {
       if (event.shiftKey) {
-        // prevent focus into input
+        // don't allow focus-in
         event.preventDefault();
 
         const row = "{{ row }}";
@@ -60,12 +66,14 @@
     });
 
     document.querySelector(
-      `#input-cell-${ {{ row }} }-${ {{ col }} }`
+      `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("focusin", (event) => {
-      const row = "{{ row }}";
-      const col = "{{ col }}";
+      if (!event.shiftKey) {
+          const row = "{{ row }}";
+          const col = "{{ col }}";
 
-      request_change_focus(row, col);
+          request_change_focus(row, col);
+      }
     });
   </script>
 </td>

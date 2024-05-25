@@ -6,10 +6,15 @@ import src.sheet as sheet
 import src.selection.types as sel_types
 
 import src.computer.compiler as compiler
+import src.computer.markdown as markdown
 
 
-def is_formula(formula):
-    return isinstance(formula, str) and formula.startswith("=")
+def is_formula(underlying_value):
+    return isinstance(underlying_value, str) and underlying_value.startswith("=")
+
+
+def is_markdown(underlying_value):
+    return isinstance(underlying_value, str) and underlying_value.startswith("!")
 
 
 def evaluate_dependencies(cell_position, node):
@@ -51,15 +56,23 @@ def evaluate(cell_position, formula):
     return value
 
 
-def compute_formula(cell_position, formula):
-    if not is_formula(formula):
-        value = formula
+def compute_formula(cell_position, underlying_value):
+    node = compiler.pre_compile(cell_position, formula)
+    formula_with_evaluated_deps = evaluate_dependencies(cell_position, node)
+    formula_post_compile = compiler.post_compile(cell_position, formula_with_evaluated_deps)
+    value = evaluate(cell_position, formula_post_compile)
+    return value
+
+
+def compute_underlying_value(cell_position, underlying_value):
+    if is_formula(underlying_value):
+        formula = underlying_value.removeprefix("=")
+        value = compute_formula(cell_position, formula)
+    elif is_markdown(underlying_value):
+        md = underlying_value.removeprefix("!")
+        value = markdown.convert_to_html(md)
     else:
-        formula = formula.removeprefix("=")
-        node = compiler.pre_compile(cell_position, formula)
-        formula = evaluate_dependencies(cell_position, node)
-        formula = compiler.post_compile(cell_position, formula)
-        value = evaluate(cell_position, formula)
+        value = underlying_value
     return value
 
 
@@ -70,7 +83,7 @@ visited: Set[sel_types.CellPosition] = set()
 
 
 # This function will begin a tree of computation like so:
-# try_compute -> compute_formula -> evaluate_dependencies -> try_compute(dep)
+# try_compute -> compute_underlying_value -> compute_formula -> evaluate_dependencies -> try_compute(dep)
 def try_compute(cell_position):
     global visited
 
@@ -83,10 +96,10 @@ def try_compute(cell_position):
             ") visited more than once."
         )
 
-    formula = sheet.get_cell_value(cell_position)
+    underlying_value = sheet.get_cell_value(cell_position)
 
     visited.add(cell_position)
-    value = compute_formula(cell_position, formula)
+    value = compute_underlying_value(cell_position, underlying_value)
     visited.remove(cell_position)
 
     return value

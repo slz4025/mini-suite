@@ -37,10 +37,6 @@ import src.computer.graph as graph
 # if the spreadsheet is large and complicated.
 
 
-def is_formula(formula):
-    return graph.is_formula(formula)
-
-
 def get_cell_computed(cell_position):
     value = graph.compute(cell_position)
     return value
@@ -77,7 +73,7 @@ def get_potential_dependents(session):
                 col_index=sel_types.ColIndex(col),
             )
             value = sheet.get_cell_value(cell_position)
-            if is_formula(value):
+            if graph.is_formula(value):
                 viewable_formulas.append(cell_position)
     return viewable_formulas
 

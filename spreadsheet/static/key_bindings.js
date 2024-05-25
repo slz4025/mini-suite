@@ -13,14 +13,14 @@ window.addEventListener('keydown', function(event) {
       switch (event.key) {
         case 'Enter':
           event.preventDefault();
-          nextId = `input-cell-${row-1}-${col}`;
+          nextId = `cell-${row-1}-${col}`;
           break;
       }
     } else {
       switch (event.key) {
         case 'Enter':
           event.preventDefault();
-          nextId = `input-cell-${row+1}-${col}`;
+          nextId = `cell-${row+1}-${col}`;
           break;
       }
     }

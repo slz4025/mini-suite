@@ -16,21 +16,13 @@
     to change the cell in focus.
   </p>
   <p>
-    This editor allows you to view and manipulate the
-    underlying value or formula of the currently focused cell
-    and update all other cells that depend on this cell.
-    To express the value using a formula, type Python code
-    within angle brackets.
+    By default, you can input basic values like boolean (True/False),
+    integers, floats, and strings. You can also input markdown by
+    starting the text with '!'. Write a formula in Python by starting
+    the text with a '='.
   </p>
   <p>
-    Refer to the index for:
-  </p>
-  <ul>
-    <li>current cell's row: <code>&lt;ROW&gt;</code>,</li>
-    <li>current cell's column: <code>&lt;COL&gt;</code>.</li>
-  </ul>
-  <p>
-    Refer to a selection of other cells:
+    Within your formula, you can refer to a selection of other cells:
   </p>
   <ul>
     <li>single row: <code>&lt;R#r&gt;</code>,</li>
@@ -50,6 +42,13 @@
     <li><code>re</code> = expression for inclusive-end index of row range,</li>
     <li><code>cs</code> = expression for inclusive-start index of column range,</li>
     <li><code>ce</code> = expression for inclusive-end index of column range.</li>
+  </ul>
+  <p>
+    Within your selection, you can refer to the index for:
+  </p>
+  <ul>
+    <li>current cell's row: <code>&lt;ROW&gt;</code>,</li>
+    <li>current cell's column: <code>&lt;COL&gt;</code>.</li>
   </ul>
   {% endif %}
 

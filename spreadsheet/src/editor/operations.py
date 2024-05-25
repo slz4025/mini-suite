@@ -57,7 +57,7 @@ all_operations = {
     ),
     Name.AVERAGE: Operation(
         name=Name.AVERAGE,
-        template="=sum([float(e) for e in {sel_macro}]) "
+        template="=float(sum([e for e in {sel_macro}])) "
         + "/ float(len({sel_macro}))",
     ),
 }

@@ -346,6 +346,41 @@ def selections(cell_position, node):
     return node
 
 
+# Cast string to basic value if possible.
+# If user insists on the value being a string,
+# which is much more unlikely,
+# they should input the value as a
+# a string in a formula, e.g. ="4.0".
+def cast(value):
+    if value == "False":
+        return False
+    if value == "True":
+        return True
+
+    try:
+        return int(value)
+    except:
+        pass
+
+    try:
+        return float(value)
+    except:
+        pass
+
+    return value
+
+
+def dump_value(value):
+    if isinstance(value, bool):
+        return f"{value}"
+    elif isinstance(value, int):
+        return f"{value}"
+    elif isinstance(value, float):
+        return f"{value}"
+    else:
+        return f"\"{value}\""
+
+
 # Compilation before DAG-evaluation.
 def pre_compile(cell_position, formula):
     node = Node(formula=formula, dependencies=[])

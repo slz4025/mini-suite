@@ -28,7 +28,7 @@ def use(path):
 def set(path):
     path = os.path.expanduser(path)
     if not os.path.isdir(path):
-        raise errors.UserError(f"'{path}' is not a valid directory.")
+        os.makedirs(path)
 
     global WIKI_PATH
     WIKI_PATH = path

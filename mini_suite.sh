@@ -58,11 +58,11 @@ _doc() {
     doc_dir="$1"
     port="$2"
     option="$3"
-    file="$4"
+    doc_path="$4"
     logfile="$5"
 
     source "${doc_dir}/.venv/bin/activate"
-    python "${doc_dir}/document.py" --port "${port}" "${option}" "${file}" > "${logfile}" 2>&1
+    python "${doc_dir}/document.py" --port "${port}" "${option}" "${doc_path}" > "${logfile}" 2>&1
 }
 
 doc() {
@@ -81,10 +81,10 @@ doc() {
 wiki() {
     doc_dir="${repo_dir}/document"
     port=$(get_port)
-    file="$1"
+    dir="$1"
     logfile=$(make_logfile "wiki")
 
-    _doc "${doc_dir}" "${port}" "wiki" "${file}" "${logfile}" &
+    _doc "${doc_dir}" "${port}" "wiki" "${dir}" "${logfile}" &
 
     echo "Visit localhost:${port} to edit your wiki."
     echo "Tailing server output in ${logfile}"

@@ -61,8 +61,14 @@
           hx-trigger="click"
           hx-target="#selection"
           hx-swap="outerHTML"
-          style="font-size: 0.8rem; margin: 0.25rem;"
-          ><span>🗑</span></button>
+          style="font-size: 0.8rem; margin: 0.25rem; width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
+          title="clear selection"
+      >
+        <span>🗑</span>
+        {% if show_help %}
+          <span>Clear [Ctrl+Y]</span>
+        {% endif %}
+    </button>
     </div>
 
     {% if show_adjustments %}
@@ -75,11 +81,12 @@
         hx-trigger="click"
         hx-target="#selection"
         hx-swap="outerHTML"
+        title="shrink selection up"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
       >
         <span>▲</span>
         {% if show_help %}
-          <span>Shrink up [Ctrl+W]</span>
+          <span>Shrink up [Ctrl+Q]</span>
         {% endif %}
       </button>
 
@@ -90,11 +97,12 @@
         hx-trigger="click"
         hx-target="#selection"
         hx-swap="outerHTML"
+        title="expand selection down"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
       >
         <span>▼</span>
         {% if show_help %}
-          <span>Expand down [Ctrl+S]</span>
+          <span>Expand down [Ctrl+W]</span>
         {% endif %}
       </button>
       {% endif %}
@@ -107,11 +115,12 @@
         hx-trigger="click"
         hx-target="#selection"
         hx-swap="outerHTML"
+        title="shrink selection left"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
       >
         <span>◀</span>
         {% if show_help %}
-          <span>Shrink left [Ctrl+A]</span>
+          <span>Shrink left [Ctrl+E]</span>
         {% endif %}
       </button>
 
@@ -122,11 +131,12 @@
         hx-trigger="click"
         hx-target="#selection"
         hx-swap="outerHTML"
+        title="expand selection right"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
       >
         <span>▶</span>
         {% if show_help %}
-          <span>Expand right [Ctrl+D]</span>
+          <span>Expand right [Ctrl+R]</span>
         {% endif %}
       </button>
       {% endif %}

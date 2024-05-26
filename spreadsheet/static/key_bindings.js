@@ -19,16 +19,19 @@ window.addEventListener('keydown', function(event) {
         break;
 
       // selection
-      case 'w':
+      case 'q':
         document.getElementById("up-selection-button")?.click();
         break;
-      case 's':
+      case 'w':
         document.getElementById("down-selection-button")?.click();
         break;
-      case 'a':
+      case 'e':
         document.getElementById("left-selection-button")?.click();
         break;
-      case 'd':
+      case 'r':
+        document.getElementById("right-selection-button")?.click();
+        break;
+      case 'y':
         document.getElementById("right-selection-button")?.click();
         break;
 

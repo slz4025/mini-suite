@@ -1,6 +1,7 @@
 import src.errors as errors
 import src.selection.types as types
-import src.sheet as sheet
+import src.sheet.data as sheet_data
+import src.sheet.types as sheet_types
 
 
 def is_row_header(cell_position):
@@ -12,16 +13,16 @@ def is_col_header(cell_position):
 
 
 def compute_from_endpoints(start, end):
-    actual_row_start = sheet.Index(
+    actual_row_start = sheet_types.Index(
         min(start.row_index.value, end.row_index.value)
     )
-    actual_row_end = sheet.Bound(
+    actual_row_end = sheet_types.Bound(
         max(start.row_index.value, end.row_index.value) + 1
     )
-    actual_col_start = sheet.Index(
+    actual_col_start = sheet_types.Index(
         min(start.col_index.value, end.col_index.value)
     )
-    actual_col_end = sheet.Bound(
+    actual_col_end = sheet_types.Bound(
         max(start.col_index.value, end.col_index.value) + 1
     )
 
@@ -85,7 +86,7 @@ def compute_from_endpoints(start, end):
 
 
 def compute_updated_selection(sel, direction):
-    bounds = sheet.get_bounds()
+    bounds = sheet_data.get_bounds()
     max_row = bounds.row.value
     max_col = bounds.col.value
 
@@ -111,12 +112,12 @@ def compute_updated_selection(sel, direction):
                 )
         return types.Box(
             row_range=types.RowRange(
-                start=sheet.Index(start_row),
-                end=sheet.Bound(end_row),
+                start=sheet_types.Index(start_row),
+                end=sheet_types.Bound(end_row),
             ),
             col_range=types.ColRange(
-                start=sheet.Index(start_col),
-                end=sheet.Bound(end_col),
+                start=sheet_types.Index(start_col),
+                end=sheet_types.Bound(end_col),
             ),
         )
     elif isinstance(sel, types.RowRange):
@@ -128,8 +129,8 @@ def compute_updated_selection(sel, direction):
             case 'down':
                 end_row = min(max_row, end_row + 1)
         return types.RowRange(
-            start=sheet.Index(start_row),
-            end=sheet.Bound(end_row),
+            start=sheet_types.Index(start_row),
+            end=sheet_types.Bound(end_row),
         )
     elif isinstance(sel, types.ColRange):
         start_col = sel.start.value
@@ -140,8 +141,8 @@ def compute_updated_selection(sel, direction):
             case 'right':
                 end_col = min(max_col, end_col + 1)
         return types.ColRange(
-            start=sheet.Index(start_col),
-            end=sheet.Bound(end_col),
+            start=sheet_types.Index(start_col),
+            end=sheet_types.Bound(end_col),
         )
     else:
         return None

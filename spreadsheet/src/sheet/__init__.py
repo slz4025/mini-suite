@@ -4,9 +4,11 @@ from typing import Any, Dict
 import src.errors as errors
 import src.port.viewer as viewer
 import src.selection.types as sel_types
-import src.sheet as sheet
 
-import src.computer.graph as graph
+import src.sheet.data as sheet_data
+import src.sheet.files as files
+import src.sheet.graph as graph
+import src.sheet.types as sheet_types
 
 
 # This dynamically computes cells when they are in view or are updated.
@@ -38,7 +40,7 @@ import src.computer.graph as graph
 
 
 def is_markdown(cell_position):
-    underlying_value = sheet.get_cell_value(cell_position)
+    underlying_value = sheet_data.get_cell_value(cell_position)
     return graph.is_markdown(underlying_value)
 
 
@@ -48,7 +50,7 @@ def get_cell_computed(cell_position):
 
 
 def get_all_cells_computed():
-    bounds = sheet.get_bounds()
+    bounds = sheet_data.get_bounds()
     data = np.empty((bounds.row.value, bounds.col.value), dtype=object)
     for row in range(bounds.row.value):
         for col in range(bounds.col.value):
@@ -62,7 +64,7 @@ def get_all_cells_computed():
 def get_potential_dependents(session):
     upperleft = viewer.get_upperleft(session)
     nrows, ncols = viewer.get_dimensions(session)
-    bounds = sheet.get_bounds()
+    bounds = sheet_data.get_bounds()
 
     viewable_formulas = []
     for row in range(
@@ -77,7 +79,7 @@ def get_potential_dependents(session):
                 row_index=sel_types.RowIndex(row),
                 col_index=sel_types.ColIndex(col),
             )
-            value = sheet.get_cell_value(cell_position)
+            value = sheet_data.get_cell_value(cell_position)
             if graph.is_formula(value):
                 viewable_formulas.append(cell_position)
     return viewable_formulas
@@ -85,7 +87,7 @@ def get_potential_dependents(session):
 
 def update_cell_value(cell_position, value):
     sel_types.check_cell_position(cell_position)
-    ptr = sheet.get()
+    ptr = sheet_data.get()
 
     prev_value = ptr[
         cell_position.row_index.value, cell_position.col_index.value

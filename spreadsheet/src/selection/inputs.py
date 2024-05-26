@@ -9,7 +9,7 @@ import src.form_helpers as form_helpers
 
 import src.selection.modes as modes
 import src.selection.types as types
-import src.sheet as sheet
+import src.sheet.types as sheet_types
 
 
 def get_row_index(inp):
@@ -46,13 +46,13 @@ def get_cell_position(inp):
 def get_row_range(inp):
     name = "row start"
     start = form_helpers.extract(inp, "row-start", name=name)
-    start = None if start == "" else sheet.Index(
+    start = None if start == "" else sheet_types.Index(
         form_helpers.parse_int(start, name=name)
     )
 
     name = "row end"
     end = form_helpers.extract(inp, "row-end", name=name)
-    end = None if end == "" else sheet.Bound(
+    end = None if end == "" else sheet_types.Bound(
         # make exclusive
         form_helpers.parse_int(end, name=name)+1
     )
@@ -65,13 +65,13 @@ def get_row_range(inp):
 def get_col_range(inp):
     name = "column start"
     start = form_helpers.extract(inp, "col-start", name=name)
-    start = None if start == "" else sheet.Index(
+    start = None if start == "" else sheet_types.Index(
         form_helpers.parse_int(start, name=name)
     )
 
     name = "column end"
     end = form_helpers.extract(inp, "col-end", name=name)
-    end = None if end == "" else sheet.Bound(
+    end = None if end == "" else sheet_types.Bound(
         # make exclusive
         form_helpers.parse_int(end, name=name)+1
     )

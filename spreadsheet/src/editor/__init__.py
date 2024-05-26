@@ -3,9 +3,9 @@ from flask import render_template
 import src.errors as errors
 import src.command_palette.state as cp_state
 import src.port.viewer as viewer
-import src.sheet as sheet
 import src.selection.modes as sel_modes
 import src.selection.types as sel_types
+import src.sheet.data as sheet_data
 
 import src.editor.state as state
 import src.editor.operations as operations
@@ -41,7 +41,7 @@ def render(session, op_name_str=None):
             op_name = operations.from_input(op_name_str)
             data = operations.get_formula_with_selection(session, op_name)
         else:
-            data = sheet.get_cell_value(focused_cell)
+            data = sheet_data.get_cell_value(focused_cell)
 
     operations_html = operations.render(session)
     return render_template(

@@ -2,11 +2,11 @@ import re
 from typing import Set
 
 import src.errors as errors
-import src.sheet as sheet
 import src.selection.types as sel_types
 
-import src.computer.compiler as compiler
-import src.computer.markdown as markdown
+import src.sheet.compiler as compiler
+import src.sheet.data as sheet_data
+import src.sheet.markdown as markdown
 
 
 def is_formula(underlying_value):
@@ -96,7 +96,7 @@ def try_compute(cell_position):
             ") visited more than once."
         )
 
-    underlying_value = sheet.get_cell_value(cell_position)
+    underlying_value = sheet_data.get_cell_value(cell_position)
 
     visited.add(cell_position)
     value = compute_underlying_value(cell_position, underlying_value)

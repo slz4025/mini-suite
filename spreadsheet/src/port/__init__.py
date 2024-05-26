@@ -1,6 +1,6 @@
 import src.port.renderer as renderer
 import src.port.viewer as viewer
-import src.sheet as sheet
+import src.sheet.data as sheet_data
 
 
 def render_cell(
@@ -20,7 +20,7 @@ def render_cell(
 def render(session, catch_failure=False):
     upperleft = viewer.get_upperleft(session)
     nrows, ncols = viewer.get_dimensions(session)
-    bounds = sheet.get_bounds()
+    bounds = sheet_data.get_bounds()
 
     table = renderer.render_table(
         session,

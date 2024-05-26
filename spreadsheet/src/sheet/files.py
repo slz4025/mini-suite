@@ -4,9 +4,9 @@ import os
 import numpy as np
 import pandas as pd
 
-import src.computer as computer
-import src.sheet as sheet
 import src.errors as errors
+
+import src.sheet.data as sheet_data
 
 
 FILE_PATH = None
@@ -22,7 +22,7 @@ def setup(filepath, debug):
     if os.path.exists(FILE_PATH):
         open()
     else:
-        sheet.init(debug)
+        sheet_data.init(debug)
 
 
 def open():
@@ -34,7 +34,7 @@ def open():
     )
     df.fillna("", inplace=True)
     data = df.to_numpy()
-    sheet.set(data)
+    sheet_data.set(data)
 
 
 def safe_format(data):
@@ -53,7 +53,7 @@ def safe_format(data):
 
 
 def save():
-    data = sheet.get()
+    data = sheet_data.get()
     converted = safe_format(data)
 
     np.savetxt(FILE_PATH, converted, delimiter=",", fmt="%s")

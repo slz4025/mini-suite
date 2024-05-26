@@ -16,14 +16,12 @@ import src.bulk_editor as bulk_editor
 import src.command_palette as command_palette
 import src.editor as editor
 import src.errors as errors
-import src.files as files
 import src.port.viewer as viewer
 import src.notifications as notifications
 import src.port as port
 import src.selection as selection
 
 import src.sheet as sheet
-import src.computer as computer
 
 
 app = Flask(__name__)
@@ -224,8 +222,8 @@ def cell_focus(row, col):
 
 def update_cell(resp, session, cell_position, value):
     try:
-        computer.update_cell_value(cell_position, value)
-        dep_cells = computer.get_potential_dependents(session)
+        sheet.update_cell_value(cell_position, value)
+        dep_cells = sheet.get_potential_dependents(session)
         for dc in dep_cells:
             if dc == cell_position:
                 continue
@@ -613,7 +611,7 @@ def port_viewer_move(method):
 def files_save():
     assert htmx is not None
 
-    files.save()
+    sheet.files.save()
 
     resp = Response()
 
@@ -647,6 +645,6 @@ def start(port, path, debug):
     _, basename = os.path.split(path)
     tab_name = basename
 
-    files.setup(path, debug)
+    sheet.files.setup(path, debug)
     app.logger.info("Starting server")
     serve(app, host='0.0.0.0', port=port)

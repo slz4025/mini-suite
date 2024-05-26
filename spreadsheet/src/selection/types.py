@@ -2,15 +2,16 @@ from dataclasses import dataclass
 from typing import Union
 
 import src.errors as errors
-import src.sheet as sheet
+import src.sheet.data as sheet_data
+import src.sheet.types as sheet_types
 
 
-class RowIndex(sheet.Index):
+class RowIndex(sheet_types.Index):
     def __init__(self, value):
         super().__init__(value)
 
 
-class ColIndex(sheet.Index):
+class ColIndex(sheet_types.Index):
     def __init__(self, value):
         super().__init__(value)
 
@@ -38,12 +39,12 @@ class CellPosition:
         return hash((self.row_index.value, self.col_index.value))
 
 
-class RowRange(sheet.Range):
+class RowRange(sheet_types.Range):
     def __init__(self, start, end):
         super().__init__(start, end)
 
 
-class ColRange(sheet.Range):
+class ColRange(sheet_types.Range):
     def __init__(self, start, end):
         super().__init__(start, end)
 
@@ -65,7 +66,7 @@ Selection = Union[
 
 
 def check_row_index(row_index):
-    bounds = sheet.get_bounds()
+    bounds = sheet_data.get_bounds()
 
     if row_index.value < 0 or row_index.value > bounds.row.value:
         raise errors.OutOfBoundsError(
@@ -75,7 +76,7 @@ def check_row_index(row_index):
 
 
 def check_col_index(col_index):
-    bounds = sheet.get_bounds()
+    bounds = sheet_data.get_bounds()
 
     if col_index.value < 0 or col_index.value > bounds.col.value:
         raise errors.OutOfBoundsError(
@@ -90,12 +91,12 @@ def check_cell_position(cell_position):
 
 
 def check_and_set_row_range(row_range):
-    bounds = sheet.get_bounds()
+    bounds = sheet_data.get_bounds()
 
     if row_range.start is None:
-        row_range.start = sheet.Index(0)
+        row_range.start = sheet_types.Index(0)
     if row_range.end is None:
-        row_range.end = sheet.Bound(bounds.row.value)
+        row_range.end = sheet_types.Bound(bounds.row.value)
 
     if row_range.start.value < 0:
         raise errors.OutOfBoundsError(
@@ -118,12 +119,12 @@ def check_and_set_row_range(row_range):
 
 
 def check_and_set_col_range(col_range):
-    bounds = sheet.get_bounds()
+    bounds = sheet_data.get_bounds()
 
     if col_range.start is None:
-        col_range.start = sheet.Index(0)
+        col_range.start = sheet_types.Index(0)
     if col_range.end is None:
-        col_range.end = sheet.Bound(bounds.col.value)
+        col_range.end = sheet_types.Bound(bounds.col.value)
 
     if col_range.start.value < 0:
         raise errors.OutOfBoundsError(

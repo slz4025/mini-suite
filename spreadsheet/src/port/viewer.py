@@ -4,7 +4,7 @@ from settings import Settings
 
 import src.command_palette.state as cp_state
 import src.errors as errors
-import src.sheet as sheet
+import src.sheet.data as sheet_data
 import src.selection.state as sel_state
 import src.selection.types as sel_types
 
@@ -80,7 +80,7 @@ def set_target(session):
     row = selection.row_index.value
     col = selection.col_index.value
 
-    bounds = sheet.get_bounds()
+    bounds = sheet_data.get_bounds()
     row_end = min(row + (nrows) // 2 + 1, bounds.row.value)
     col_end = min(col + (ncols) // 2 + 1, bounds.col.value)
     row_start = max(0, row_end - nrows)
@@ -135,7 +135,7 @@ def move_upperleft(session, method):
                 )
 
         upperleft = get_upperleft(session)
-        bounds = sheet.get_bounds()
+        bounds = sheet_data.get_bounds()
 
         row = upperleft.row_index.value
         potential_row = max(0, upperleft.row_index.value+delta_row)

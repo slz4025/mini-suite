@@ -4,8 +4,9 @@ import re
 from typing import List
 
 import src.errors as errors
-import src.sheet as sheet
 import src.selection.types as sel_types
+import src.sheet.data as sheet_data
+import src.sheet.types as sheet_types
 
 
 num_regex = r"[0-9]+"
@@ -85,7 +86,7 @@ def position_references(cell_position, node):
 
 def get_row_range_positions(sel):
     sel = sel_types.check_and_set_row_range(sel)
-    bounds = sheet.get_bounds()
+    bounds = sheet_data.get_bounds()
 
     pos = []
     for i in range(sel.start.value, sel.end.value):
@@ -99,7 +100,7 @@ def get_row_range_positions(sel):
 
 def get_col_range_positions(sel):
     sel = sel_types.check_and_set_col_range(sel)
-    bounds = sheet.get_bounds()
+    bounds = sheet_data.get_bounds()
 
     pos = []
     for i in range(0, bounds.row.value):
@@ -148,14 +149,14 @@ def selections(cell_position, node):
         col_end = evaluate(cell_position, instance.group("col_end"))
         sel = sel_types.Box(
             row_range=sel_types.RowRange(
-                start=sheet.Index(row_start),
+                start=sheet_types.Index(row_start),
                 # make exclusive
-                end=sheet.Bound(row_end+1),
+                end=sheet_types.Bound(row_end+1),
             ),
             col_range=sel_types.ColRange(
-                start=sheet.Index(col_start),
+                start=sheet_types.Index(col_start),
                 # make exclusive
-                end=sheet.Bound(col_end+1),
+                end=sheet_types.Bound(col_end+1),
             ),
         )
         pos = get_box_positions(sel)
@@ -191,12 +192,12 @@ def selections(cell_position, node):
         col = evaluate(cell_position, instance.group("col"))
         sel = sel_types.Box(
             row_range=sel_types.RowRange(
-                start=sheet.Index(row),
-                end=sheet.Bound(row+1),
+                start=sheet_types.Index(row),
+                end=sheet_types.Bound(row+1),
             ),
             col_range=sel_types.ColRange(
-                start=sheet.Index(col),
-                end=sheet.Bound(col+1),
+                start=sheet_types.Index(col),
+                end=sheet_types.Bound(col+1),
             ),
         )
         pos = get_box_positions(sel)
@@ -227,9 +228,9 @@ def selections(cell_position, node):
         row_start = evaluate(cell_position, instance.group("row_start"))
         row_end = evaluate(cell_position, instance.group("row_end"))
         sel = sel_types.RowRange(
-            start=sheet.Index(row_start),
+            start=sheet_types.Index(row_start),
             # make exclusive
-            end=sheet.Bound(row_end+1),
+            end=sheet_types.Bound(row_end+1),
         )
         pos = get_row_range_positions(sel)
 
@@ -258,8 +259,8 @@ def selections(cell_position, node):
     def row_replace(instance):
         row = evaluate(cell_position, instance.group("row"))
         sel = sel_types.RowRange(
-            start=sheet.Index(row),
-            end=sheet.Bound(row+1),
+            start=sheet_types.Index(row),
+            end=sheet_types.Bound(row+1),
         )
         pos = get_row_range_positions(sel)
 
@@ -291,9 +292,9 @@ def selections(cell_position, node):
         col_start = evaluate(cell_position, instance.group("col_start"))
         col_end = evaluate(cell_position, instance.group("col_end"))
         sel = sel_types.ColRange(
-            start=sheet.Index(col_start),
+            start=sheet_types.Index(col_start),
             # make exclusive
-            end=sheet.Bound(col_end+1),
+            end=sheet_types.Bound(col_end+1),
         )
         pos = get_col_range_positions(sel)
 
@@ -322,8 +323,8 @@ def selections(cell_position, node):
     def col_replace(instance):
         col = evaluate(cell_position, instance.group("col"))
         sel = sel_types.ColRange(
-            start=sheet.Index(col),
-            end=sheet.Bound(col+1),
+            start=sheet_types.Index(col),
+            end=sheet_types.Bound(col+1),
         )
         pos = get_col_range_positions(sel)
 

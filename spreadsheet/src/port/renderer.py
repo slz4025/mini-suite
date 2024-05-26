@@ -1,11 +1,11 @@
 from flask import render_template
 
-import src.computer as computer
+import src.sheet as sheet
 import src.editor.state as ed_state
 import src.errors as errors
 import src.selection.state as sel_state
 import src.selection.types as sel_types
-import src.sheet as sheet
+import src.sheet.data as sheet_data
 
 
 def make_render_selected(session):
@@ -62,7 +62,7 @@ def render_cell(
     sel_types.check_cell_position(cell_position)
 
     editing = ed_state.is_editing(session, cell_position)
-    markdown = computer.is_markdown(cell_position)
+    markdown = sheet.is_markdown(cell_position)
 
     renders = []
     input_render = None
@@ -86,15 +86,15 @@ def render_cell(
         # trigger error on rendering for edit if computation is invalid
         if not catch_failure:
             try:
-                computer.get_cell_computed(
+                sheet.get_cell_computed(
                     cell_position,
                 )
             except errors.UserError as e:
                 raise e
-        value = sheet.get_cell_value(cell_position)
+        value = sheet_data.get_cell_value(cell_position)
     else:
         try:
-            value = computer.get_cell_computed(
+            value = sheet.get_cell_computed(
                 cell_position,
             )
         except errors.UserError as e:

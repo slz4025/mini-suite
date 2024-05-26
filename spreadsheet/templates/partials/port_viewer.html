@@ -5,16 +5,6 @@
 >
   <h1 class="command-palette">PORT VIEWER</h1>
 
-  {% if show_help %}
-  <div class="inner">
-    Move one cell
-    <div class="justify"><span>Left</span><span>[Shift+Tab]</span></div>
-    <div class="justify"><span>Right</span><span>[Tab]</span></div>
-    <div class="justify"><span>Up</span><span>[Shift+Enter]</span></div>
-    <div class="justify"><span>Down</span><span>[Enter]</span></div>
-  </div>
-  {% endif %}
-
   <div class="inner">
     <span
       style="margin-right: 1rem;"
@@ -48,7 +38,7 @@
       >
         <span>▲</span>
         {% if show_help %}
-          <span>[Shift+Up]</span>
+          <span>[Ctrl+I]</span>
         {% endif %}
       </button>
 
@@ -63,7 +53,7 @@
       >
         <span>▼</span>
         {% if show_help %}
-          <span>[Shift+Down]</span>
+          <span>[Ctrl+K]</span>
         {% endif %}
       </button>
 
@@ -78,7 +68,7 @@
       >
         <span>◀</span>
         {% if show_help %}
-          <span>[Shift+Left]</span>
+          <span>[Ctrl+J]</span>
         {% endif %}
       </button>
 
@@ -93,7 +83,7 @@
       >
         <span>▶</span>
         {% if show_help %}
-          <span>[Shift+Right]</span>
+          <span>[Ctrl+L]</span>
         {% endif %}
       </button>
     </span>

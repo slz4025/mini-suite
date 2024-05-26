@@ -7,6 +7,7 @@ from flask import (
 )
 from flask_htmx import HTMX
 import json
+import os
 from waitress import serve
 
 from settings import Settings
@@ -28,6 +29,9 @@ import src.computer as computer
 app = Flask(__name__)
 htmx = HTMX(app)
 app.config.from_object('config.Config')
+
+
+tab_name = None
 
 
 @app.route("/error")
@@ -131,6 +135,7 @@ def root():
     html = render_template(
         "index.html",
         body=body,
+        tab_name=tab_name,
         )
     resp.set_data(html)
     return resp
@@ -650,6 +655,10 @@ def port_viewer_dimensions():
 
 
 def start(port, path, debug):
+    global tab_name
+    _, basename = os.path.split(path)
+    tab_name = basename
+
     files.setup(path, debug)
     app.logger.info("Starting server")
     serve(app, host='0.0.0.0', port=port)

@@ -22,10 +22,11 @@ MODE = None
 FILE_PATH = None
 FILE_DIR = None
 FILE_NAME = None
+TAB_NAME = None
 
 
 def setup(wiki_path, one_off_file):
-    global MODE
+    global TAB_NAME, MODE
 
     if one_off_file is not None:
         global FILE_PATH, FILE_DIR, FILE_NAME
@@ -34,10 +35,13 @@ def setup(wiki_path, one_off_file):
         FILE_DIR = dir
         FILE_PATH = one_off_file
         MODE = Mode.FILE
+        TAB_NAME = FILE_NAME
         command_palette.init(show=False)
     elif wiki_path is not None:
         wiki.set(wiki_path)
         MODE = Mode.WIKI
+        _, basename = os.path.split(wiki_path)
+        TAB_NAME = basename
         command_palette.init(show=True)
     else:
         raise Exception("Mode not specified.")
@@ -105,6 +109,7 @@ def render(session):
     return render_template(
             "index.html",
             body=body,
+            tab_name=TAB_NAME,
             )
 
 

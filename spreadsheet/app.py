@@ -17,7 +17,7 @@ import src.command_palette as command_palette
 import src.editor as editor
 import src.errors as errors
 import src.files as files
-import src.port_viewer as port_viewer
+import src.port.viewer as viewer
 import src.notifications as notifications
 import src.port as port
 import src.selection as selection
@@ -128,7 +128,7 @@ def root():
 
     command_palette.init(session)
     notifications.init(session)
-    port_viewer.init(session)
+    viewer.init(session)
 
     resp = Response()
     body = render_body(resp, session)
@@ -566,7 +566,7 @@ def port_viewer_toggler():
     show_port_viewer = command_palette.get_show_port_viewer(session)
     command_palette.set_show_port_viewer(session, not show_port_viewer)
 
-    html = port_viewer.render(session)
+    html = viewer.render(session)
     return html
 
 
@@ -580,14 +580,14 @@ def port_viewer_target():
     match request.method:
         case 'POST':
             try:
-                port_viewer.set_target(session)
+                viewer.set_target(session)
 
                 add_event(resp, "update-port")
                 notify_info(resp, session, "Targeted cell position.")
             except errors.NotSupportedError as e:
                 notify_error(resp, session, e)
 
-    port_viewer_target_html = port_viewer.render_target(session)
+    port_viewer_target_html = viewer.render_target(session)
     resp.set_data(port_viewer_target_html)
     return resp
 
@@ -597,13 +597,13 @@ def port_viewer_target():
 def port_viewer_move(method):
     assert htmx is not None
 
-    port_viewer.move_upperleft(session, method)
+    viewer.move_upperleft(session, method)
 
     resp = Response()
     add_event(resp, "update-port")
     notify_info(resp, session, "Moved port.")
 
-    port_viewer_html = port_viewer.render(session)
+    port_viewer_html = viewer.render(session)
     resp.set_data(port_viewer_html)
     return resp
 
@@ -643,7 +643,7 @@ def port_viewer_dimensions():
 
     nrows = int(request.form['nrows'])
     ncols = int(request.form['ncols'])
-    port_viewer.set_dimensions(session, nrows, ncols)
+    viewer.set_dimensions(session, nrows, ncols)
 
     resp = Response()
 

@@ -2,7 +2,7 @@ from flask import render_template
 
 import src.bulk_editor as bulk_editor
 import src.editor as editor
-import src.port_viewer as port_viewer
+import src.port.viewer as viewer
 import src.selection as selection
 
 
@@ -67,7 +67,7 @@ def render(session):
     editor_html = editor.render(session)
     selection_html = selection.render(session)
     bulk_editor_html = bulk_editor.render(session)
-    port_viewer_html = port_viewer.render(session)
+    port_viewer_html = viewer.render(session)
 
     command_palette = render_template(
             "partials/command_palette.html",

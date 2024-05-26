@@ -3,7 +3,6 @@ from flask import render_template
 import src.computer as computer
 import src.editor.state as ed_state
 import src.errors as errors
-import src.port_viewer as port_viewer
 import src.selection.state as sel_state
 import src.selection.types as sel_types
 import src.sheet as sheet
@@ -293,19 +292,3 @@ def render_table(
             data="\n".join(tablerows),
             header=header,
     )
-
-
-def render(session, catch_failure=False):
-    upperleft = port_viewer.get_upperleft(session)
-    nrows, ncols = port_viewer.get_dimensions(session)
-    bounds = sheet.get_bounds()
-
-    table = render_table(
-        session,
-        upperleft=upperleft,
-        nrows=nrows,
-        ncols=ncols,
-        bounds=bounds,
-        catch_failure=catch_failure,
-    )
-    return table

@@ -1,6 +1,7 @@
 window.addEventListener('keydown', function(event) {
-  const focused_cell = get_focused_cell();
-  if (focused_cell != undefined) {
+  if (editing()) {
+    const focused_cell = get_focused_cell();
+    // if editing is true, focused_cell must not be undefined
     const [row, col] = focused_cell;
 
     // The native behavior is that

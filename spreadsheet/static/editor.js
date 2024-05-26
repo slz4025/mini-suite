@@ -50,7 +50,7 @@ function editing() {
   else if (activeId == "value-contents") {
     return true;
   }
-  else if (get_focused_cell() !== undefined) {
+  else if (activeId.startsWith("input-cell-")) {
     return true;
   }
   else {

@@ -337,6 +337,10 @@ pre.code {
 }
 code {
   font-family: monospace;
+  /* make it comparable in size to body font */
+  font-size: 0.75rem;
+  background-color: var(--main-color);
+  color: var(--background-color);
 }
 table {
   width: 100%;

@@ -26,21 +26,25 @@
     style="width: 100%; height: 100%;"
     >{{ data }}</textarea>
   {% else %}
-  <!-- Use a content-editable div to allow native tabbing to work. -->
-  <div contenteditable="true" style="margin: 0; border: 0; padding: 0; width: 100%; height: 100%; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
-    {{ data|safe }}
-  </div>
+  <button
+    onclick="request_change_focus({{ row }}, {{ col }})"
+    style="position: absolute; top: 0; left: 0;"
+    title="edit"
+  >
+    <span>✎</span>
+  </button>
+  {{ data|safe }}
   {% endif %}
   <script>
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("mousedown", (event) => {
+      const row = "{{ row }}";
+      const col = "{{ col }}";
+
       if (event.shiftKey) {
         // don't allow focus-in
         event.preventDefault();
-
-        const row = "{{ row }}";
-        const col = "{{ col }}";
 
         begin_selection(row, col);
       }

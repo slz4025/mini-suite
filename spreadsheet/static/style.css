@@ -15,14 +15,14 @@
   --error-color: #F0F0F0;
   --error-background-color: #8B0000;
 
-  --failure-background-color: #FF0000;
-  --editing-background-color: #00FF00;
-  --editing-color: #111111;
+  --markdown-background-color: #77FFFF;
+  --selected-trial-color: #FF00FF;
   --selected-background-color: #FFFF00;
   --selected-color: #111111;
-  --selected-pointer-color: #00FFFF;
-
-  --selected-trial-color: #FF00FF;
+  --selected-pointer-color: #0000FF;
+  --editing-background-color: #00FF00;
+  --editing-color: #111111;
+  --failure-background-color: #FF0000;
 
   --main-ff: dejavu;
   --code-ff: monospace;
@@ -305,10 +305,16 @@ td {
   padding: 0;
   border: 1px solid var(--secondary-color);
 
+  text-align: center;
+
   /* clip long text */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+/* define following in order of precedence  precendence */
+td.markdown {
+  background-color: var(--markdown-background-color);
 }
 td.selected-current {
   background-color: var(--selected-background-color);
@@ -322,7 +328,6 @@ td.selected-next-col {
 td.failure {
   background-color: var(--failure-background-color);
 }
-/* define last so takes precendence */
 td.editing-current {
   background-color: var(--editing-background-color);
 }

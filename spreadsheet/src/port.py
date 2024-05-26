@@ -62,21 +62,26 @@ def render_cell(
 ):
     sel_types.check_cell_position(cell_position)
 
+    editing = ed_state.is_editing(session, cell_position)
+    markdown = computer.is_markdown(cell_position)
+
     renders = []
     input_render = None
+    
+    # Apply in reverse order of precendence.
+    if markdown:
+        renders.append("markdown")
+
     if render_selected is None:
         render_selected = make_render_selected(session)
     render_selected_state = render_selected(cell_position)
     if "selected-current" in render_selected_state:
         input_render = "selected"
     renders.append(render_selected_state)
-    # Apply later so takes precendence.
-    if ed_state.is_editing(session, cell_position):
+
+    if editing:
         renders.append("editing-current")
         input_render = "editing"
-
-    editing = ed_state.is_editing(session, cell_position)
-    markdown = computer.is_markdown(cell_position)
 
     if editing:
         # trigger error on rendering for edit if computation is invalid

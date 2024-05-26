@@ -37,6 +37,11 @@ import src.computer.graph as graph
 # if the spreadsheet is large and complicated.
 
 
+def is_markdown(cell_position):
+    underlying_value = sheet.get_cell_value(cell_position)
+    return graph.is_markdown(underlying_value)
+
+
 def get_cell_computed(cell_position):
     value = graph.compute(cell_position)
     return value

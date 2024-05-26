@@ -305,6 +305,8 @@ td {
   padding: 0;
   border: 1px solid var(--secondary-color);
 
+  text-align: center;
+
   /* clip long text */
   overflow: hidden;
   text-overflow: ellipsis;

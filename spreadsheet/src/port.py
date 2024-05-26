@@ -76,6 +76,7 @@ def render_cell(
         input_render = "editing"
 
     editing = ed_state.is_editing(session, cell_position)
+    markdown = computer.is_markdown(cell_position)
 
     if editing:
         # trigger error on rendering for edit if computation is invalid
@@ -111,6 +112,7 @@ def render_cell(
             row=row,
             col=col,
             editing=editing,
+            markdown=markdown,
             data=value,
             renders=renders,
             input_render=input_render if input_render is not None else '',

@@ -1,4 +1,5 @@
 from markdown_it import MarkdownIt
+from mdit_py_plugins.anchors import anchors_plugin
 import os
 import re
 
@@ -6,6 +7,7 @@ import re
 md = (
         MarkdownIt('commonmark', {'breaks': True, 'html': True})
         .enable('table')
+        .use(anchors_plugin)
         )
 
 
@@ -45,8 +47,8 @@ def use_abs_path(markdown, base_rel_path):
         alt = instance.group("alt")
         path = instance.group("path")
 
-        # skip web-links
-        if path.startswith("http"):
+        # skip web-links and section headers
+        if path.startswith("http") or path.startswith("#"):
             continue
 
         abs_path = get_abs_path(path, base_rel_path)

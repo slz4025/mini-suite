@@ -27,6 +27,7 @@
     >{{ data }}</textarea>
   {% else %}
   <button
+    id="cell-{{ row }}-{{ col }}-md-button"
     onclick="request_change_focus({{ row }}, {{ col }})"
     style="position: absolute; top: 0; left: 0;"
     title="edit"
@@ -73,7 +74,7 @@
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("focusin", (event) => {
-      if (!event.shiftKey) {
+      if (!event.shiftKey && '{{ markdown }}' !== 'True') {
           const row = "{{ row }}";
           const col = "{{ col }}";
 

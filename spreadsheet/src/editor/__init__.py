@@ -1,7 +1,7 @@
 from flask import render_template
 
 import src.errors as errors
-import src.command_palette as command_palette
+import src.command_palette.state as cp_state
 import src.port.viewer as viewer
 import src.sheet as sheet
 import src.selection.modes as sel_modes
@@ -12,8 +12,8 @@ import src.editor.operations as operations
 
 
 def render(session, op_name_str=None):
-    show_help = command_palette.get_show_help(session)
-    show_editor = command_palette.get_show_editor(session)
+    show_help = cp_state.get_show_help(session)
+    show_editor = cp_state.get_show_editor(session)
 
     focused_cell = state.get_focused_cell_position(session)
     if focused_cell is not None:

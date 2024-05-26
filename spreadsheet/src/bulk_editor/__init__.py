@@ -1,12 +1,12 @@
 from flask import render_template
 
-import src.command_palette as command_palette
+import src.command_palette.state as cp_state
 
 import src.bulk_editor.operations as operations
 
 
 def render(session):
-    show_bulk_editor = command_palette.get_show_bulk_editor(session)
+    show_bulk_editor = cp_state.get_show_bulk_editor(session)
 
     default = None
     operation_html = None

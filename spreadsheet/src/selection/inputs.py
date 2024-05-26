@@ -3,7 +3,7 @@ from flask import render_template
 import os
 from typing import Callable
 
-import src.command_palette as command_palette
+import src.command_palette.state as cp_state
 import src.errors as errors
 import src.form_helpers as form_helpers
 
@@ -141,7 +141,7 @@ def validate_and_parse(inp):
 
 
 def render(session, mode, sel=None):
-    show_help = command_palette.get_show_help(session)
+    show_help = cp_state.get_show_help(session)
 
     row_index = ""
     col_index = ""

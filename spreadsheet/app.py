@@ -104,7 +104,7 @@ def render_cell(resp, session, cell_position):
 def render_body(resp, session):
     dark_mode = Settings.DARK_MODE
     null = render_null(session)
-    show_command_palette = command_palette.get_show(session)
+    show_command_palette = command_palette.state.get_show(session)
     command_palette_html = command_palette.render(session)
     port_html = render_port(resp, session)
     # render last in case set any notifications from previous steps
@@ -146,8 +146,8 @@ def root():
 def command_palette_toggle():
     assert htmx is not None
 
-    show_command_palette = command_palette.get_show(session)
-    command_palette.set_show(session, not show_command_palette)
+    show_command_palette = command_palette.state.get_show(session)
+    command_palette.state.set_show(session, not show_command_palette)
 
     resp = Response()
     body_html = render_body(resp, session)
@@ -160,8 +160,8 @@ def command_palette_toggle():
 def help_toggler():
     assert htmx is not None
 
-    show_help = command_palette.get_show_help(session)
-    command_palette.set_show_help(session, not show_help)
+    show_help = command_palette.state.get_show_help(session)
+    command_palette.state.set_show_help(session, not show_help)
 
     return command_palette.render(session)
 
@@ -298,8 +298,8 @@ def cell_sync(row, col):
 def editor_toggler():
     assert htmx is not None
 
-    show_editor = command_palette.get_show_editor(session)
-    command_palette.set_show_editor(session, not show_editor)
+    show_editor = command_palette.state.get_show_editor(session)
+    command_palette.state.set_show_editor(session, not show_editor)
 
     html = editor.render(session)
     return html
@@ -338,8 +338,8 @@ def editor_endpoint():
 def selection_toggler():
     assert htmx is not None
 
-    show_selection = command_palette.get_show_selection(session)
-    command_palette.set_show_selection(session, not show_selection)
+    show_selection = command_palette.state.get_show_selection(session)
+    command_palette.state.set_show_selection(session, not show_selection)
 
     html = selection.render(session)
     return html
@@ -478,8 +478,8 @@ def selection_endpoint():
 def bulk_editor_toggler():
     assert htmx is not None
 
-    show_bulk_editor = command_palette.get_show_bulk_editor(session)
-    command_palette.set_show_bulk_editor(session, not show_bulk_editor)
+    show_bulk_editor = command_palette.state.get_show_bulk_editor(session)
+    command_palette.state.set_show_bulk_editor(session, not show_bulk_editor)
 
     html = bulk_editor.render(session)
     return html
@@ -563,8 +563,8 @@ def notification(show):
 def port_viewer_toggler():
     assert htmx is not None
 
-    show_port_viewer = command_palette.get_show_port_viewer(session)
-    command_palette.set_show_port_viewer(session, not show_port_viewer)
+    show_port_viewer = command_palette.state.get_show_port_viewer(session)
+    command_palette.state.set_show_port_viewer(session, not show_port_viewer)
 
     html = viewer.render(session)
     return html
@@ -606,18 +606,6 @@ def port_viewer_move(method):
     port_viewer_html = viewer.render(session)
     resp.set_data(port_viewer_html)
     return resp
-
-
-@app.route("/files/toggle", methods=['PUT'])
-@errors.handler
-def files_toggler():
-    assert htmx is not None
-
-    show_files = command_palette.get_show_files(session)
-    command_palette.set_show_files(session, not show_files)
-
-    html = files.render(session)
-    return html
 
 
 @app.route("/files/save", methods=['POST'])

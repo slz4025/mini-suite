@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 
 import src.computer as computer
-import src.command_palette as command_palette
 import src.sheet as sheet
 import src.errors as errors
 

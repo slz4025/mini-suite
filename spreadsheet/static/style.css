@@ -402,6 +402,7 @@ p {
 }
 code {
   font-family: var(--code-ff);
+  font-size: 0.85rem;
 }
 ul {
   font-family: var(--md-ff);

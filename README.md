@@ -16,7 +16,7 @@ mini-suite aims to:
 
 This is still in active development. I have mostly finished the markdown editor and am currently working on the spreadsheet editor.
 
-## How do I use the markdown editor?
+## What can I  do with the markdown editor?
 
 ![demo](./media/readme.png)
 
@@ -28,44 +28,18 @@ Note that there are two key limitations of the markdown editor:
 1. It has no history and may overwrite files destructively. This is intentional. The tool does not manage your file versions. Use `git` or a similar tool to do so instead.
 1. It only allows you to interact with one file at a time. This is because of how the application manages state. However, if you are traversing files in the wiki, you can go back and forward using the browser's history buttons. Just remember to save your work before you do this!
 
-Setup the environment:
-```
-cd document
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+After you [setup](#setup) your environment, you can edit a one-off markdown file via `doc my_file.md` and create and edit a wiki via `wiki my-wiki-dir`.
 
-Start the application:
-1. In one-off file mode:
-    ```
-    python document.py -f <path to file>
-    ```
-1. In wiki mode:
-    ```
-    python document.py -w <path to wiki folder>
-    ```
-
-Visit `localhost:5000` in your browser and interact with the webpage.
-
-## How do I use the spreadsheet editor?
+## What can I do with the spreadsheet editor?
 
 The spreadsheet editor allows you to manipulate table-based data via a GUI.
 
-Setup the environment:
-```
-cd spreadsheet
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+After you [setup](#setup) your environment, you can edit a csv file via `sheet my_file.csv`.
 
-Start the server:
-```
-python spreadsheet/app.py
-```
+## Setup
 
-Visit `localhost:5000` in your browser and interact with the webpage.
+1. Prepare the environment: `bash setup.sh`.
+2. Create aliases for the simple use-case of these tools: `source mini_suite.sh`. Add `source mini_suite.sh` to your `~/.bashrc` if you always want these aliases upon opening a new interactive shell.
 
 ## How does this work?
 

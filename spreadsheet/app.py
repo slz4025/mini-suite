@@ -651,6 +651,5 @@ def port_viewer_dimensions():
 
 def start(port, path, debug):
     files.setup(path, debug)
-
-    print(f"Serving on port {port}.")
+    app.logger.info("Starting server")
     serve(app, host='0.0.0.0', port=port)

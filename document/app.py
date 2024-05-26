@@ -243,6 +243,5 @@ def export_html():
 
 def start(port, wiki_path, one_off_file=None):
     project.setup(wiki_path, one_off_file)
-
-    print(f"Serving on port {port}.")
+    app.logger.info("Starting server")
     serve(app, host='0.0.0.0', port=port)

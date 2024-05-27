@@ -4,6 +4,7 @@ from flask import (
     session,
 )
 from flask_htmx import HTMX
+import secrets
 from waitress import serve
 
 import src.errors as errors
@@ -13,7 +14,6 @@ import src.selector.types as sel_types
 
 app = Flask(__name__)
 htmx = HTMX(app)
-app.config.from_object('config.Config')
 
 
 @app.route("/error")
@@ -316,5 +316,7 @@ def update_dimensions():
 
 def start(port, path, debug):
     project.setup(path, debug)
+    # key for this session
+    app.secret_key = secrets.token_hex()
     app.logger.info("Starting server")
     serve(app, host='0.0.0.0', port=port)

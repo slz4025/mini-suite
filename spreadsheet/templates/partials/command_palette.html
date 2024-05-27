@@ -42,7 +42,7 @@
     hx-swap="outerHTML"
   >
     <span>
-      ✎ EDITOR
+      ✎ EDIT
       {% if show_help %}
       [Ctrl+1]
       {% endif %}
@@ -58,7 +58,7 @@
     hx-swap="outerHTML"
   >
     <span>
-      ✛ SELECTION
+      ✛ SELECT
       {% if show_help %}
       [Ctrl+2]
       {% endif %}
@@ -74,7 +74,7 @@
     hx-swap="outerHTML"
   >
     <span>
-      ⊂ BULK EDITOR
+      ⊂ BULK EDIT
       {% if show_help %}
       [Ctrl+3]
       {% endif %}
@@ -82,19 +82,19 @@
   </button>
   {{ bulk_editor|safe }}
   <button
-    id="port-viewer-toggler"
+    id="viewer-toggler"
     class="command"
-    hx-put="/port-viewer/toggle"
+    hx-put="/viewer/toggle"
     hx-trigger="click"
-    hx-target="#port-viewer"
+    hx-target="#viewer"
     hx-swap="outerHTML"
   >
     <span>
-      ❖ PORT VIEWER
+      ❖ VIEW
       {% if show_help %}
       [Ctrl+4]
       {% endif %}
     </span>
   </button>
-  {{ port_viewer|safe }}
+  {{ viewer|safe }}
 </div>

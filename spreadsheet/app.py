@@ -271,15 +271,15 @@ def render_notification(show):
     return project.render_notification(session, show)
 
 
-@app.route("/port-viewer/toggle", methods=['PUT'])
+@app.route("/viewer/toggle", methods=['PUT'])
 @errors.handler
-def toggle_port_viewer():
+def toggle_viewer():
     assert htmx is not None
 
-    return project.toggle_port_viewer(session)
+    return project.toggle_viewer(session)
 
 
-@app.route("/port-viewer/target", methods=['PUT'])
+@app.route("/viewer/target", methods=['PUT'])
 @errors.handler
 def render_cell_targeter():
     assert htmx is not None
@@ -287,7 +287,7 @@ def render_cell_targeter():
     return project.render_cell_targeter(session)
 
 
-@app.route("/port/target", methods=['POST'])
+@app.route("/viewer/target", methods=['POST'])
 @errors.handler
 def apply_cell_target():
     assert htmx is not None
@@ -295,7 +295,7 @@ def apply_cell_target():
     return project.apply_cell_target(session)
 
 
-@app.route("/port/move/<method>", methods=['POST'])
+@app.route("/viewer/move/<method>", methods=['POST'])
 @errors.handler
 def move_port(method):
     assert htmx is not None
@@ -303,7 +303,7 @@ def move_port(method):
     return project.move_port(session, method)
 
 
-@app.route("/port/dimensions", methods=['POST'])
+@app.route("/viewer/dimensions", methods=['POST'])
 @errors.handler
 def update_dimensions():
     assert htmx is not None

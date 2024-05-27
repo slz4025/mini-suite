@@ -168,7 +168,7 @@ def render_target(session):
         col = target.col_index.value
 
     return render_template(
-            "partials/port_viewer/target.html",
+            "partials/viewer/target.html",
             show_help=show_help,
             show_target=show_target,
             row=row,
@@ -178,14 +178,14 @@ def render_target(session):
 
 def render(session):
     show_help = cp_state.get_show_help(session)
-    show_port_viewer = cp_state.get_show_port_viewer(session)
+    show_viewer = cp_state.get_show_viewer(session)
     nrows, ncols = get_dimensions(session)
     mrows, mcols = get_move_increments(session)
     target = render_target(session)
     return render_template(
-            "partials/port_viewer.html",
+            "partials/viewer.html",
             show_help=show_help,
-            show_port_viewer=show_port_viewer,
+            show_viewer=show_viewer,
             mrows=mrows,
             mcols=mcols,
             nrows=nrows,

@@ -15,7 +15,7 @@ def render(session):
     editor_html = editor.render(session)
     selection_html = selection.render(session)
     bulk_editor_html = bulk_editor.render(session)
-    port_viewer_html = viewer.render(session)
+    viewer_html = viewer.render(session)
 
     command_palette = render_template(
             "partials/command_palette.html",
@@ -24,7 +24,7 @@ def render(session):
             editor=editor_html,
             selection=selection_html,
             bulk_editor=bulk_editor_html,
-            port_viewer=port_viewer_html,
+            viewer=viewer_html,
     )
     return command_palette
 
@@ -41,5 +41,5 @@ def init(session):
     state.set_show_selection(session, show_selection)
     show_bulk_editor = False
     state.set_show_bulk_editor(session, show_bulk_editor)
-    show_port_viewer = False
-    state.set_show_port_viewer(session, show_port_viewer)
+    show_viewer = False
+    state.set_show_viewer(session, show_viewer)

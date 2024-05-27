@@ -44,10 +44,10 @@ def set_show_bulk_editor(session, show_bulk_editor):
     session["show-bulk-editor"] = str(show_bulk_editor)
 
 
-def get_show_port_viewer(session):
-    show_port_viewer = session["show-port-viewer"] == 'True'
-    return show_port_viewer
+def get_show_viewer(session):
+    show_viewer = session["show-viewer"] == 'True'
+    return show_viewer
 
 
-def set_show_port_viewer(session, show_port_viewer):
-    session["show-port-viewer"] = str(show_port_viewer)
+def set_show_viewer(session, show_viewer):
+    session["show-viewer"] = str(show_viewer)

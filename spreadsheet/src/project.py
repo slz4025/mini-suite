@@ -328,8 +328,8 @@ def update_selection_helper(
     add_event(resp, "editor-operations")
     # Rerender what bulk-editor operations are allowed based on selection.
     add_event(resp, "bulk-editor")
-    # Update showing port-viewer target feature.
-    add_event(resp, "port-viewer-target")
+    # Update showing viewer target feature.
+    add_event(resp, "viewer-target")
 
 
 def update_selection_from_endpoints(session, start, end):
@@ -481,11 +481,11 @@ def render_notification(session, show):
     return resp
 
 
-def toggle_port_viewer(session):
+def toggle_viewer(session):
     resp = Response()
 
-    show_port_viewer = command_palette.state.get_show_port_viewer(session)
-    command_palette.state.set_show_port_viewer(session, not show_port_viewer)
+    show_viewer = command_palette.state.get_show_viewer(session)
+    command_palette.state.set_show_viewer(session, not show_viewer)
 
     viewer_html = viewer.render(session)
     resp.set_data(viewer_html)

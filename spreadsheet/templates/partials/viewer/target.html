@@ -1,17 +1,17 @@
 <span
-  id="port-viewer-target"
-  hx-put="/port/target"
-  hx-trigger="port-viewer-target from:body"
+  id="viewer-target"
+  hx-put="/viewer/target"
+  hx-trigger="viewer-target from:body"
   hx-target="this"
   hx-swap="outerHTML"
   style="display: {{ 'inline' if show_target else 'none' }};"
 >
   <button 
-    id="port-viewer-target-button"
+    id="viewer-target-button"
     class="icon"
-    hx-post="/port/target"
+    hx-post="/viewer/target"
     hx-trigger="click"
-    hx-target="#port-viewer-target"
+    hx-target="#viewer-target"
     hx-swap="outerHTML"
     title="target selected cell"
     style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"

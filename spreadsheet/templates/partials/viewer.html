@@ -1,9 +1,9 @@
 <div
-  id="port-viewer"
+  id="viewer"
   class="section"
-  style="display: {{ 'none' if not show_port_viewer else 'inherit' }};"
+  style="display: {{ 'none' if not show_viewer else 'inherit' }};"
 >
-  <h1 class="command-palette">PORT VIEWER</h1>
+  <h1 class="command-palette">VIEWER</h1>
 
   <div class="inner">
     <span
@@ -12,9 +12,9 @@
       <button
         id="home-button"
         class="icon"
-        hx-post="/port/move/home"
+        hx-post="/viewer/move/home"
         hx-trigger="click"
-        hx-target="#port-viewer"
+        hx-target="#viewer"
         hx-swap="outerHTML"
         title="go home"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
@@ -31,9 +31,9 @@
       <button
         id="up-button"
         class="icon"
-        hx-post="/port/move/up"
+        hx-post="/viewer/move/up"
         hx-trigger="click"
-        hx-target="#port-viewer"
+        hx-target="#viewer"
         hx-swap="outerHTML"
         title="move up"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
@@ -47,9 +47,9 @@
       <button
         id="down-button"
         class="icon"
-        hx-post="/port/move/down"
+        hx-post="/viewer/move/down"
         hx-trigger="click"
-        hx-target="#port-viewer"
+        hx-target="#viewer"
         hx-swap="outerHTML"
         title="move down"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
@@ -63,9 +63,9 @@
       <button
         id="left-button"
         class="icon"
-        hx-post="/port/move/left"
+        hx-post="/viewer/move/left"
         hx-trigger="click"
-        hx-target="#port-viewer"
+        hx-target="#viewer"
         hx-swap="outerHTML"
         title="move left"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
@@ -79,9 +79,9 @@
       <button
         id="right-button"
         class="icon"
-        hx-post="/port/move/right"
+        hx-post="/viewer/move/right"
         hx-trigger="click"
-        hx-target="#port-viewer"
+        hx-target="#viewer"
         hx-swap="outerHTML"
         title="move right"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
@@ -95,8 +95,8 @@
   </div>
 
   <form
-    id="port-viewer-dimensions"
-    hx-post="/port/dimensions"
+    id="viewer-dimensions"
+    hx-post="/viewer/dimensions"
     hx-target="#port"
     hx-swap="innerHTML"
     enctype="multipart/form-data"
@@ -106,9 +106,9 @@
 
       <div class="inner" style="margin-bottom: 0;">
         <div class="inner">
-          <label for="port-viewer-dimensions-rows">Rows</label>
+          <label for="viewer-dimensions-rows">Rows</label>
           <input
-            id="port-viewer-dimensions-rows-number"
+            id="viewer-dimensions-rows-number"
             type="number"
             step=1
             value="{{ nrows }}"
@@ -118,9 +118,9 @@
         </div>
 
         <div class="inner">
-          <label for="port-viewer-dimensions-rows">Columns</label>
+          <label for="viewer-dimensions-rows">Columns</label>
           <input
-            id="port-viewer-dimensions-cols-number"
+            id="viewer-dimensions-cols-number"
             type="number"
             step=1
             value="{{ ncols }}"
@@ -129,7 +129,7 @@
           >
         </div>
 
-        <input type="submit" value="↵" id="port-viewer-dimensions-submit"/>
+        <input type="submit" value="↵" id="viewer-dimensions-submit"/>
       </div>
     </fieldset>
   </form>

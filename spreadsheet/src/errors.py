@@ -63,7 +63,7 @@ def handler(func):
             print(error_message)
 
             resp = make_response()
-            resp.headers["HX-Redirect"] = url_for("unexpected_error")
+            resp.headers["HX-Redirect"] = url_for("render_error")
 
         return resp
 

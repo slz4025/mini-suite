@@ -54,7 +54,7 @@
   {{ operations|safe }}
 
   <form
-    hx-put="/cell/{{ row }}/{{ col }}/update"
+    hx-post="/cell/{{ row }}/{{ col }}/update"
     hx-target="#cell-{{ row }}-{{ col }}"
     hx-swap="outerHTML"
     enctype="multipart/form-data"

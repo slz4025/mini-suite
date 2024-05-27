@@ -1,6 +1,6 @@
 <span
   id="port-viewer-target"
-  hx-put="/port-viewer/target"
+  hx-put="/port/target"
   hx-trigger="port-viewer-target from:body"
   hx-target="this"
   hx-swap="outerHTML"
@@ -9,7 +9,7 @@
   <button 
     id="port-viewer-target-button"
     class="icon"
-    hx-post="/port-viewer/target"
+    hx-post="/port/target"
     hx-trigger="click"
     hx-target="#port-viewer-target"
     hx-swap="outerHTML"

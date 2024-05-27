@@ -12,7 +12,7 @@
       <button
         id="home-button"
         class="icon"
-        hx-put="/port-viewer/move/home"
+        hx-post="/port/move/home"
         hx-trigger="click"
         hx-target="#port-viewer"
         hx-swap="outerHTML"
@@ -31,7 +31,7 @@
       <button
         id="up-button"
         class="icon"
-        hx-put="/port-viewer/move/up"
+        hx-post="/port/move/up"
         hx-trigger="click"
         hx-target="#port-viewer"
         hx-swap="outerHTML"
@@ -47,7 +47,7 @@
       <button
         id="down-button"
         class="icon"
-        hx-put="/port-viewer/move/down"
+        hx-post="/port/move/down"
         hx-trigger="click"
         hx-target="#port-viewer"
         hx-swap="outerHTML"
@@ -63,7 +63,7 @@
       <button
         id="left-button"
         class="icon"
-        hx-put="/port-viewer/move/left"
+        hx-post="/port/move/left"
         hx-trigger="click"
         hx-target="#port-viewer"
         hx-swap="outerHTML"
@@ -79,7 +79,7 @@
       <button
         id="right-button"
         class="icon"
-        hx-put="/port-viewer/move/right"
+        hx-post="/port/move/right"
         hx-trigger="click"
         hx-target="#port-viewer"
         hx-swap="outerHTML"
@@ -96,7 +96,7 @@
 
   <form
     id="port-viewer-dimensions"
-    hx-put="/port-viewer/dimensions"
+    hx-post="/port/dimensions"
     hx-target="#port"
     hx-swap="innerHTML"
     enctype="multipart/form-data"

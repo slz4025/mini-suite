@@ -59,7 +59,7 @@ function editing() {
 }
 
 async function update_focus(row, col) {
-  await htmx.ajax('PUT', `/cell/${row}/${col}/focus`, {
+  await htmx.ajax('POST', `/cell/${row}/${col}/focus`, {
     target: `#cell-${row}-${col}`,
     swap: "outerHTML",
   });

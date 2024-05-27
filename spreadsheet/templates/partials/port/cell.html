@@ -17,7 +17,7 @@
   <textarea
     type="text"
     class="cell {{ input_render }}"
-    hx-put="/cell/{{ row }}/{{ col }}/sync"
+    hx-post="/cell/{{ row }}/{{ col }}/sync"
     hx-target="#editor"
     hx-trigger="keyup changed"
     hx-swap="outerHTML"

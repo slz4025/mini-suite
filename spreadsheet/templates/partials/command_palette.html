@@ -3,9 +3,9 @@
   style="display: {{ 'inherit' if show_command_palette else 'none' }};"
 >
   <button
-    id="files-save"
+    id="save-button"
     class="command"
-    hx-post="/files/save"
+    hx-post="/save"
     hx-trigger="click"
     hx-target="#null"
     hx-swap="outerHTML"

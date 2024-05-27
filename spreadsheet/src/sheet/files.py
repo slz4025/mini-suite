@@ -6,6 +6,7 @@ import pandas as pd
 
 import src.errors as errors
 
+import src.sheet.compiler as compiler
 import src.sheet.data as sheet_data
 
 
@@ -25,19 +26,19 @@ def setup(filepath, debug):
         sheet_data.init(debug)
 
 
-def open():
-    df = pd.read_csv(
-        FILE_PATH,
-        skipinitialspace=True,
-        header=None,
-        dtype=object,
-    )
-    df.fillna("", inplace=True)
-    data = df.to_numpy()
-    sheet_data.set(data)
+def load(data):
+    num_rows = data.shape[0]
+    num_cols = data.shape[1]
+
+    converted = np.empty((num_rows, num_cols), dtype=object)
+    for i in range(num_rows):
+        for j in range(num_cols):
+            entry = data[i, j]
+            converted[i, j] = compiler.cast(entry)
+    return converted
 
 
-def safe_format(data):
+def dump(data):
     num_rows = data.shape[0]
     num_cols = data.shape[1]
 
@@ -52,8 +53,21 @@ def safe_format(data):
     return converted
 
 
+def open():
+    df = pd.read_csv(
+        FILE_PATH,
+        skipinitialspace=True,
+        header=None,
+        dtype=object,
+    )
+    data = df.to_numpy()
+    converted = load(data)
+
+    sheet_data.set(converted)
+
+
 def save():
     data = sheet_data.get()
-    converted = safe_format(data)
+    converted = dump(data)
 
     np.savetxt(FILE_PATH, converted, delimiter=",", fmt="%s")

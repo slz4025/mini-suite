@@ -2,11 +2,11 @@ from flask import render_template
 
 import src.command_palette.state as cp_state
 import src.errors as errors
-import src.selection.helpers as helpers
-import src.selection.inputs as inputs
-import src.selection.modes as modes
-import src.selection.state as state
-import src.selection.types as types
+import src.selector.helpers as helpers
+import src.selector.inputs as inputs
+import src.selector.modes as modes
+import src.selector.state as state
+import src.selector.types as types
 
 
 def compute_from_endpoints(start, end):
@@ -43,7 +43,7 @@ def reset(session):
 
 def render(session):
     show_help = cp_state.get_show_help(session)
-    show_selection = cp_state.get_show_selection(session)
+    show_selector = cp_state.get_show_selector(session)
 
     mode_options = inputs.options
 
@@ -72,9 +72,9 @@ def render(session):
     inp = inputs.render(session, mode, selection)
 
     return render_template(
-            "partials/selection.html",
+            "partials/selector.html",
             show_help=show_help,
-            show_selection=show_selection,
+            show_selector=show_selector,
             mode_options=[mo.value for mo in mode_options],
             mode=mode.value,
             input=inp,

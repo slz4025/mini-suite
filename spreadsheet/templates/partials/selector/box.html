@@ -1,4 +1,4 @@
-<fieldset id="selection-input">
+<fieldset id="selector-input">
   <legend>Input</legend>
 
   {% if show_help %}
@@ -11,21 +11,21 @@
   <div class="inner">
     Rows
 
-    <label for="selection-row-start" hidden>Row Start</label>
+    <label for="selector-row-start" hidden>Row Start</label>
     <input
       type="number"
       pattern="[0-9]*"
-      id="selection-row-start"
+      id="selector-row-start"
       name="row-start"
       value="{{ row_start }}"
       style="width: 50px;"
     >
 
-    <label for="selection-row-end" hidden>Row End</label>
+    <label for="selector-row-end" hidden>Row End</label>
     <input
       type="number"
       pattern="[0-9]*"
-      id="selection-row-end"
+      id="selector-row-end"
       name="row-end"
       value="{{ row_end }}"
       style="width: 50px;"
@@ -35,21 +35,21 @@
   <div class="inner">
     Columns
 
-    <label for="selection-col-start" hidden>Column Start</label>
+    <label for="selector-col-start" hidden>Column Start</label>
     <input
       type="number"
       pattern="[0-9]*"
-      id="selection-col-start"
+      id="selector-col-start"
       name="col-start"
       value="{{ col_start }}"
       style="width: 50px;"
     >
 
-    <label for="selection-col-end" hidden>Column End</label>
+    <label for="selector-col-end" hidden>Column End</label>
     <input
       type="number"
       pattern="[0-9]*"
-      id="selection-col-end"
+      id="selector-col-end"
       name="col-end"
       value="{{ col_end }}"
       style="width: 50px;"

@@ -5,8 +5,8 @@ from settings import Settings
 import src.command_palette.state as cp_state
 import src.errors as errors
 import src.sheet.data as sheet_data
-import src.selection.state as sel_state
-import src.selection.types as sel_types
+import src.selector.state as sel_state
+import src.selector.types as sel_types
 
 
 def get_upperleft(session):

@@ -3,8 +3,8 @@ from flask import render_template
 import src.sheet as sheet
 import src.editor.state as ed_state
 import src.errors as errors
-import src.selection.state as sel_state
-import src.selection.types as sel_types
+import src.selector.state as sel_state
+import src.selector.types as sel_types
 import src.sheet.data as sheet_data
 
 

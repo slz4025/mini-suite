@@ -8,7 +8,7 @@ from waitress import serve
 
 import src.errors as errors
 import src.project as project
-import src.selection.types as sel_types
+import src.selector.types as sel_types
 
 
 app = Flask(__name__)
@@ -152,28 +152,28 @@ def render_editor():
     return project.render_editor(session)
 
 
-@app.route("/selection/toggle", methods=['PUT'])
+@app.route("/selector/toggle", methods=['PUT'])
 @errors.handler
-def toggle_selection():
+def toggle_selector():
     assert htmx is not None
 
-    return project.toggle_selection(session)
+    return project.toggle_selector(session)
 
 
-# Though this updates the shown selection form,
+# Though this updates the shown selector form,
 # we use 'GET' in order to retrieve the request argument.
-@app.route("/selection/input", methods=['GET'])
+@app.route("/selector/input", methods=['GET'])
 @errors.handler
-def render_selection_input():
+def render_selector_input():
     assert htmx is not None
 
     mode_str = request.args["mode"]
 
-    return project.render_selection_input(session, mode_str)
+    return project.render_selector_input(session, mode_str)
 
 
 @app.route(
-    "/selection/start/<start_row>/<start_col>/end/<end_row>/<end_col>",
+    "/selector/start/<start_row>/<start_col>/end/<end_row>/<end_col>",
     methods=['POST'],
 )
 @errors.handler
@@ -192,7 +192,7 @@ def update_selection_from_endpoints(start_row, start_col, end_row, end_col):
     return project.update_selection_from_endpoints(session, start, end) 
 
 
-@app.route("/selection/move/<direction>", methods=['POST'])
+@app.route("/selector/move/<direction>", methods=['POST'])
 @errors.handler
 def move_selection(direction):
     assert htmx is not None
@@ -200,7 +200,7 @@ def move_selection(direction):
     return project.move_selection(session, direction)
 
 
-@app.route("/selection", methods=['POST'])
+@app.route("/selector", methods=['POST'])
 @errors.handler
 def update_selection():
     assert htmx is not None
@@ -210,7 +210,7 @@ def update_selection():
     return project.update_selection(session, form)
 
 
-@app.route("/selection", methods=['DELETE'])
+@app.route("/selector", methods=['DELETE'])
 def delete_selection():
     assert htmx is not None
 

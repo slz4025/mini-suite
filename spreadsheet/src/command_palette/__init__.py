@@ -3,7 +3,7 @@ from flask import render_template
 import src.bulk_editor as bulk_editor
 import src.editor as editor
 import src.port.viewer as viewer
-import src.selection as selection
+import src.selector as selector
 
 import src.command_palette.state as state
 
@@ -13,7 +13,7 @@ def render(session):
     show_help = state.get_show_help(session)
 
     editor_html = editor.render(session)
-    selection_html = selection.render(session)
+    selector_html = selector.render(session)
     bulk_editor_html = bulk_editor.render(session)
     viewer_html = viewer.render(session)
 
@@ -22,7 +22,7 @@ def render(session):
             show_command_palette=show_command_palette,
             show_help=show_help,
             editor=editor_html,
-            selection=selection_html,
+            selector=selector_html,
             bulk_editor=bulk_editor_html,
             viewer=viewer_html,
     )
@@ -37,8 +37,8 @@ def init(session):
     state.set_show_help(session, show_help)
     show_editor = False
     state.set_show_editor(session, show_editor)
-    show_selection = False
-    state.set_show_selection(session, show_selection)
+    show_selector = False
+    state.set_show_selector(session, show_selector)
     show_bulk_editor = False
     state.set_show_bulk_editor(session, show_bulk_editor)
     show_viewer = False

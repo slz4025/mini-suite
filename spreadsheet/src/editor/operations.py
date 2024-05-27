@@ -3,9 +3,9 @@ from dataclasses import dataclass
 from flask import render_template
 
 import src.errors as errors
-import src.selection.modes as sel_modes
-import src.selection.state as sel_state
-import src.selection.types as sel_types
+import src.selector.modes as sel_modes
+import src.selector.state as sel_state
+import src.selector.types as sel_types
 
 
 def get_show_operations(session):

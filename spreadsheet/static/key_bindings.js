@@ -9,7 +9,7 @@ window.addEventListener('keydown', function(event) {
         document.getElementById("editor-toggler").click();
         break;
       case '2':
-        document.getElementById("selection-toggler").click();
+        document.getElementById("selector-toggler").click();
         break;
       case '3':
         document.getElementById("bulk-editor-toggler").click();
@@ -18,21 +18,21 @@ window.addEventListener('keydown', function(event) {
         document.getElementById("navigator-toggler").click();
         break;
 
-      // selection
+      // selector
       case 'q':
-        document.getElementById("up-selection-button")?.click();
+        document.getElementById("up-selector-button")?.click();
         break;
       case 'w':
-        document.getElementById("down-selection-button")?.click();
+        document.getElementById("down-selector-button")?.click();
         break;
       case 'e':
-        document.getElementById("left-selection-button")?.click();
+        document.getElementById("left-selector-button")?.click();
         break;
       case 'r':
-        document.getElementById("right-selection-button")?.click();
+        document.getElementById("right-selector-button")?.click();
         break;
       case 'y':
-        document.getElementById("right-selection-button")?.click();
+        document.getElementById("clear-selector-button")?.click();
         break;
 
       // bulk edit

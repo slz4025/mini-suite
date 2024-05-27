@@ -26,13 +26,13 @@ def set_show_editor(session, show_editor):
     session["show-editor"] = str(show_editor)
 
 
-def get_show_selection(session):
-    show_selection = session["show-selection"] == 'True'
-    return show_selection
+def get_show_selector(session):
+    show_selector = session["show-selector"] == 'True'
+    return show_selector
 
 
-def set_show_selection(session, show_selection):
-    session["show-selection"] = str(show_selection)
+def set_show_selector(session, show_selector):
+    session["show-selector"] = str(show_selector)
 
 
 def get_show_bulk_editor(session):

@@ -4,7 +4,7 @@ import re
 from typing import List
 
 import src.errors as errors
-import src.selection.types as sel_types
+import src.selector.types as sel_types
 import src.sheet.data as sheet_data
 import src.sheet.types as sheet_types
 

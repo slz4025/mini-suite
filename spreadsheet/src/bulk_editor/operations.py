@@ -6,9 +6,9 @@ from typing import Callable, List
 import src.command_palette.state as cp_state
 import src.errors as errors
 import src.form_helpers as form_helpers
-import src.selection.modes as sel_modes
-import src.selection.state as sel_state
-import src.selection.types as sel_types
+import src.selector.modes as sel_modes
+import src.selector.state as sel_state
+import src.selector.types as sel_types
 
 import src.bulk_editor.modifications as modifications
 

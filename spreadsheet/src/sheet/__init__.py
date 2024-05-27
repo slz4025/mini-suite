@@ -3,7 +3,7 @@ from typing import Any, Dict
 
 import src.errors as errors
 import src.port.viewer as viewer
-import src.selection.types as sel_types
+import src.selector.types as sel_types
 
 import src.sheet.data as sheet_data
 import src.sheet.files as files

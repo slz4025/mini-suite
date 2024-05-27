@@ -1,4 +1,4 @@
-<fieldset id="selection-input">
+<fieldset id="selector-input">
   <legend>Input</legend>
 
   {% if show_help %}
@@ -8,23 +8,23 @@
   </p>
   {% endif %}
 
-  <label for="selection-col-start">Start</label>
+  <label for="selector-row-start">Start</label>
   <input
     type="number"
     pattern="[0-9]*"
-    id="selection-col-start"
-    name="col-start"
-    value="{{ col_start }}"
+    id="selector-row-start"
+    name="row-start"
+    value="{{ row_start }}"
     style="width: 50px;"
   >
 
-  <label for="selection-col-end">End</label>
+  <label for="selector-row-end">End</label>
   <input
     type="number"
     pattern="[0-9]*"
-    id="selection-col-end"
-    name="col-end"
-    value="{{ col_end }}"
+    id="selector-row-end"
+    name="row-end"
+    value="{{ row_end }}"
     style="width: 50px;"
   >
 </fieldset>

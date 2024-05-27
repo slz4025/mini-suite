@@ -7,8 +7,8 @@ import src.command_palette.state as cp_state
 import src.errors as errors
 import src.form_helpers as form_helpers
 
-import src.selection.modes as modes
-import src.selection.types as types
+import src.selector.modes as modes
+import src.selector.types as types
 import src.sheet.types as sheet_types
 
 
@@ -181,7 +181,7 @@ def render(session, mode, sel=None):
 
     form = forms[mode]
     template_path = os.path.join(
-        "partials/selection",
+        "partials/selector",
         form.template,
     )
     html = render_template(

@@ -13,7 +13,7 @@ import src.command_palette as command_palette
 import src.notifications as notifications
 import src.port as port
 import src.editor as editor
-import src.selection as selection
+import src.selector as selector
 import src.bulk_editor as bulk_editor
 import src.port.viewer as viewer
 
@@ -280,24 +280,24 @@ def render_editor(session):
     return resp
 
 
-def toggle_selection(session):
+def toggle_selector(session):
     resp = Response()
 
-    show_selection = command_palette.state.get_show_selection(session)
-    command_palette.state.set_show_selection(session, not show_selection)
+    show_selector = command_palette.state.get_show_selector(session)
+    command_palette.state.set_show_selector(session, not show_selector)
 
-    selection_html = selection.render(session)
-    resp.set_data(selection_html)
+    selector_html = selector.render(session)
+    resp.set_data(selector_html)
     return resp
 
 
-def render_selection_input(session, mode_str):
+def render_selector_input(session, mode_str):
     resp = Response()
 
-    mode = selection.modes.from_input(mode_str)
+    mode = selector.modes.from_input(mode_str)
 
-    selection_input_html = selection.inputs.render(session, mode)
-    resp.set_data(selection_input_html)
+    selector_input_html = selector.inputs.render(session, mode)
+    resp.set_data(selector_input_html)
     return resp
 
 
@@ -311,9 +311,9 @@ def update_selection_helper(
     update_port=False,
 ):
     if reset:
-        selection.reset(session)
+        selector.reset(session)
     else:
-        selection.save(session, mode, sel)
+        selector.save(session, mode, sel)
 
     if notify:
         notify_info(resp, session, "Selection {}.".format(
@@ -336,14 +336,14 @@ def update_selection_from_endpoints(session, start, end):
     resp = Response()
 
     try:
-        mode, sel = selection.compute_from_endpoints(start, end)
+        mode, sel = selector.compute_from_endpoints(start, end)
 
         update_selection_helper(resp, session, mode, sel)
     except (errors.NotSupportedError) as e:
         notify_error(resp, session, e)
 
-    selection_html = selection.render(session)
-    resp.set_data(selection_html)
+    selector_html = selector.render(session)
+    resp.set_data(selector_html)
     return resp
 
 
@@ -351,14 +351,14 @@ def move_selection(session, direction):
     resp = Response()
 
     try:
-        mode, sel = selection.compute_updated_selection(session, direction)
+        mode, sel = selector.compute_updated_selector(session, direction)
 
         update_selection_helper(resp, session, mode, sel, update_port=True)
     except (errors.NotSupportedError) as e:
         notify_error(resp, session, e)
 
-    selection_html = selection.render(session)
-    resp.set_data(selection_html)
+    selector_html = selector.render(session)
+    resp.set_data(selector_html)
     return resp
 
 
@@ -366,7 +366,7 @@ def update_selection(session, form):
     resp = Response()
 
     try:
-        mode, sel = selection.validate_and_parse(session, form)
+        mode, sel = selector.validate_and_parse(session, form)
 
         update_selection_helper(
             resp,
@@ -379,8 +379,8 @@ def update_selection(session, form):
     except (errors.UserError, errors.OutOfBoundsError) as e:
         notify_error(resp, session, e)
 
-    selection_html = selection.render(session)
-    resp.set_data(selection_html)
+    selector_html = selector.render(session)
+    resp.set_data(selector_html)
     return resp
 
 
@@ -397,8 +397,8 @@ def delete_selection(session):
         update_port=True,
     )
 
-    selection_html = selection.render(session)
-    resp.set_data(selection_html)
+    selector_html = selector.render(session)
+    resp.set_data(selector_html)
     return resp
 
 

@@ -1,4 +1,4 @@
-import src.selection.types as sel_types
+import src.selector.types as sel_types
 
 
 # The focused cell is the cell that displays its underlying value.

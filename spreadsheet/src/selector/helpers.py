@@ -1,5 +1,5 @@
 import src.errors as errors
-import src.selection.types as types
+import src.selector.types as types
 import src.sheet.data as sheet_data
 import src.sheet.types as sheet_types
 

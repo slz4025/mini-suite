@@ -50,11 +50,11 @@
   </button>
   {{ editor|safe }}
   <button
-    id="selection-toggler"
+    id="selector-toggler"
     class="command"
-    hx-put="/selection/toggle"
+    hx-put="/selector/toggle"
     hx-trigger="click"
-    hx-target="#selection"
+    hx-target="#selector"
     hx-swap="outerHTML"
   >
     <span>
@@ -64,7 +64,7 @@
       {% endif %}
     </span>
   </button>
-  {{ selection|safe }}
+  {{ selector|safe }}
   <button
     id="bulk-editor-toggler"
     class="command"

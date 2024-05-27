@@ -1,6 +1,6 @@
 import jsonpickle
 
-import src.selection.modes as modes
+import src.selector.modes as modes
 
 
 def get_mode(session):

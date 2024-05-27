@@ -1,7 +1,7 @@
 from enum import Enum
 
 import src.errors as errors
-import src.selection.types as types
+import src.selector.types as types
 
 
 class Mode(Enum):

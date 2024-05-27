@@ -1,7 +1,7 @@
 <div
-  id="selection"
+  id="selector"
   class="section"
-  style="display: {{ 'inherit' if show_selection else 'none' }};"
+  style="display: {{ 'inherit' if show_selector else 'none' }};"
 >
   <h1 class="command-palette">SELECTOR</h1>
 
@@ -13,8 +13,8 @@
   {% endif %}
 
   <form
-    hx-post="/selection"
-    hx-target="#selection"
+    hx-post="/selector"
+    hx-target="#selector"
     hx-swap="outerHTML"
     enctype="multipart/form-data"
   >
@@ -27,12 +27,12 @@
       </p>
       {% endif %}
 
-      <label for="selection-mode" hidden>Mode</label>
+      <label for="selector-mode" hidden>Mode</label>
       <select
-        id="selection-mode"
+        id="selector-mode"
         name="mode"
-        hx-get="/selection/input"
-        hx-target="#selection-input"
+        hx-get="/selector/input"
+        hx-target="#selector-input"
         hx-swap="outerHTML"
       >
         {% for mode_option in mode_options %}
@@ -51,15 +51,15 @@
       <input
         type="submit"
         value="↵"
-        id="selection-submit"
+        id="selector-submit"
         style="margin: 0.25rem;"
       />
       <button
-          id="selection-clear"
+          id="clear-selector-button"
           class="icon justify"
-          hx-delete="/selection"
+          hx-delete="/selector"
           hx-trigger="click"
-          hx-target="#selection"
+          hx-target="#selector"
           hx-swap="outerHTML"
           style="font-size: 0.8rem; margin: 0.25rem; width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
           title="clear selection"
@@ -75,11 +75,11 @@
     <div class="inner" style="margin-bottom: 0;">
       {% if show_row_adjustments %}
       <button
-        id="up-selection-button"
+        id="up-selector-button"
         class="icon"
-        hx-post="/selection/move/up"
+        hx-post="/selector/move/up"
         hx-trigger="click"
-        hx-target="#selection"
+        hx-target="#selector"
         hx-swap="outerHTML"
         title="shrink selection up"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
@@ -91,11 +91,11 @@
       </button>
 
       <button
-        id="down-selection-button"
+        id="down-selector-button"
         class="icon"
-        hx-post="/selection/move/down"
+        hx-post="/selector/move/down"
         hx-trigger="click"
-        hx-target="#selection"
+        hx-target="#selector"
         hx-swap="outerHTML"
         title="expand selection down"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
@@ -109,11 +109,11 @@
 
       {% if show_col_adjustments %}
       <button
-        id="left-selection-button"
+        id="left-selector-button"
         class="icon"
-        hx-post="/selection/move/left"
+        hx-post="/selector/move/left"
         hx-trigger="click"
-        hx-target="#selection"
+        hx-target="#selector"
         hx-swap="outerHTML"
         title="shrink selection left"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
@@ -125,11 +125,11 @@
       </button>
 
       <button
-        id="right-selection-button"
+        id="right-selector-button"
         class="icon"
-        hx-post="/selection/move/right"
+        hx-post="/selector/move/right"
         hx-trigger="click"
-        hx-target="#selection"
+        hx-target="#selector"
         hx-swap="outerHTML"
         title="expand selection right"
         style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"

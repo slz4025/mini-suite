@@ -2,7 +2,7 @@ import re
 from typing import Set
 
 import src.errors as errors
-import src.selection.types as sel_types
+import src.selector.types as sel_types
 
 import src.sheet.compiler as compiler
 import src.sheet.data as sheet_data

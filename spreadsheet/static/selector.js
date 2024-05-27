@@ -142,9 +142,9 @@ function apply_selection() {
   const [start_row, start_col, end_row, end_col] = get_trial_selection();
   htmx.ajax(
     'POST',
-    `/selection/start/${start_row}/${start_col}/end/${end_row}/${end_col}`,
+    `/selector/start/${start_row}/${start_col}/end/${end_row}/${end_col}`,
     {
-      target: "#selection",
+      target: "#selector",
       swap: "outerHTML",
     }
   );

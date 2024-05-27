@@ -3,8 +3,6 @@
 MIN_PORT=15000
 MAX_PORT=25000
 
-repo_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-
 get_port() {
     available_port=0
     for port in {$MIN_PORT..$MAX_PORT}
@@ -42,7 +40,7 @@ _sheet() {
 }
 
 sheet() {
-    sheet_dir="${repo_dir}/spreadsheet"
+    sheet_dir="${MINISUITE_PATH}/spreadsheet"
     port=$(get_port)
     file="$1"
     logfile=$(make_logfile "sheet")
@@ -66,7 +64,7 @@ _doc() {
 }
 
 doc() {
-    doc_dir="${repo_dir}/document"
+    doc_dir="${MINISUITE_PATH}/document"
     port=$(get_port)
     file="$1"
     logfile=$(make_logfile "doc")
@@ -79,7 +77,7 @@ doc() {
 }
 
 wiki() {
-    doc_dir="${repo_dir}/document"
+    doc_dir="${MINISUITE_PATH}/document"
     port=$(get_port)
     dir="$1"
     logfile=$(make_logfile "wiki")

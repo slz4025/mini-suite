@@ -39,7 +39,7 @@ After you [setup](#setup) your environment, you can edit a csv file via `sheet m
 ## Setup
 
 1. Prepare the environment: `bash setup.sh`.
-2. Create aliases for the simple use-case of these tools: `source mini_suite.sh`. Add `source mini_suite.sh` to your `~/.bashrc` if you always want these aliases upon opening a new interactive shell.
+2. Create aliases for the simple use-case of these tools: `export MINISUITE_PATH=$(pwd) && source mini_suite.sh`. Set the `MINISUITE_PATH` variable and add `source mini_suite.sh` to your `~/.bashrc` if you always want these aliases upon opening a new interactive shell.
 
 ## How does this work?
 

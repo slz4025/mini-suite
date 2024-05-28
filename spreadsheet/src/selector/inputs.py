@@ -4,7 +4,7 @@ import os
 from typing import Callable
 
 import src.command_palette.state as cp_state
-import src.errors as errors
+import src.errors.types as err_types
 import src.form_helpers as form_helpers
 
 import src.selector.modes as modes
@@ -175,7 +175,7 @@ def render(session, mode, sel=None):
             col_end = sel.col_range.end.value - 1
         else:
             sel_type = type(sel)
-            raise errors.UnknownOptionError(
+            raise err_types.UnknownOptionError(
                 f"Unknown selection type: {sel_type}."
             )
 

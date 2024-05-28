@@ -3,7 +3,7 @@
 import re
 from typing import List
 
-import src.errors as errors
+import src.errors.types as err_types
 import src.selector.types as sel_types
 import src.sheet.data as sheet_data
 import src.sheet.types as sheet_types
@@ -33,7 +33,7 @@ def evaluate(cell_position, expression):
     try:
         value = eval(expression)
     except Exception as e:
-        raise errors.UserError(
+        raise err_types.UserError(
             "Evaluation of expression at cell position "
             f"({cell_position.row_index.value}, "
             f"{cell_position.col_index.value}) "

@@ -7,7 +7,8 @@ import os
 
 from settings import Settings
 
-import src.errors as errors
+import src.errors.types as err_types
+import src.errors.state as err_state
 import src.sheet as sheet
 import src.command_palette as command_palette
 import src.notifications as notifications
@@ -49,7 +50,7 @@ def render_port_helper(resp, session, show_errors=True):
     try:
         if show_errors:
             port_html = port.render(session)
-    except errors.UserError as e:
+    except err_types.UserError as e:
         notify_error(resp, session, e)
 
     return port_html
@@ -64,7 +65,7 @@ def render_cell_helper(resp, session, cell_position):
 
     try:
         cell_html = port.render_cell(session, cell_position)
-    except errors.UserError as e:
+    except err_types.UserError as e:
         notify_error(resp, session, e)
 
     add_event(resp, "editor")
@@ -103,7 +104,7 @@ def render_body_helper(resp, session):
 def render_error(session, logger):
     resp = Response()
 
-    error_message = errors.get_message(session)
+    error_message = err_state.get_message(session)
     logger.error(error_message)
 
     user_error_msg = f"""
@@ -213,7 +214,7 @@ def update_cell_helper(resp, session, cell_position, value):
             col = dc.col_index.value
             add_event(resp, f"cell-{row}-{col}")
         return True
-    except (errors.UserError) as e:
+    except (err_types.UserError) as e:
         notify_error(resp, session, e)
         return False
 
@@ -339,7 +340,7 @@ def update_selection_from_endpoints(session, start, end):
         mode, sel = selector.compute_from_endpoints(start, end)
 
         update_selection_helper(resp, session, mode, sel)
-    except (errors.NotSupportedError) as e:
+    except (err_types.NotSupportedError) as e:
         notify_error(resp, session, e)
 
     selector_html = selector.render(session)
@@ -354,7 +355,7 @@ def move_selection(session, direction):
         mode, sel = selector.compute_updated_selector(session, direction)
 
         update_selection_helper(resp, session, mode, sel, update_port=True)
-    except (errors.NotSupportedError) as e:
+    except (err_types.NotSupportedError) as e:
         notify_error(resp, session, e)
 
     selector_html = selector.render(session)
@@ -376,7 +377,7 @@ def update_selection(session, form):
             notify=True,
             update_port=True,
         )
-    except (errors.UserError, errors.OutOfBoundsError) as e:
+    except (err_types.UserError, err_types.OutOfBoundsError) as e:
         notify_error(resp, session, e)
 
     selector_html = selector.render(session)
@@ -431,7 +432,7 @@ def apply_bulk_editor_operation(session, name_str):
         bulk_editor.apply(session, name, modifications)
         add_event(resp, "update-port")
         notify_info(resp, session, "Bulk operation complete.")
-    except (errors.NotSupportedError, errors.DoesNotExistError) as e:
+    except (err_types.NotSupportedError, err_types.DoesNotExistError) as e:
         notify_error(resp, session, e)
 
     bulk_editor_html = bulk_editor.render(session)
@@ -459,7 +460,7 @@ def apply_bulk_edit(session, form):
         bulk_editor.apply(session, name, modifications)
         add_event(resp, "update-port")
         notify_info(resp, session, "Bulk operation complete.")
-    except (errors.UserError) as e:
+    except (err_types.UserError) as e:
         notify_error(resp, session, e)
 
     bulk_editor_html = bulk_editor.render(session)
@@ -508,7 +509,7 @@ def apply_cell_target(session):
 
         add_event(resp, "update-port")
         notify_info(resp, session, "Targeted cell position.")
-    except errors.NotSupportedError as e:
+    except err_types.NotSupportedError as e:
         notify_error(resp, session, e)
 
     cell_targeter_html = viewer.render_target(session)

@@ -7,7 +7,7 @@ from enum import Enum
 import numpy as np
 from typing import Callable, Union
 
-import src.errors as errors
+import src.errors.types as err_types
 import src.selector.types as sel_types
 import src.sheet.data as sheet_data
 
@@ -48,7 +48,7 @@ def apply_delete(sel):
         end = sel.end.value
         axis = Axis.COLUMN
     else:
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             f"Option {type(sel)} is not valid for delete."
         )
 
@@ -73,7 +73,7 @@ def apply_insert(inp):
         index = sel.value
         axis = Axis.COLUMN
     else:
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             f"Option, {type(sel)}, is not valid for insert."
         )
 
@@ -134,7 +134,7 @@ def maybe_insert_at_end(axis, needed):
 
 def apply_paste(sel):
     if buffer is None:
-        raise errors.UserError("Nothing in buffer to paste from.")
+        raise err_types.UserError("Nothing in buffer to paste from.")
 
     # Copy objects, e.g. strings, within the array.
     copied_buffer = copy.deepcopy(buffer)
@@ -157,7 +157,7 @@ def apply_paste(sel):
         col_start = sel.col_index.value
         col_end = col_start + copied_buffer.shape[1]
     else:
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             f"Option, {type(sel)}, is not valid for paste."
         )
 

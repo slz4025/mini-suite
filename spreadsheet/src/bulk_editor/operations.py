@@ -4,7 +4,7 @@ from flask import render_template
 from typing import Callable, List
 
 import src.command_palette.state as cp_state
-import src.errors as errors
+import src.errors.types as err_types
 import src.form_helpers as form_helpers
 import src.selector.modes as sel_modes
 import src.selector.state as sel_state
@@ -40,7 +40,7 @@ def from_input(name_str):
         case "Value":
             return Name.VALUE
         case _:
-            raise errors.UnknownOptionError(
+            raise err_types.UnknownOptionError(
                 f"Unknown operation: {name_str}."
             )
 
@@ -88,7 +88,7 @@ def allow_paste_with_selection(session, mode):
     if copy_selection_mode is None:
         pass
     elif copy_selection_mode not in copy_to_paste:
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             f"Unexpected copy type {copy_selection_mode} "
             "is not supported by paste."
         )
@@ -134,11 +134,11 @@ def allow_value_with_selection(session, mode):
 def validate_and_parse_cut(session, form):
     sel = sel_state.get_selection(session)
     if sel is None:
-        raise errors.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_cut_with_selection(session, sel_mode):
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with cut operation."
         )
@@ -164,11 +164,11 @@ def validate_and_parse_cut(session, form):
 def validate_and_parse_copy(session, form):
     sel = sel_state.get_selection(session)
     if sel is None:
-        raise errors.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_copy_with_selection(session, sel_mode):
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with copy operation."
         )
@@ -183,7 +183,7 @@ def validate_and_parse_copy(session, form):
 def validate_and_parse_paste(session, form):
     sel = sel_state.get_selection(session)
     if sel is None:
-        raise errors.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Selection does not exist.")
 
     # In multi-element selections, it is possible
     # for the start value(s) to be greater than the end value(s).
@@ -195,7 +195,7 @@ def validate_and_parse_paste(session, form):
             pass
             sel = sel_types.RowIndex(sel.start.value)
         else:
-            raise errors.NotSupportedError(
+            raise err_types.NotSupportedError(
                 f"Selection mode {sel_mode} "
                 "is not supported with paste operation. "
                 "Select a single row instead."
@@ -204,7 +204,7 @@ def validate_and_parse_paste(session, form):
         if sel.end.value - sel.start.value == 1:
             sel = sel_types.ColIndex(sel.start.value)
         else:
-            raise errors.NotSupportedError(
+            raise err_types.NotSupportedError(
                 f"Selection mode {sel_mode} "
                 "is not supported with paste operation. "
                 "Select a single column instead."
@@ -217,7 +217,7 @@ def validate_and_parse_paste(session, form):
                 col_index=sel_types.ColIndex(sel.col_range.start.value),
             )
         else:
-            raise errors.NotSupportedError(
+            raise err_types.NotSupportedError(
                 f"Selection mode {sel_mode} "
                 "is not supported with paste operation. "
                 "Select a single cell instead."
@@ -225,7 +225,7 @@ def validate_and_parse_paste(session, form):
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_paste_with_selection(session, sel_mode):
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with paste operation."
         )
@@ -240,11 +240,11 @@ def validate_and_parse_paste(session, form):
 def validate_and_parse_delete(session, form):
     sel = sel_state.get_selection(session)
     if sel is None:
-        raise errors.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_delete_with_selection(session, sel_mode):
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with delete operation."
         )
@@ -259,11 +259,11 @@ def validate_and_parse_delete(session, form):
 def validate_and_parse_insert(session, form):
     sel = sel_state.get_selection(session)
     if sel is None:
-        raise errors.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_insert_with_selection(session, sel_mode):
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with insert operation."
         )
@@ -286,11 +286,11 @@ def validate_and_parse_insert(session, form):
 def validate_and_parse_erase(session, form):
     sel = sel_state.get_selection(session)
     if sel is None:
-        raise errors.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_erase_with_selection(session, sel_mode):
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with erase operation."
         )
@@ -306,18 +306,18 @@ def validate_and_parse_erase(session, form):
 def validate_and_parse_value(session, form):
     sel = sel_state.get_selection(session)
     if sel is None:
-        raise errors.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
     if not allow_value_with_selection(session, sel_mode):
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with value operation."
         )
 
     value = form_helpers.extract(form, "value", name="value")
     if value == "":
-        raise errors.InputError("Field 'value' was not given.")
+        raise err_types.InputError("Field 'value' was not given.")
 
     inp = modifications.ValueInput(selection=sel, value=value)
     modification = modifications.Modification(
@@ -484,7 +484,7 @@ options = list(all_operations.keys())
 
 def get(name):
     if name not in all_operations:
-        raise errors.UnknownOptionError(f"Unknown operation: {name.value}.")
+        raise err_types.UnknownOptionError(f"Unknown operation: {name.value}.")
     operation = all_operations[name]
     return operation
 
@@ -538,7 +538,7 @@ def get_modifications(session, name):
             operation = get(name)
             modifications = operation.validate_and_parse(session, None)
         case _:
-            raise errors.NotSupportedError(
+            raise err_types.NotSupportedError(
                 f"Cannot get modifications for operation {name.value} "
                 "without additional inputs."
             )

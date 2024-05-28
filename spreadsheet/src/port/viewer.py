@@ -3,7 +3,7 @@ from flask import render_template
 from settings import Settings
 
 import src.command_palette.state as cp_state
-import src.errors as errors
+import src.errors.types as err_types
 import src.sheet.data as sheet_data
 import src.selector.state as sel_state
 import src.selector.types as sel_types
@@ -72,7 +72,7 @@ def set_target(session):
     selection_mode = sel_state.get_mode(session)
     selection = get_selection_for_target(session)
     if selection is None:
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             "Centering requires a cell position selection. "
             f"Got selection mode {selection_mode.value} instead."
         )
@@ -130,7 +130,7 @@ def move_upperleft(session, method):
             case 'right':
                 delta_col = mcols
             case _:
-                raise errors.UnknownOptionError(
+                raise err_types.UnknownOptionError(
                     f"Unexpected method: {method}."
                 )
 

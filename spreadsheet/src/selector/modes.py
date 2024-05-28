@@ -1,6 +1,7 @@
 from enum import Enum
 
-import src.errors as errors
+import src.errors.types as err_types
+
 import src.selector.types as types
 
 
@@ -28,7 +29,7 @@ def from_selection(sel):
         return Mode.BOX
     else:
         sel_type = type(sel)
-        raise errors.UnknownOptionError(
+        raise err_types.UnknownOptionError(
             f"Unknown selection type: {sel_type}."
         )
 
@@ -48,6 +49,6 @@ def from_input(mode_str):
         case "Box":
             return Mode.BOX
         case _:
-            raise errors.UnknownOptionError(
+            raise err_types.UnknownOptionError(
                 f"Unknown selection mode: {mode_str}."
             )

@@ -4,7 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 
-import src.errors as errors
+import src.errors.types as err_types
 
 import src.sheet.compiler as compiler
 import src.sheet.data as sheet_data
@@ -17,7 +17,7 @@ def setup(filepath, debug):
     global FILE_PATH
 
     if not filepath.endswith(".csv"):
-        raise errors.UserError("File is not a csv file.")
+        raise err_types.UserError("File is not a csv file.")
     FILE_PATH = filepath
 
     if os.path.exists(FILE_PATH):

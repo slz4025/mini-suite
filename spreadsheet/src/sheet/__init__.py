@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Any, Dict
 
-import src.errors as errors
+import src.errors.types as err_types
 import src.port.viewer as viewer
 import src.selector.types as sel_types
 
@@ -99,7 +99,7 @@ def update_cell_value(cell_position, value):
     # If not, rollback to previous value.
     try:
         graph.compute(cell_position)
-    except errors.UserError as e:
+    except err_types.UserError as e:
         ptr[
             cell_position.row_index.value, cell_position.col_index.value
         ] = prev_value

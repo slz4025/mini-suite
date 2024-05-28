@@ -5,40 +5,8 @@ from flask import (
 )
 import traceback
 
-
-# Errors that arise due to general bad user input/action.
-class UserError(Exception):
-    pass
-
-
-class InputError(Exception):
-    pass
-
-
-class OutOfBoundsError(Exception):
-    pass
-
-
-class NotSupportedError(Exception):
-    pass
-
-
-class UnknownOptionError(Exception):
-    pass
-
-
-class DoesNotExistError(Exception):
-    pass
-
-
-def get_message(session):
-    if "error-message" not in session:
-        return None
-    return session["error-message"]
-
-
-def set_message(session, error_message):
-    session["error-message"] = error_message
+import src.errors.types as types
+import src.errors.state as state
 
 
 def handler(func):
@@ -55,7 +23,7 @@ def handler(func):
         if error is not None:
             stack_trace = "".join(traceback.format_tb(error.__traceback__))
             error_message = f"ERROR: {error}\n{stack_trace}"
-            set_message(session, error_message)
+            state.set_message(session, error_message)
 
             # Print error in case can't redirect to page.
             # Seems like this usually happens when an unexpected bug

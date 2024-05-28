@@ -1,7 +1,8 @@
-import src.errors as errors
-import src.selector.types as types
+import src.errors.types as err_types
 import src.sheet.data as sheet_data
 import src.sheet.types as sheet_types
+
+import src.selector.types as types
 
 
 def is_row_header(cell_position):
@@ -34,18 +35,18 @@ def compute_from_endpoints(start, end):
                 end=actual_row_end,
             )
         elif is_col_header(end):
-            raise errors.NotSupportedError(
+            raise err_types.NotSupportedError(
                 "Selection start is row header "
                 "but selection end is col header."
             )
         else:
-            raise errors.NotSupportedError(
+            raise err_types.NotSupportedError(
                 "Selection start is row header "
                 "but selection end is cell."
             )
     elif is_col_header(start):
         if is_row_header(end):
-            raise errors.NotSupportedError(
+            raise err_types.NotSupportedError(
                 "Selection start is col header "
                 "but selection end is row header."
             )
@@ -55,18 +56,18 @@ def compute_from_endpoints(start, end):
                 end=actual_col_end,
             )
         else:
-            raise errors.NotSupportedError(
+            raise err_types.NotSupportedError(
                 "Selection start is col header "
                 "but selection end is cell."
             )
     else:
         if is_row_header(end):
-            raise errors.NotSupportedError(
+            raise err_types.NotSupportedError(
                 "Selection start is cell "
                 "but selection end is row header."
             )
         elif is_col_header(end):
-            raise errors.NotSupportedError(
+            raise err_types.NotSupportedError(
                 "Selection start is cell "
                 "but selection end is col header."
             )
@@ -107,7 +108,7 @@ def compute_updated_selection(sel, direction):
             case 'right':
                 end_col = min(max_col, end_col + 1)
             case _:
-                raise errors.UnknownOptionError(
+                raise err_types.UnknownOptionError(
                     f"Unexpected direction: {direction}."
                 )
         return types.Box(

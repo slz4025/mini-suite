@@ -1,7 +1,7 @@
 import re
 from typing import Set
 
-import src.errors as errors
+import src.errors.types as err_types
 import src.selector.types as sel_types
 
 import src.sheet.compiler as compiler
@@ -46,7 +46,7 @@ def evaluate(cell_position, formula):
     try:
         value = eval(formula)
     except Exception as e:
-        raise errors.UserError(
+        raise err_types.UserError(
             "Evaluation of compiled formula at cell position "
             f"({cell_position.row_index.value}, "
             f"{cell_position.col_index.value}) "
@@ -88,7 +88,7 @@ def try_compute(cell_position):
     global visited
 
     if cell_position in visited:
-        raise errors.UserError(
+        raise err_types.UserError(
             "Dependency loop in computing cell values. "
             "Cell at position ("
             f"{cell_position.row_index.value},"

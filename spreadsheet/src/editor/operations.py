@@ -2,7 +2,7 @@ from enum import Enum
 from dataclasses import dataclass
 from flask import render_template
 
-import src.errors as errors
+import src.errors.types as err_types
 import src.selector.modes as sel_modes
 import src.selector.state as sel_state
 import src.selector.types as sel_types
@@ -33,7 +33,7 @@ def get_selection_macro(session):
         )
     else:
         sel_mode = sel_modes.from_selection(sel)
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             "Selection mode {} is not supported in formulas."
             .format(sel_mode.value)
         )
@@ -70,14 +70,14 @@ def from_input(name_str):
         case "Average":
             return Name.AVERAGE
         case _:
-            raise errors.UnknownOptionError(
+            raise err_types.UnknownOptionError(
                 f"Unknown operation: {name_str}."
             )
 
 
 def get_operation(op_name):
     if op_name not in all_operations:
-        raise errors.UnknownOptionError(f"Unknown operation: {op_name.value}.")
+        raise err_types.UnknownOptionError(f"Unknown operation: {op_name.value}.")
     return all_operations[op_name]
 
 

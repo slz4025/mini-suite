@@ -2,7 +2,7 @@ from flask import render_template
 
 import src.sheet as sheet
 import src.editor.state as ed_state
-import src.errors as errors
+import src.errors.types as err_types
 import src.selector.state as sel_state
 import src.selector.types as sel_types
 import src.sheet.data as sheet_data
@@ -89,7 +89,7 @@ def render_cell(
                 sheet.get_cell_computed(
                     cell_position,
                 )
-            except errors.UserError as e:
+            except err_types.UserError as e:
                 raise e
         value = sheet_data.get_cell_value(cell_position)
     else:
@@ -97,7 +97,7 @@ def render_cell(
             value = sheet.get_cell_computed(
                 cell_position,
             )
-        except errors.UserError as e:
+        except err_types.UserError as e:
             if catch_failure:
                 # set as empty while report error
                 value = ""

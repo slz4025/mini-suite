@@ -1,6 +1,6 @@
 from flask import render_template
 
-import src.errors as errors
+import src.errors.types as err_types
 import src.command_palette.state as cp_state
 import src.port.viewer as viewer
 import src.selector.modes as sel_modes
@@ -19,7 +19,7 @@ def render(session, op_name_str=None):
     if focused_cell is not None:
         try:
             sel_types.check_cell_position(focused_cell)
-        except errors.OutOfBoundsError:
+        except err_types.OutOfBoundsError:
             state.reset_focused_cell_position(session)
             focused_cell = None
 

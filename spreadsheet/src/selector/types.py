@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Union
 
-import src.errors as errors
+import src.errors.types as err_types
 import src.sheet.data as sheet_data
 import src.sheet.types as sheet_types
 
@@ -69,7 +69,7 @@ def check_row_index(row_index):
     bounds = sheet_data.get_bounds()
 
     if row_index.value < 0 or row_index.value > bounds.row.value:
-        raise errors.OutOfBoundsError(
+        raise err_types.OutOfBoundsError(
             f"Row index, {row_index.value}, "
             f"is out of bounds [{0}:{bounds.row.value}]."
         )
@@ -79,7 +79,7 @@ def check_col_index(col_index):
     bounds = sheet_data.get_bounds()
 
     if col_index.value < 0 or col_index.value > bounds.col.value:
-        raise errors.OutOfBoundsError(
+        raise err_types.OutOfBoundsError(
             f"Column index, {col_index.value}, "
             f"is out of bounds [{0}:{bounds.col.value}]."
         )
@@ -99,17 +99,17 @@ def check_and_set_row_range(row_range):
         row_range.end = sheet_types.Bound(bounds.row.value)
 
     if row_range.start.value < 0:
-        raise errors.OutOfBoundsError(
+        raise err_types.OutOfBoundsError(
             f"Row range start, {row_range.start.value}, "
             "is negative."
         )
     if row_range.end.value > bounds.row.value:
-        raise errors.OutOfBoundsError(
+        raise err_types.OutOfBoundsError(
             f"Row range end, {row_range.end.value}, "
             f"exceeds sheet bound, {bounds.row.value}."
         )
     if row_range.start.value >= row_range.end.value:
-        raise errors.OutOfBoundsError(
+        raise err_types.OutOfBoundsError(
             f"Row range start, {row_range.start.value}, "
             "is greater than or equal to "
             f"row range end, {row_range.end.value}."
@@ -127,17 +127,17 @@ def check_and_set_col_range(col_range):
         col_range.end = sheet_types.Bound(bounds.col.value)
 
     if col_range.start.value < 0:
-        raise errors.OutOfBoundsError(
+        raise err_types.OutOfBoundsError(
             f"Column range start, {col_range.start.value}, "
             "is negative."
         )
     if col_range.end.value > bounds.col.value:
-        raise errors.OutOfBoundsError(
+        raise err_types.OutOfBoundsError(
             f"Column range end, {col_range.end.value}, "
             f"exceeds sheet bound, {bounds.col.value}."
         )
     if col_range.start.value >= col_range.end.value:
-        raise errors.OutOfBoundsError(
+        raise err_types.OutOfBoundsError(
             f"Column range start, {col_range.start.value}, "
             "is greater than or equal to "
             f"column range end, {col_range.end.value}."
@@ -181,7 +181,7 @@ def get_bounds_from_selection(sel):
         col_start = sel.col_range.start.value
         col_end = sel.col_range.end.value
     else:
-        raise errors.NotSupportedError(
+        raise err_types.NotSupportedError(
             f"Option, {type(sel)}, does not have bounds."
         )
 

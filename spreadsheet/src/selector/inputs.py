@@ -5,7 +5,7 @@ from typing import Callable
 
 import src.command_palette.state as cp_state
 import src.errors.types as err_types
-import src.form_helpers as form_helpers
+import src.utils.form as form_helpers
 
 import src.selector.modes as modes
 import src.selector.types as types

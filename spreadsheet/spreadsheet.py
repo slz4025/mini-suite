@@ -2,9 +2,6 @@ import argparse
 import sys
 
 
-import app
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
             prog="spreadsheet",
@@ -33,6 +30,7 @@ if __name__ == "__main__":
             )
 
     args = parser.parse_args(sys.argv[1:])
+    import app
     app.start(
             port=args.port,
             path=args.path,

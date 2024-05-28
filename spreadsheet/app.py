@@ -8,17 +8,18 @@ import secrets
 from waitress import serve
 
 import src.errors as errors
-import src.project as project
+from src.session import Session
 import src.selector.types as sel_types
 
 
 app = Flask(__name__)
 htmx = HTMX(app)
+_session = None
 
 
 @app.route("/error")
 def render_error():
-    return project.render_error(session, app.logger)
+    return _session.render_error(session, app.logger)
 
 
 @app.route("/")
@@ -26,7 +27,7 @@ def render_error():
 def root():
     assert htmx is not None
 
-    return project.root(session)
+    return _session.root(session)
 
 
 @app.route("/command-palette/toggle", methods=['PUT'])
@@ -34,7 +35,7 @@ def root():
 def toggle_command_palette():
     assert htmx is not None
 
-    return project.toggle_command_palette(session)
+    return _session.toggle_command_palette(session)
 
 
 @app.route("/save", methods=['POST'])
@@ -42,7 +43,7 @@ def toggle_command_palette():
 def save():
     assert htmx is not None
 
-    return project.save(session)
+    return _session.save(session)
 
 
 @app.route("/help/toggle", methods=['PUT'])
@@ -50,7 +51,7 @@ def save():
 def toggle_help():
     assert htmx is not None
 
-    return project.toggle_help(session)
+    return _session.toggle_help(session)
 
 
 @app.route("/port", methods=['PUT'])
@@ -58,7 +59,7 @@ def toggle_help():
 def render_port():
     assert htmx is not None
 
-    return project.render_port(session)
+    return _session.render_port(session)
 
 
 @app.route("/cell/<row>/<col>", methods=['PUT'])
@@ -70,7 +71,7 @@ def render_cell(row, col):
         row_index=sel_types.RowIndex(int(row)),
         col_index=sel_types.ColIndex(int(col)),
     )
-    return project.render_cell(session, cell_position)
+    return _session.render_cell(session, cell_position)
 
 
 @app.route("/cell/<row>/<col>/focus", methods=['POST'])
@@ -83,7 +84,7 @@ def focus_cell(row, col):
         col_index=sel_types.ColIndex(int(col)),
     )
 
-    return project.focus_cell(session, cell_position)
+    return _session.focus_cell(session, cell_position)
 
 
 @app.route("/cell/<row>/<col>/update", methods=['POST'])
@@ -99,7 +100,7 @@ def update_cell(row, col):
     key = f"input-cell-{row}-{col}"
     value = request.form[key]
 
-    return project.update_cell(session, cell_position, value)
+    return _session.update_cell(session, cell_position, value)
 
 
 @app.route("/cell/<row>/<col>/sync", methods=['POST'])
@@ -117,7 +118,7 @@ def sync_cell(row, col):
         return
     value = request.form[key]
 
-    return project.sync_cell(session, cell_position, value)
+    return _session.sync_cell(session, cell_position, value)
 
 
 @app.route("/editor/toggle", methods=['PUT'])
@@ -125,7 +126,7 @@ def sync_cell(row, col):
 def toggle_editor():
     assert htmx is not None
 
-    return project.toggle_editor(session)
+    return _session.toggle_editor(session)
 
 
 @app.route("/editor/operations", methods=['PUT'])
@@ -133,7 +134,7 @@ def toggle_editor():
 def render_editor_operations():
     assert htmx is not None
 
-    return project.render_editor_operations(session)
+    return _session.render_editor_operations(session)
 
 
 @app.route("/editor/operation/<op_name_str>", methods=['PUT'])
@@ -141,7 +142,7 @@ def render_editor_operations():
 def preview_editor_operation(op_name_str):
     assert htmx is not None
 
-    return project.preview_editor_operation(session, op_name_str)
+    return _session.preview_editor_operation(session, op_name_str)
 
 
 @app.route("/editor", methods=['PUT'])
@@ -149,7 +150,7 @@ def preview_editor_operation(op_name_str):
 def render_editor():
     assert htmx is not None
 
-    return project.render_editor(session)
+    return _session.render_editor(session)
 
 
 @app.route("/selector/toggle", methods=['PUT'])
@@ -157,7 +158,7 @@ def render_editor():
 def toggle_selector():
     assert htmx is not None
 
-    return project.toggle_selector(session)
+    return _session.toggle_selector(session)
 
 
 # Though this updates the shown selector form,
@@ -169,7 +170,7 @@ def render_selector_input():
 
     mode_str = request.args["mode"]
 
-    return project.render_selector_input(session, mode_str)
+    return _session.render_selector_input(session, mode_str)
 
 
 @app.route(
@@ -189,7 +190,7 @@ def update_selection_from_endpoints(start_row, start_col, end_row, end_col):
         col_index=sel_types.ColIndex(int(end_col)),
     )
 
-    return project.update_selection_from_endpoints(session, start, end) 
+    return _session.update_selection_from_endpoints(session, start, end) 
 
 
 @app.route("/selector/move/<direction>", methods=['POST'])
@@ -197,7 +198,7 @@ def update_selection_from_endpoints(start_row, start_col, end_row, end_col):
 def move_selection(direction):
     assert htmx is not None
 
-    return project.move_selection(session, direction)
+    return _session.move_selection(session, direction)
 
 
 @app.route("/selector", methods=['POST'])
@@ -207,14 +208,14 @@ def update_selection():
 
     form = request.form
 
-    return project.update_selection(session, form)
+    return _session.update_selection(session, form)
 
 
 @app.route("/selector", methods=['DELETE'])
 def delete_selection():
     assert htmx is not None
 
-    return project.delete_selection(session)
+    return _session.delete_selection(session)
 
 
 @app.route("/bulk-editor/toggle", methods=['PUT'])
@@ -222,7 +223,7 @@ def delete_selection():
 def toggle_bulk_editor():
     assert htmx is not None
 
-    return project.toggle_bulk_editor(session)
+    return _session.toggle_bulk_editor(session)
 
 
 # Though this updates the shown operation form,
@@ -234,7 +235,7 @@ def render_bulk_editor_operation():
 
     name_str = request.args["operation"]
 
-    return project.render_bulk_editor_operation(session, name_str)
+    return _session.render_bulk_editor_operation(session, name_str)
 
 
 @app.route("/bulk-editor/apply/<name_str>", methods=['POST'])
@@ -242,7 +243,7 @@ def render_bulk_editor_operation():
 def apply_bulk_editor_operation(name_str):
     assert htmx is not None
 
-    return project.apply_bulk_editor_operation(session, name_str)
+    return _session.apply_bulk_editor_operation(session, name_str)
 
 
 @app.route("/bulk-editor", methods=['PUT'])
@@ -250,7 +251,7 @@ def apply_bulk_editor_operation(name_str):
 def render_bulk_editor():
     assert htmx is not None
 
-    return project.render_bulk_editor(session)
+    return _session.render_bulk_editor(session)
 
 
 @app.route("/bulk-editor", methods=['POST'])
@@ -260,7 +261,7 @@ def apply_bulk_edit():
 
     form = request.form
 
-    return project.apply_bulk_edit(session, form)
+    return _session.apply_bulk_edit(session, form)
 
 
 @app.route("/notification/<show>", methods=['PUT'])
@@ -268,7 +269,7 @@ def apply_bulk_edit():
 def render_notification(show):
     assert htmx is not None
 
-    return project.render_notification(session, show)
+    return _session.render_notification(session, show)
 
 
 @app.route("/viewer/toggle", methods=['PUT'])
@@ -276,7 +277,7 @@ def render_notification(show):
 def toggle_viewer():
     assert htmx is not None
 
-    return project.toggle_viewer(session)
+    return _session.toggle_viewer(session)
 
 
 @app.route("/viewer/target", methods=['PUT'])
@@ -284,7 +285,7 @@ def toggle_viewer():
 def render_cell_targeter():
     assert htmx is not None
 
-    return project.render_cell_targeter(session)
+    return _session.render_cell_targeter(session)
 
 
 @app.route("/viewer/target", methods=['POST'])
@@ -292,7 +293,7 @@ def render_cell_targeter():
 def apply_cell_target():
     assert htmx is not None
 
-    return project.apply_cell_target(session)
+    return _session.apply_cell_target(session)
 
 
 @app.route("/viewer/move/<method>", methods=['POST'])
@@ -300,7 +301,7 @@ def apply_cell_target():
 def move_port(method):
     assert htmx is not None
 
-    return project.move_port(session, method)
+    return _session.move_port(session, method)
 
 
 @app.route("/viewer/dimensions", methods=['POST'])
@@ -311,11 +312,12 @@ def update_dimensions():
     nrows = int(request.form['nrows'])
     ncols = int(request.form['ncols'])
 
-    return project.update_dimensions(session, nrows, ncols)
+    return _session.update_dimensions(session, nrows, ncols)
 
 
 def start(port, path, debug):
-    project.setup(path, debug)
+    global _session
+    _session = Session(path, debug)
     # key for this session
     app.secret_key = secrets.token_hex()
     app.logger.info("Starting server")

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Union
 
 import src.errors.types as err_types
-import src.sheet.data as sheet_data
+import src.sheet as sheet
 import src.sheet.types as sheet_types
 
 
@@ -66,7 +66,7 @@ Selection = Union[
 
 
 def check_row_index(row_index):
-    bounds = sheet_data.get_bounds()
+    bounds = sheet.data.get_bounds()
 
     if row_index.value < 0 or row_index.value > bounds.row.value:
         raise err_types.OutOfBoundsError(
@@ -76,7 +76,7 @@ def check_row_index(row_index):
 
 
 def check_col_index(col_index):
-    bounds = sheet_data.get_bounds()
+    bounds = sheet.data.get_bounds()
 
     if col_index.value < 0 or col_index.value > bounds.col.value:
         raise err_types.OutOfBoundsError(
@@ -91,7 +91,7 @@ def check_cell_position(cell_position):
 
 
 def check_and_set_row_range(row_range):
-    bounds = sheet_data.get_bounds()
+    bounds = sheet.data.get_bounds()
 
     if row_range.start is None:
         row_range.start = sheet_types.Index(0)
@@ -119,7 +119,7 @@ def check_and_set_row_range(row_range):
 
 
 def check_and_set_col_range(col_range):
-    bounds = sheet_data.get_bounds()
+    bounds = sheet.data.get_bounds()
 
     if col_range.start is None:
         col_range.start = sheet_types.Index(0)

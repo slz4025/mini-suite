@@ -5,7 +5,7 @@ import src.command_palette as command_palette
 import src.viewer as viewer
 import src.selector.modes as sel_modes
 import src.selector.types as sel_types
-import src.sheet.data as sheet_data
+import src.sheet as sheet
 
 import src.editor.state as state
 import src.editor.operations as operations
@@ -41,7 +41,7 @@ def render(session, op_name_str=None):
             op_name = operations.from_input(op_name_str)
             data = operations.get_formula_with_selection(session, op_name)
         else:
-            data = sheet_data.get_cell_value(focused_cell)
+            data = sheet.data.get_cell_value(focused_cell)
 
     operations_html = operations.render(session)
     return render_template(

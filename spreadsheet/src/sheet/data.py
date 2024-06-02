@@ -13,6 +13,19 @@ def get_bounds():
     return types.Bounds(row=types.Bound(shape[0]), col=types.Bound(shape[1]))
 
 
+def get():
+    return sheet
+
+
+def set(data):
+    global sheet
+    sheet = data
+
+
+def get_cell_value(cell_position):
+    return sheet[cell_position.row_index.value, cell_position.col_index.value]
+
+
 def init(debug=False):
     global sheet
 
@@ -24,17 +37,3 @@ def init(debug=False):
         for row in range(maxrows):
             for col in range(maxcols):
                 sheet[row, col] = row*maxcols + col
-
-
-def get():
-    return sheet
-
-
-def get_cell_value(cell_position):
-    return sheet[cell_position.row_index.value, cell_position.col_index.value]
-
-
-def set(data):
-    global sheet
-
-    sheet = data

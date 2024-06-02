@@ -1,5 +1,5 @@
 import src.errors.types as err_types
-import src.sheet.data as sheet_data
+import src.sheet as sheet
 import src.sheet.types as sheet_types
 
 import src.selector.types as types
@@ -87,7 +87,7 @@ def compute_from_endpoints(start, end):
 
 
 def compute_updated_selection(sel, direction):
-    bounds = sheet_data.get_bounds()
+    bounds = sheet.data.get_bounds()
     max_row = bounds.row.value
     max_col = bounds.col.value
 

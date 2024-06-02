@@ -5,7 +5,7 @@ import src.editor.state as ed_state
 import src.errors.types as err_types
 import src.selector.state as sel_state
 import src.selector.types as sel_types
-import src.sheet.data as sheet_data
+import src.sheet as sheet
 
 
 def make_render_selected(session):
@@ -91,7 +91,7 @@ def render_cell(
                 )
             except err_types.UserError as e:
                 raise e
-        value = sheet_data.get_cell_value(cell_position)
+        value = sheet.data.get_cell_value(cell_position)
     else:
         try:
             value = sheet.get_cell_computed(

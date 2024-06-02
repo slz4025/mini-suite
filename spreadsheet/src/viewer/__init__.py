@@ -2,7 +2,7 @@ from flask import render_template
 
 import src.command_palette as command_palette
 import src.errors.types as err_types
-import src.sheet.data as sheet_data
+import src.sheet as sheet
 import src.selector.state as sel_state
 import src.selector.types as sel_types
 
@@ -40,7 +40,7 @@ def set_target(session):
     row = selection.row_index.value
     col = selection.col_index.value
 
-    bounds = sheet_data.get_bounds()
+    bounds = sheet.data.get_bounds()
     row_end = min(row + (nrows) // 2 + 1, bounds.row.value)
     col_end = min(col + (ncols) // 2 + 1, bounds.col.value)
     row_start = max(0, row_end - nrows)
@@ -95,7 +95,7 @@ def move_upperleft(method):
                     f"Unexpected method: {method}."
                 )
 
-        bounds = sheet_data.get_bounds()
+        bounds = sheet.data.get_bounds()
 
         row = upperleft.row_index.value
         potential_row = max(0, upperleft.row_index.value+delta_row)

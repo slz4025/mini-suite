@@ -9,7 +9,7 @@ from typing import Callable, Union
 
 import src.errors.types as err_types
 import src.selector.types as sel_types
-import src.sheet.data as sheet_data
+import src.sheet as sheet
 
 
 class Axis(Enum):
@@ -56,9 +56,9 @@ def apply_delete(sel):
     assert end is not None
     assert axis is not None
 
-    ptr = sheet_data.get()
+    ptr = sheet.data.get()
     indices = list(range(start, end))
-    sheet_data.set(np.delete(ptr, indices, axis.value))
+    sheet.data.set(np.delete(ptr, indices, axis.value))
 
 
 def apply_insert(inp):
@@ -80,10 +80,10 @@ def apply_insert(inp):
     assert index is not None
     assert axis is not None
 
-    ptr = sheet_data.get()
+    ptr = sheet.data.get()
     number = inp.number
     insertion = np.array([[None] * number])
-    sheet_data.set(np.insert(
+    sheet.data.set(np.insert(
         ptr,
         [index] * number,
         insertion if axis == Axis.COLUMN else insertion.T,
@@ -97,7 +97,7 @@ def apply_value(inp):
         sel_types.get_bounds_from_selection(sel)
 
     value = inp.value
-    ptr = sheet_data.get()
+    ptr = sheet.data.get()
     ptr[row_start:row_end, col_start:col_end] = value
 
 
@@ -110,12 +110,12 @@ def apply_copy(sel):
     row_start, row_end, col_start, col_end = \
         sel_types.get_bounds_from_selection(sel)
 
-    ptr = sheet_data.get()
+    ptr = sheet.data.get()
     buffer = copy.deepcopy(ptr[row_start:row_end, col_start:col_end])
 
 
 def maybe_insert_at_end(axis, needed):
-    bounds = sheet_data.get_bounds()
+    bounds = sheet.data.get_bounds()
     match axis:
         case Axis.ROW:
             bound = bounds.row.value
@@ -144,11 +144,11 @@ def apply_paste(sel):
         row_end = row_start + copied_buffer.shape[0]
         col_start = 0
         col_end = copied_buffer.shape[1]
-        assert col_end == sheet_data.get_bounds().col.value
+        assert col_end == sheet.data.get_bounds().col.value
     elif isinstance(sel, sel_types.ColIndex):
         row_start = 0
         row_end = copied_buffer.shape[0]
-        assert row_end == sheet_data.get_bounds().row.value
+        assert row_end == sheet.data.get_bounds().row.value
         col_start = sel.value
         col_end = col_start + copied_buffer.shape[1]
     elif isinstance(sel, sel_types.CellPosition):
@@ -164,7 +164,7 @@ def apply_paste(sel):
     maybe_insert_at_end(Axis.ROW, row_end)
     maybe_insert_at_end(Axis.COLUMN, col_end)
 
-    ptr = sheet_data.get()
+    ptr = sheet.data.get()
     ptr[row_start:row_end, col_start:col_end] = copied_buffer
 
 

@@ -199,7 +199,7 @@ class Session:
     def update_cell_helper(self, resp, session, cell_position, value):
         try:
             sheet.update_cell_value(cell_position, value)
-            dep_cells = sheet.get_potential_dependents(session)
+            dep_cells = sheet.get_potential_dependents()
             for dc in dep_cells:
                 if dc == cell_position:
                     continue

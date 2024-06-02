@@ -24,6 +24,8 @@ class Session:
         self.path = path
         sheet.files.setup(path, debug)
 
+        notifications.state.init()
+
     def add_event(self, resp, event):
         if 'HX-Trigger' not in resp.headers:
             resp.headers['HX-Trigger'] = ""
@@ -31,13 +33,17 @@ class Session:
         if event not in events:
             resp.headers['HX-Trigger'] += "," + event
 
-    def notify_info(self, resp, session, message):
+    def notify_info(self, resp, message):
         self.add_event(resp, "notification")
-        notifications.set_info(session, message)
+        notifications.state.set_info(message)
 
-    def notify_error(self, resp, session, error):
+    def notify_error(self, resp, error):
         self.add_event(resp, "notification")
-        notifications.set_error(session, error)
+        notifications.state.set_error(error)
+
+    def reset_notifications(self, resp):
+        self.add_event(resp, "notification")
+        notifications.state.reset()
 
     def render_null_helper(self, session):
         return render_template("partials/null.html")
@@ -49,7 +55,7 @@ class Session:
             if show_errors:
                 port_html = port.render(session)
         except err_types.UserError as e:
-            self.notify_error(resp, session, e)
+            self.notify_error(resp, e)
 
         return port_html
 
@@ -63,7 +69,7 @@ class Session:
         try:
             cell_html = port.render_cell(session, cell_position)
         except err_types.UserError as e:
-            self.notify_error(resp, session, e)
+            self.notify_error(resp, e)
 
         self.add_event(resp, "editor")
       
@@ -77,7 +83,7 @@ class Session:
         command_palette_html = command_palette.render(session)
         port_html = self.render_port_helper(resp, session)
         # render last in case set any notifications from previous steps
-        notification_html = notifications.render(session, False)
+        notification_html = notifications.render(False)
 
         body = render_template(
                 "partials/body.html",
@@ -120,7 +126,6 @@ class Session:
         resp = Response()
 
         command_palette.init(session)
-        notifications.init(session)
         viewer.init(session)
 
         body_html = self.render_body_helper(resp, session)
@@ -142,7 +147,7 @@ class Session:
 
         sheet.files.save()
 
-        self.notify_info(resp, session, "Saved file.")
+        self.notify_info(resp, "Saved file.")
 
         null_html = self.render_null_helper(session)
         resp.set_data(null_html)
@@ -203,7 +208,7 @@ class Session:
                 self.add_event(resp, f"cell-{row}-{col}")
             return True
         except (err_types.UserError) as e:
-            self.notify_error(resp, session, e)
+            self.notify_error(resp, e)
             return False
 
     def update_cell(self, session, cell_position, value):
@@ -211,7 +216,7 @@ class Session:
 
         success = self.update_cell_helper(resp, session, cell_position, value)
         if success:
-            self.notify_info(resp, session, "Updated cell value successfully.")
+            self.notify_info(resp, "Updated cell value successfully.")
 
         cell_html = self.render_cell_helper(resp, session, cell_position)
         resp.set_data(cell_html)
@@ -224,8 +229,7 @@ class Session:
         if success:
             # Clear errors, most likely caused by updating cell.
             # Note that this may clear unrelated errors too.
-            self.add_event(resp, "notification")
-            notifications.reset(session)
+            self.reset_notifications(resp)
 
         editor_html = editor.render(session)
         resp.set_data(editor_html)
@@ -297,7 +301,7 @@ class Session:
             selector.save(session, mode, sel)
 
         if notify:
-            self.notify_info(resp, session, "Selection {}.".format(
+            self.notify_info(resp, "Selection {}.".format(
                 "cleared" if reset else "registered"
             ))
 
@@ -320,7 +324,7 @@ class Session:
 
             self.update_selection_helper(resp, session, mode, sel)
         except (err_types.NotSupportedError) as e:
-            self.notify_error(resp, session, e)
+            self.notify_error(resp, e)
 
         selector_html = selector.render(session)
         resp.set_data(selector_html)
@@ -334,7 +338,7 @@ class Session:
 
             self.update_selection_helper(resp, session, mode, sel, update_port=True)
         except (err_types.NotSupportedError) as e:
-            self.notify_error(resp, session, e)
+            self.notify_error(resp, e)
 
         selector_html = selector.render(session)
         resp.set_data(selector_html)
@@ -355,7 +359,7 @@ class Session:
                 update_port=True,
             )
         except (err_types.UserError, err_types.OutOfBoundsError) as e:
-            self.notify_error(resp, session, e)
+            self.notify_error(resp, e)
 
         selector_html = selector.render(session)
         resp.set_data(selector_html)
@@ -404,9 +408,9 @@ class Session:
 
             bulk_editor.apply(session, name, modifications)
             self.add_event(resp, "update-port")
-            self.notify_info(resp, session, "Bulk operation complete.")
+            self.notify_info(resp, "Bulk operation complete.")
         except (err_types.NotSupportedError, err_types.DoesNotExistError) as e:
-            self.notify_error(resp, session, e)
+            self.notify_error(resp, e)
 
         bulk_editor_html = bulk_editor.render(session)
         resp.set_data(bulk_editor_html)
@@ -430,9 +434,9 @@ class Session:
 
             bulk_editor.apply(session, name, modifications)
             self.add_event(resp, "update-port")
-            self.notify_info(resp, session, "Bulk operation complete.")
+            self.notify_info(resp, "Bulk operation complete.")
         except (err_types.UserError) as e:
-            self.notify_error(resp, session, e)
+            self.notify_error(resp, e)
 
         bulk_editor_html = bulk_editor.render(session)
         resp.set_data(bulk_editor_html)
@@ -445,9 +449,9 @@ class Session:
 
         show_notifications = show == "on"
         if not show_notifications:
-            notifications.reset(session)
+            self.reset_notifications(resp)
 
-        notification_html = notifications.render(session, show_notifications)
+        notification_html = notifications.render(show_notifications)
         resp.set_data(notification_html)
         return resp
 
@@ -475,9 +479,9 @@ class Session:
             viewer.set_target(session)
 
             self.add_event(resp, "update-port")
-            self.notify_info(resp, session, "Targeted cell position.")
+            self.notify_info(resp, "Targeted cell position.")
         except err_types.NotSupportedError as e:
-            self.notify_error(resp, session, e)
+            self.notify_error(resp, e)
 
         cell_targeter_html = viewer.render_target(session)
         resp.set_data(cell_targeter_html)
@@ -489,7 +493,7 @@ class Session:
         viewer.move_upperleft(session, method)
 
         self.add_event(resp, "update-port")
-        self.notify_info(resp, session, "Moved port.")
+        self.notify_info(resp, "Moved port.")
 
         viewer_html = viewer.render(session)
         resp.set_data(viewer_html)
@@ -499,7 +503,7 @@ class Session:
         resp = Response()
 
         viewer.set_dimensions(session, nrows, ncols)
-        self.notify_info(resp, session, "Updated view dimensions.")
+        self.notify_info(resp, "Updated view dimensions.")
 
         port_html = self.render_port_helper(resp, session)
         resp.set_data(port_html)

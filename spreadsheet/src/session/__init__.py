@@ -16,7 +16,7 @@ import src.port as port
 import src.editor as editor
 import src.selector as selector
 import src.bulk_editor as bulk_editor
-import src.port.viewer as viewer
+import src.viewer as viewer
 
 
 class Session:
@@ -126,7 +126,7 @@ class Session:
         resp = Response()
 
         command_palette.state.init()
-        viewer.init(session)
+        viewer.state.init()
 
         body_html = self.render_body_helper(resp, session)
         resp.set_data(body_html)
@@ -490,7 +490,7 @@ class Session:
     def move_port(self, session, method):
         resp = Response()
 
-        viewer.move_upperleft(session, method)
+        viewer.move_upperleft(method)
 
         self.add_event(resp, "update-port")
         self.notify_info(resp, "Moved port.")
@@ -502,7 +502,7 @@ class Session:
     def update_dimensions(self, session, nrows, ncols):
         resp = Response()
 
-        viewer.set_dimensions(session, nrows, ncols)
+        viewer.state.set_dimensions(nrows, ncols)
         self.notify_info(resp, "Updated view dimensions.")
 
         port_html = self.render_port_helper(resp, session)

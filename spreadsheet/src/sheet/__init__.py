@@ -2,7 +2,7 @@ import numpy as np
 from typing import Any, Dict
 
 import src.errors.types as err_types
-import src.port.viewer as viewer
+import src.viewer as viewer
 import src.selector.types as sel_types
 
 import src.sheet.data as sheet_data
@@ -61,9 +61,9 @@ def get_all_cells_computed():
     return data
 
 
-def get_potential_dependents(session):
-    upperleft = viewer.get_upperleft(session)
-    nrows, ncols = viewer.get_dimensions(session)
+def get_potential_dependents():
+    upperleft = viewer.state.get_upperleft()
+    nrows, ncols = viewer.state.get_dimensions()
     bounds = sheet_data.get_bounds()
 
     viewable_formulas = []

@@ -1,5 +1,5 @@
 import src.port.renderer as renderer
-import src.port.viewer as viewer
+import src.viewer as viewer
 import src.sheet.data as sheet_data
 
 
@@ -18,8 +18,8 @@ def render_cell(
 
 
 def render(session, catch_failure=False):
-    upperleft = viewer.get_upperleft(session)
-    nrows, ncols = viewer.get_dimensions(session)
+    upperleft = viewer.state.get_upperleft()
+    nrows, ncols = viewer.state.get_dimensions()
     bounds = sheet_data.get_bounds()
 
     table = renderer.render_table(

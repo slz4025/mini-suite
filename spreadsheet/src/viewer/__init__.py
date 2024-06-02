@@ -6,45 +6,7 @@ import src.sheet.data as sheet_data
 import src.selector.state as sel_state
 import src.selector.types as sel_types
 
-
-def get_upperleft(session):
-    return sel_types.CellPosition(
-        row_index=sel_types.RowIndex(int(session["upper-left"]["row-index"])),
-        col_index=sel_types.ColIndex(int(session["upper-left"]["col-index"])),
-    )
-
-
-def set_upperleft(session, upperleft):
-    session["upper-left"] = {
-        "row-index": str(upperleft.row_index.value),
-        "col-index": str(upperleft.col_index.value),
-    }
-
-
-def get_dimensions(session):
-    nrows = int(session["dimensions"]["nrows"])
-    ncols = int(session["dimensions"]["ncols"])
-    return nrows, ncols
-
-
-def set_dimensions(session, nrows, ncols):
-    session["dimensions"] = {
-        "nrows": str(nrows),
-        "ncols": str(ncols),
-    }
-
-
-def get_move_increments(session):
-    mrows = int(session["move-increments"]["mrows"])
-    mcols = int(session["move-increments"]["mcols"])
-    return mrows, mcols
-
-
-def set_move_increments(session, mrows, mcols):
-    session["move-increments"] = {
-        "mrows": str(mrows),
-        "mcols": str(mcols),
-    }
+import src.viewer.state as state
 
 
 def get_selection_for_target(session):
@@ -65,7 +27,7 @@ def get_selection_for_target(session):
 
 
 def set_target(session):
-    nrows, ncols = get_dimensions(session)
+    nrows, ncols = state.get_dimensions()
 
     selection_mode = sel_state.get_mode(session)
     selection = get_selection_for_target(session)
@@ -84,19 +46,19 @@ def set_target(session):
     row_start = max(0, row_end - nrows)
     col_start = max(0, col_end - ncols)
 
-    upperleft = sel_types.CellPosition(
+    state.set_upperleft(sel_types.CellPosition(
         row_index=sel_types.RowIndex(row_start),
         col_index=sel_types.RowIndex(col_start),
-    )
-    set_upperleft(session, upperleft)
+    ))
 
 
-def in_view(session, cell_position):
-    upperleft = get_upperleft(session)
+def in_view(cell_position):
+    upperleft = state.get_upperleft()
+    nrows, ncols = state.get_dimensions()
+
     start_row = upperleft.row_index.value
     start_col = upperleft.col_index.value
 
-    nrows, ncols = get_dimensions(session)
     end_row = start_row + nrows
     end_col = start_col + ncols
 
@@ -107,8 +69,9 @@ def in_view(session, cell_position):
         and (col >= start_col and col < end_col)
 
 
-def move_upperleft(session, method):
-    mrows, mcols = get_move_increments(session)
+def move_upperleft(method):
+    upperleft = state.get_upperleft()
+    mrows, mcols = state.get_move_increments()
 
     if method == 'home':
         moved = sel_types.CellPosition(
@@ -132,7 +95,6 @@ def move_upperleft(session, method):
                     f"Unexpected method: {method}."
                 )
 
-        upperleft = get_upperleft(session)
         bounds = sheet_data.get_bounds()
 
         row = upperleft.row_index.value
@@ -150,7 +112,7 @@ def move_upperleft(session, method):
             col_index=sel_types.ColIndex(col),
         )
 
-    set_upperleft(session, moved)
+    state.set_upperleft(moved)
 
 
 def render_target(session):
@@ -177,9 +139,11 @@ def render_target(session):
 def render(session):
     show_help = command_palette.state.get_show_help()
     show_viewer = command_palette.state.get_show_viewer()
-    nrows, ncols = get_dimensions(session)
-    mrows, mcols = get_move_increments(session)
+    mrows, mcols = state.get_move_increments()
+    nrows, ncols = state.get_dimensions()
+
     target = render_target(session)
+
     return render_template(
             "partials/viewer.html",
             show_help=show_help,
@@ -190,19 +154,3 @@ def render(session):
             ncols=ncols,
             target=target,
     )
-
-
-def init(session):
-    upperleft = sel_types.CellPosition(
-        row_index=sel_types.RowIndex(0),
-        col_index=sel_types.ColIndex(0),
-    )
-    set_upperleft(session, upperleft)
-
-    nrows = Settings.DIM_PORT_ROWS
-    ncols = Settings.DIM_PORT_COLS
-    set_dimensions(session, nrows, ncols)
-
-    mrows = Settings.MOVE_INCR_ROWS
-    mcols = Settings.MOVE_INCR_COLS
-    set_move_increments(session, mrows, mcols)

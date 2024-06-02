@@ -2,7 +2,7 @@ from flask import render_template
 
 import src.bulk_editor as bulk_editor
 import src.editor as editor
-import src.port.viewer as viewer
+import src.viewer as viewer
 import src.selector as selector
 
 import src.command_palette.state as state

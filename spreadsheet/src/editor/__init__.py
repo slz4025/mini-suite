@@ -2,7 +2,7 @@ from flask import render_template
 
 import src.errors.types as err_types
 import src.command_palette as command_palette
-import src.port.viewer as viewer
+import src.viewer as viewer
 import src.selector.modes as sel_modes
 import src.selector.types as sel_types
 import src.sheet.data as sheet_data
@@ -24,7 +24,7 @@ def render(session, op_name_str=None):
             focused_cell = None
 
     if focused_cell is not None:
-        if not viewer.in_view(session, focused_cell):
+        if not viewer.in_view(focused_cell):
             state.reset_focused_cell_position(session)
             focused_cell = None
 

@@ -19,7 +19,7 @@ _session = None
 
 @app.route("/error")
 def render_error():
-    return _session.render_error(session, app.logger)
+    return _session.render_error(app.logger)
 
 
 @app.route("/")

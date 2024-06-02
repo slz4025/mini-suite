@@ -8,7 +8,7 @@ import os
 from settings import Settings
 
 import src.errors.types as err_types
-import src.errors.state as err_state
+import src.errors as errors
 import src.sheet as sheet
 import src.command_palette as command_palette
 import src.notifications as notifications
@@ -103,10 +103,10 @@ class Session:
             )
         return body_html
 
-    def render_error(self, session, logger):
+    def render_error(self, logger):
         resp = Response()
 
-        error_message = err_state.get_message(session)
+        error_message = errors.state.get_message()
         logger.error(error_message)
 
         user_error_msg = f"""

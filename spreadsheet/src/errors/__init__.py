@@ -1,5 +1,4 @@
 from flask import (
-    session,
     make_response,
     url_for,
 )
@@ -23,7 +22,7 @@ def handler(func):
         if error is not None:
             stack_trace = "".join(traceback.format_tb(error.__traceback__))
             error_message = f"ERROR: {error}\n{stack_trace}"
-            state.set_message(session, error_message)
+            state.set_message(error_message)
 
             # Print error in case can't redirect to page.
             # Seems like this usually happens when an unexpected bug

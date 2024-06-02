@@ -1,8 +1,8 @@
-def get_message(session):
-    if "error-message" not in session:
-        return None
-    return session["error-message"]
+error_message = None
 
+def get_message():
+    return error_message
 
-def set_message(session, error_message):
-    session["error-message"] = error_message
+def set_message(err_msg):
+    global error_message
+    error_message = err_msg

@@ -9,8 +9,8 @@ import src.command_palette.state as state
 
 
 def render(session):
-    show_command_palette = state.get_show(session)
-    show_help = state.get_show_help(session)
+    show_command_palette = state.get_show()
+    show_help = state.get_show_help()
 
     editor_html = editor.render(session)
     selector_html = selector.render(session)
@@ -27,19 +27,3 @@ def render(session):
             viewer=viewer_html,
     )
     return command_palette
-
-
-def init(session):
-    show = False
-    state.set_show(session, show)
-
-    show_help = False
-    state.set_show_help(session, show_help)
-    show_editor = False
-    state.set_show_editor(session, show_editor)
-    show_selector = False
-    state.set_show_selector(session, show_selector)
-    show_bulk_editor = False
-    state.set_show_bulk_editor(session, show_bulk_editor)
-    show_viewer = False
-    state.set_show_viewer(session, show_viewer)

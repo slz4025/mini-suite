@@ -1,8 +1,6 @@
 from flask import render_template
 
-from settings import Settings
-
-import src.command_palette.state as cp_state
+import src.command_palette as command_palette
 import src.errors.types as err_types
 import src.sheet.data as sheet_data
 import src.selector.state as sel_state
@@ -156,7 +154,7 @@ def move_upperleft(session, method):
 
 
 def render_target(session):
-    show_help = cp_state.get_show_help(session)
+    show_help = command_palette.state.get_show_help()
     target = get_selection_for_target(session)
 
     show_target = False
@@ -177,8 +175,8 @@ def render_target(session):
 
 
 def render(session):
-    show_help = cp_state.get_show_help(session)
-    show_viewer = cp_state.get_show_viewer(session)
+    show_help = command_palette.state.get_show_help()
+    show_viewer = command_palette.state.get_show_viewer()
     nrows, ncols = get_dimensions(session)
     mrows, mcols = get_move_increments(session)
     target = render_target(session)

@@ -77,7 +77,7 @@ class Session:
 
     def render_body_helper(self, resp, session):
         dark_mode = Settings.DARK_MODE
-        show_command_palette = command_palette.state.get_show(session)
+        show_command_palette = command_palette.state.get_show()
 
         null = self.render_null_helper(session)
         command_palette_html = command_palette.render(session)
@@ -125,7 +125,7 @@ class Session:
     def root(self, session):
         resp = Response()
 
-        command_palette.init(session)
+        command_palette.state.init()
         viewer.init(session)
 
         body_html = self.render_body_helper(resp, session)
@@ -135,8 +135,8 @@ class Session:
     def toggle_command_palette(self, session):
         resp = Response()
 
-        show_command_palette = command_palette.state.get_show(session)
-        command_palette.state.set_show(session, not show_command_palette)
+        show_command_palette = command_palette.state.get_show()
+        command_palette.state.set_show(not show_command_palette)
 
         body_html = self.render_body_helper(resp, session)
         resp.set_data(body_html)
@@ -156,8 +156,8 @@ class Session:
     def toggle_help(self, session):
         resp = Response()
 
-        show_help = command_palette.state.get_show_help(session)
-        command_palette.state.set_show_help(session, not show_help)
+        show_help = command_palette.state.get_show_help()
+        command_palette.state.set_show_help(not show_help)
 
         command_palette_html = command_palette.render(session)
         resp.set_data(command_palette_html)
@@ -238,8 +238,8 @@ class Session:
     def toggle_editor(self, session):
         resp = Response()
 
-        show_editor = command_palette.state.get_show_editor(session)
-        command_palette.state.set_show_editor(session, not show_editor)
+        show_editor = command_palette.state.get_show_editor()
+        command_palette.state.set_show_editor(not show_editor)
 
         editor_html = editor.render(session)
         resp.set_data(editor_html)
@@ -269,8 +269,8 @@ class Session:
     def toggle_selector(self, session):
         resp = Response()
 
-        show_selector = command_palette.state.get_show_selector(session)
-        command_palette.state.set_show_selector(session, not show_selector)
+        show_selector = command_palette.state.get_show_selector()
+        command_palette.state.set_show_selector(not show_selector)
 
         selector_html = selector.render(session)
         resp.set_data(selector_html)
@@ -385,8 +385,8 @@ class Session:
     def toggle_bulk_editor(self, session):
         resp = Response()
 
-        show_bulk_editor = command_palette.state.get_show_bulk_editor(session)
-        command_palette.state.set_show_bulk_editor(session, not show_bulk_editor)
+        show_bulk_editor = command_palette.state.get_show_bulk_editor()
+        command_palette.state.set_show_bulk_editor(not show_bulk_editor)
 
         bulk_editor_html = bulk_editor.render(session)
         resp.set_data(bulk_editor_html)
@@ -458,8 +458,8 @@ class Session:
     def toggle_viewer(self, session):
         resp = Response()
 
-        show_viewer = command_palette.state.get_show_viewer(session)
-        command_palette.state.set_show_viewer(session, not show_viewer)
+        show_viewer = command_palette.state.get_show_viewer()
+        command_palette.state.set_show_viewer(not show_viewer)
 
         viewer_html = viewer.render(session)
         resp.set_data(viewer_html)

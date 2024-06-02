@@ -1,6 +1,6 @@
 from flask import render_template
 
-import src.command_palette.state as cp_state
+import src.command_palette as command_palette
 import src.selector.helpers as helpers
 import src.selector.inputs as inputs
 import src.selector.modes as modes
@@ -41,8 +41,8 @@ def reset(session):
 
 
 def render(session):
-    show_help = cp_state.get_show_help(session)
-    show_selector = cp_state.get_show_selector(session)
+    show_help = command_palette.state.get_show_help()
+    show_selector = command_palette.state.get_show_selector()
 
     mode_options = inputs.options
 

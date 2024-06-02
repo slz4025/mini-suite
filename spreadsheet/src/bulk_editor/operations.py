@@ -3,7 +3,7 @@ from enum import Enum
 from flask import render_template
 from typing import Callable, List
 
-import src.command_palette.state as cp_state
+import src.command_palette as command_palette
 import src.errors.types as err_types
 import src.utils.form as form_helpers
 import src.selector.modes as sel_modes
@@ -411,7 +411,7 @@ def render_erase_inputs(session):
 
 
 def render_value_inputs(session):
-    show_help = cp_state.get_show_help(session)
+    show_help = command_palette.state.get_show_help()
     return render_template(
             "partials/bulk_editor/value.html",
             show_help=show_help,
@@ -503,7 +503,7 @@ def get_allowed_options(session):
 
 
 def render_option(session, option):
-    show_help = cp_state.get_show_help(session)
+    show_help = command_palette.state.get_show_help()
 
     if not show_help:
         return option.value

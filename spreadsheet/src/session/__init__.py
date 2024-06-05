@@ -468,7 +468,7 @@ class Session:
     def render_cell_targeter(self, session):
         resp = Response()
 
-        cell_targeter_html = viewer.render_target(session)
+        cell_targeter_html = viewer.target.render(session)
         resp.set_data(cell_targeter_html)
         return resp
 
@@ -476,14 +476,14 @@ class Session:
         resp = Response()
 
         try:
-            viewer.set_target(session)
+            viewer.target.set(session)
 
             self.add_event(resp, "update-port")
             self.notify_info(resp, "Targeted cell position.")
         except err_types.NotSupportedError as e:
             self.notify_error(resp, e)
 
-        cell_targeter_html = viewer.render_target(session)
+        cell_targeter_html = viewer.target.render(session)
         resp.set_data(cell_targeter_html)
         return resp
 

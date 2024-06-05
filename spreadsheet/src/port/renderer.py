@@ -1,7 +1,7 @@
 from flask import render_template
 
 import src.sheet as sheet
-import src.editor.state as ed_state
+import src.editor as editor
 import src.errors.types as err_types
 import src.selector.state as sel_state
 import src.selector.types as sel_types
@@ -61,7 +61,7 @@ def render_cell(
 ):
     sel_types.check_cell_position(cell_position)
 
-    editing = ed_state.is_editing(session, cell_position)
+    editing = editor.is_editing(cell_position)
     markdown = sheet.is_markdown(cell_position)
 
     renders = []

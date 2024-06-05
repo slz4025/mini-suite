@@ -11,21 +11,28 @@ import src.editor.state as state
 import src.editor.operations as operations
 
 
+def is_editing(cell_position):
+    focused_cell_position = state.get_focused_cell_position()
+    if focused_cell_position is None:
+        return False
+    return focused_cell_position.equals(cell_position)
+
+
 def render(session, op_name_str=None):
     show_help = command_palette.state.get_show_help()
     show_editor = command_palette.state.get_show_editor()
 
-    focused_cell = state.get_focused_cell_position(session)
+    focused_cell = state.get_focused_cell_position()
     if focused_cell is not None:
         try:
             sel_types.check_cell_position(focused_cell)
         except err_types.OutOfBoundsError:
-            state.reset_focused_cell_position(session)
+            state.reset_focused_cell_position()
             focused_cell = None
 
     if focused_cell is not None:
         if not viewer.in_view(focused_cell):
-            state.reset_focused_cell_position(session)
+            state.reset_focused_cell_position()
             focused_cell = None
 
     row = None

@@ -180,9 +180,9 @@ class Session:
     def focus_cell(self, session, cell_position):
         resp = Response()
 
-        prev_focused_cell_position = editor.state.get_focused_cell_position(session)
+        prev_focused_cell_position = editor.state.get_focused_cell_position()
 
-        editor.state.set_focused_cell_position(session, cell_position)
+        editor.state.set_focused_cell_position(cell_position)
 
         # Re-render former focused cell to show computed value.
         if prev_focused_cell_position is not None and prev_focused_cell_position != cell_position:

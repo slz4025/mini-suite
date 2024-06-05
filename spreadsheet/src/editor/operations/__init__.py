@@ -1,5 +1,3 @@
-from enum import Enum
-from dataclasses import dataclass
 from flask import render_template
 
 import src.errors.types as err_types
@@ -7,8 +5,41 @@ import src.selector.modes as sel_modes
 import src.selector.state as sel_state
 import src.selector.types as sel_types
 
+import src.editor.operations.types as types
 
-def get_show_operations(session):
+
+all_operations = {
+    types.Name.SUM: types.Operation(
+        name=types.Name.SUM,
+        template="=sum({sel_macro})",
+    ),
+    types.Name.AVERAGE: types.Operation(
+        name=types.Name.AVERAGE,
+        template="=float(sum([e for e in {sel_macro}])) "
+        + "/ float(len({sel_macro}))",
+    ),
+}
+
+
+def from_input(name_str):
+    match name_str:
+        case "Sum":
+            return types.Name.SUM
+        case "Average":
+            return types.Name.AVERAGE
+        case _:
+            raise err_types.UnknownOptionError(
+                f"Unknown operation: {name_str}."
+            )
+
+
+def get_operation(op_name):
+    if op_name not in all_operations:
+        raise err_types.UnknownOptionError(f"Unknown operation: {op_name.value}.")
+    return all_operations[op_name]
+
+
+def show_operations(session):
     sel = sel_state.get_selection(session)
     if isinstance(sel, sel_types.RowRange):
         return True
@@ -20,8 +51,7 @@ def get_show_operations(session):
         return False
 
 
-def get_selection_macro(session):
-    sel = sel_state.get_selection(session)
+def get_selection_macro(sel):
     if isinstance(sel, sel_types.RowRange):
         return "<R#{}:{}>".format(sel.start.value, sel.end.value-1)
     elif isinstance(sel, sel_types.ColRange):
@@ -39,60 +69,19 @@ def get_selection_macro(session):
         )
 
 
-class Name(Enum):
-    SUM = "Sum"
-    AVERAGE = "Average"
-
-
-@dataclass
-class Operation:
-    name: Name
-    template: str
-
-
-all_operations = {
-    Name.SUM: Operation(
-        name=Name.SUM,
-        template="=sum({sel_macro})",
-    ),
-    Name.AVERAGE: Operation(
-        name=Name.AVERAGE,
-        template="=float(sum([e for e in {sel_macro}])) "
-        + "/ float(len({sel_macro}))",
-    ),
-}
-
-
-def from_input(name_str):
-    match name_str:
-        case "Sum":
-            return Name.SUM
-        case "Average":
-            return Name.AVERAGE
-        case _:
-            raise err_types.UnknownOptionError(
-                f"Unknown operation: {name_str}."
-            )
-
-
-def get_operation(op_name):
-    if op_name not in all_operations:
-        raise err_types.UnknownOptionError(f"Unknown operation: {op_name.value}.")
-    return all_operations[op_name]
-
-
 def get_formula_with_selection(session, op_name):
     operation = get_operation(op_name)
     template = operation.template
 
-    sel_macro = get_selection_macro(session)
+    sel = sel_state.get_selection(session)
+    sel_macro = get_selection_macro(sel)
     formula = template.format(sel_macro=sel_macro)
     return formula
 
 
 def render(session):
-    show_operations = get_show_operations(session)
+    show_ops = show_operations(session)
     return render_template(
             "partials/editor/operations.html",
-            show_operations=show_operations,
+            show_operations=show_ops,
     )

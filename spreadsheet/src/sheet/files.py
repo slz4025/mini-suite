@@ -34,7 +34,7 @@ def load(data):
     for i in range(num_rows):
         for j in range(num_cols):
             entry = data[i, j]
-            if np.isnan(entry):
+            if not isinstance(entry, str) and np.isnan(entry):
               entry = None
             converted[i, j] = compiler.cast(entry)
     return converted

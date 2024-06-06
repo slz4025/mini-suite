@@ -29,6 +29,14 @@ def root():
     return _session.root()
 
 
+@app.route("/notification/<show>", methods=['PUT'])
+@errors.handler
+def render_notification(show):
+    assert htmx is not None
+
+    return _session.render_notification(show)
+
+
 @app.route("/command-palette/toggle", methods=['PUT'])
 @errors.handler
 def toggle_command_palette():
@@ -261,14 +269,6 @@ def apply_bulk_edit():
     form = request.form
 
     return _session.apply_bulk_edit(form)
-
-
-@app.route("/notification/<show>", methods=['PUT'])
-@errors.handler
-def render_notification(show):
-    assert htmx is not None
-
-    return _session.render_notification(show)
 
 
 @app.route("/viewer/toggle", methods=['PUT'])

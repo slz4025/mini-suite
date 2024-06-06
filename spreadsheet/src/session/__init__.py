@@ -131,6 +131,19 @@ class Session:
         resp.set_data(body_html)
         return resp
 
+    # TODO: Later, consider supporting an array of notifications
+    # with timeouts we maintain server-side.
+    def render_notification(self, show):
+        resp = Response()
+
+        show_notifications = show == "on"
+        if not show_notifications:
+            self.reset_notifications(resp)
+
+        notification_html = notifications.render(show_notifications)
+        resp.set_data(notification_html)
+        return resp
+
     def toggle_command_palette(self):
         resp = Response()
 
@@ -435,19 +448,6 @@ class Session:
 
         bulk_editor_html = bulk_editor.render()
         resp.set_data(bulk_editor_html)
-        return resp
-
-    # TODO: Later, consider supporting an array of notifications
-    # with timeouts we maintain server-side.
-    def render_notification(self, show):
-        resp = Response()
-
-        show_notifications = show == "on"
-        if not show_notifications:
-            self.reset_notifications(resp)
-
-        notification_html = notifications.render(show_notifications)
-        resp.set_data(notification_html)
         return resp
 
     def toggle_viewer(self):

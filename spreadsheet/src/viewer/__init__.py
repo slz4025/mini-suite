@@ -72,13 +72,13 @@ def move_upperleft(method):
     state.set_upperleft(moved)
 
 
-def render(session):
+def render():
     show_help = command_palette.state.get_show_help()
     show_viewer = command_palette.state.get_show_viewer()
     mrows, mcols = state.get_move_increments()
     nrows, ncols = state.get_dimensions()
 
-    target_html = target.render(session)
+    target_html = target.render()
 
     return render_template(
             "partials/viewer.html",

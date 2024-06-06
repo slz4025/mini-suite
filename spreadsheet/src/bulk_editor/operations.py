@@ -49,16 +49,13 @@ def from_input(name_str):
 class Operation:
     name: Name
     icon: str
-    allow_with_selection: Callable[[object, str], bool]
-    validate_and_parse: Callable[
-        [object, object],
-        List[modifications.Modification],
-    ]
-    apply: Callable[[object, List[modifications.Modification]], None]
-    render: Callable[[object], str]
+    allow_with_selection: Callable[[str], bool]
+    validate_and_parse: Callable[[object], List[modifications.Modification]]
+    apply: Callable[[List[modifications.Modification]], None]
+    render: Callable[[], str]
 
 
-def allow_cut_with_selection(session, mode):
+def allow_cut_with_selection(mode):
     selection_mode_options = [
         sel_types.Mode.ROWS,
         sel_types.Mode.COLUMNS,
@@ -67,7 +64,7 @@ def allow_cut_with_selection(session, mode):
     return mode in selection_mode_options
 
 
-def allow_copy_with_selection(session, mode):
+def allow_copy_with_selection(mode):
     selection_mode_options = [
         sel_types.Mode.ROWS,
         sel_types.Mode.COLUMNS,
@@ -76,13 +73,13 @@ def allow_copy_with_selection(session, mode):
     return mode in selection_mode_options
 
 
-def allow_paste_with_selection(session, mode):
+def allow_paste_with_selection(mode):
     copy_to_paste = {
         sel_types.Mode.ROWS: sel_types.Mode.ROW_INDEX,
         sel_types.Mode.COLUMNS: sel_types.Mode.COLUMN_INDEX,
         sel_types.Mode.BOX: sel_types.Mode.CELL_POSITION,
     }
-    copy_selection_mode = sel_state.get_buffer_mode(session)
+    copy_selection_mode = sel_state.get_buffer_mode()
 
     selection_mode_options = []
     if copy_selection_mode is None:
@@ -97,7 +94,7 @@ def allow_paste_with_selection(session, mode):
     return mode in selection_mode_options
 
 
-def allow_delete_with_selection(session, mode):
+def allow_delete_with_selection(mode):
     selection_mode_options = [
         sel_types.Mode.ROWS,
         sel_types.Mode.COLUMNS,
@@ -105,7 +102,7 @@ def allow_delete_with_selection(session, mode):
     return mode in selection_mode_options
 
 
-def allow_insert_with_selection(session, mode):
+def allow_insert_with_selection(mode):
     selection_mode_options = [
         sel_types.Mode.ROW_INDEX,
         sel_types.Mode.COLUMN_INDEX,
@@ -113,7 +110,7 @@ def allow_insert_with_selection(session, mode):
     return mode in selection_mode_options
 
 
-def allow_erase_with_selection(session, mode):
+def allow_erase_with_selection(mode):
     selection_mode_options = [
         sel_types.Mode.ROWS,
         sel_types.Mode.COLUMNS,
@@ -122,7 +119,7 @@ def allow_erase_with_selection(session, mode):
     return mode in selection_mode_options
 
 
-def allow_value_with_selection(session, mode):
+def allow_value_with_selection(mode):
     selection_mode_options = [
         sel_types.Mode.ROWS,
         sel_types.Mode.COLUMNS,
@@ -131,13 +128,13 @@ def allow_value_with_selection(session, mode):
     return mode in selection_mode_options
 
 
-def validate_and_parse_cut(session, form):
-    sel = sel_state.get_selection(session)
+def validate_and_parse_cut(form):
+    sel = sel_state.get_selection()
     if sel is None:
         raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_cut_with_selection(session, sel_mode):
+    if not allow_cut_with_selection(sel_mode):
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with cut operation."
@@ -161,13 +158,13 @@ def validate_and_parse_cut(session, form):
     return mods
 
 
-def validate_and_parse_copy(session, form):
-    sel = sel_state.get_selection(session)
+def validate_and_parse_copy(form):
+    sel = sel_state.get_selection()
     if sel is None:
         raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_copy_with_selection(session, sel_mode):
+    if not allow_copy_with_selection(sel_mode):
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with copy operation."
@@ -180,8 +177,8 @@ def validate_and_parse_copy(session, form):
     return [modification]
 
 
-def validate_and_parse_paste(session, form):
-    sel = sel_state.get_selection(session)
+def validate_and_parse_paste(form):
+    sel = sel_state.get_selection()
     if sel is None:
         raise err_types.DoesNotExistError("Selection does not exist.")
 
@@ -224,7 +221,7 @@ def validate_and_parse_paste(session, form):
             )
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_paste_with_selection(session, sel_mode):
+    if not allow_paste_with_selection(sel_mode):
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with paste operation."
@@ -237,13 +234,13 @@ def validate_and_parse_paste(session, form):
     return [modification]
 
 
-def validate_and_parse_delete(session, form):
-    sel = sel_state.get_selection(session)
+def validate_and_parse_delete(form):
+    sel = sel_state.get_selection()
     if sel is None:
         raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_delete_with_selection(session, sel_mode):
+    if not allow_delete_with_selection(sel_mode):
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with delete operation."
@@ -256,13 +253,13 @@ def validate_and_parse_delete(session, form):
     return [modification]
 
 
-def validate_and_parse_insert(session, form):
-    sel = sel_state.get_selection(session)
+def validate_and_parse_insert(form):
+    sel = sel_state.get_selection()
     if sel is None:
         raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_insert_with_selection(session, sel_mode):
+    if not allow_insert_with_selection(sel_mode):
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with insert operation."
@@ -283,13 +280,13 @@ def validate_and_parse_insert(session, form):
     return [modification]
 
 
-def validate_and_parse_erase(session, form):
-    sel = sel_state.get_selection(session)
+def validate_and_parse_erase(form):
+    sel = sel_state.get_selection()
     if sel is None:
         raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_erase_with_selection(session, sel_mode):
+    if not allow_erase_with_selection(sel_mode):
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with erase operation."
@@ -303,13 +300,13 @@ def validate_and_parse_erase(session, form):
     return [modification]
 
 
-def validate_and_parse_value(session, form):
-    sel = sel_state.get_selection(session)
+def validate_and_parse_value(form):
+    sel = sel_state.get_selection()
     if sel is None:
         raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_value_with_selection(session, sel_mode):
+    if not allow_value_with_selection(sel_mode):
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with value operation."
@@ -327,90 +324,90 @@ def validate_and_parse_value(session, form):
     return [modification]
 
 
-def apply_cut(session, mods):
+def apply_cut(mods):
     assert len(mods) == 2
     copy_mod = mods[0]
     assert copy_mod.operation == modifications.Type.COPY
     sel = copy_mod.input
 
-    sel_state.set_buffer_mode(session, sel)
+    sel_state.set_buffer_mode(sel)
     for modification in mods:
         modifications.apply_modification(modification)
 
 
-def apply_copy(session, mods):
+def apply_copy(mods):
     assert len(mods) == 1
     copy_mod = mods[0]
     assert copy_mod.operation == modifications.Type.COPY
     sel = copy_mod.input
 
-    sel_state.set_buffer_mode(session, sel)
+    sel_state.set_buffer_mode(sel)
     for modification in mods:
         modifications.apply_modification(modification)
 
 
-def apply_paste(session, mods):
+def apply_paste(mods):
     for modification in mods:
         modifications.apply_modification(modification)
 
 
-def apply_delete(session, mods):
+def apply_delete(mods):
     for modification in mods:
         modifications.apply_modification(modification)
 
 
-def apply_insert(session, mods):
+def apply_insert(mods):
     for modification in mods:
         modifications.apply_modification(modification)
 
 
-def apply_erase(session, mods):
+def apply_erase(mods):
     for modification in mods:
         modifications.apply_modification(modification)
 
 
-def apply_value(session, mods):
+def apply_value(mods):
     for modification in mods:
         modifications.apply_modification(modification)
 
 
-def render_cut_inputs(session):
+def render_cut_inputs():
     return render_template(
             "partials/bulk_editor/cut.html",
     )
 
 
-def render_copy_inputs(session):
+def render_copy_inputs():
     return render_template(
             "partials/bulk_editor/copy.html",
     )
 
 
-def render_paste_inputs(session):
+def render_paste_inputs():
     return render_template(
             "partials/bulk_editor/paste.html",
     )
 
 
-def render_delete_inputs(session):
+def render_delete_inputs():
     return render_template(
             "partials/bulk_editor/delete.html",
     )
 
 
-def render_insert_inputs(session):
+def render_insert_inputs():
     return render_template(
             "partials/bulk_editor/insert.html",
     )
 
 
-def render_erase_inputs(session):
+def render_erase_inputs():
     return render_template(
             "partials/bulk_editor/erase.html",
     )
 
 
-def render_value_inputs(session):
+def render_value_inputs():
     show_help = command_palette.state.get_show_help()
     return render_template(
             "partials/bulk_editor/value.html",
@@ -489,20 +486,20 @@ def get(name):
     return operation
 
 
-def get_allowed_options(session):
+def get_allowed_options():
     allowed_options = []
 
-    selection_mode = sel_state.get_mode(session)
+    selection_mode = sel_state.get_mode()
     if selection_mode is not None:
         for o in options:
             operation = get(o)
-            if operation.allow_with_selection(session, selection_mode):
+            if operation.allow_with_selection(selection_mode):
                 allowed_options.append(o)
 
     return allowed_options
 
 
-def render_option(session, option):
+def render_option(option):
     show_help = command_palette.state.get_show_help()
 
     if not show_help:
@@ -521,22 +518,22 @@ def render_option(session, option):
                 return option.value
 
 
-def get_modifications(session, name):
+def get_modifications(name):
     modifications = None
 
     match name:
         case Name.CUT:
             operation = get(name)
-            modifications = operation.validate_and_parse(session, None)
+            modifications = operation.validate_and_parse(None)
         case Name.COPY:
             operation = get(name)
-            modifications = operation.validate_and_parse(session, None)
+            modifications = operation.validate_and_parse(None)
         case Name.PASTE:
             operation = get(name)
-            modifications = operation.validate_and_parse(session, None)
+            modifications = operation.validate_and_parse(None)
         case Name.DELETE:
             operation = get(name)
-            modifications = operation.validate_and_parse(session, None)
+            modifications = operation.validate_and_parse(None)
         case _:
             raise err_types.NotSupportedError(
                 f"Cannot get modifications for operation {name.value} "
@@ -547,20 +544,20 @@ def get_modifications(session, name):
     return modifications
 
 
-def validate_and_parse(session, form):
+def validate_and_parse(form):
     name_str = form_helpers.extract(form, "operation")
     name = from_input(name_str)
     operation = get(name)
-    modifications = operation.validate_and_parse(session, form)
+    modifications = operation.validate_and_parse(form)
     return name, modifications
 
 
-def apply(session, name, modifications):
+def apply(name, modifications):
     operation = get(name)
-    operation.apply(session, modifications)
+    operation.apply(modifications)
 
 
-def render(session, name_str):
+def render(name_str):
     name = from_input(name_str)
     operation = get(name)
-    return operation.render(session)
+    return operation.render()

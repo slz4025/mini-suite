@@ -8,8 +8,8 @@ import src.selector.types as sel_types
 import src.sheet as sheet
 
 
-def make_render_selected(session):
-    sel = sel_state.get_selection(session)
+def make_render_selected():
+    sel = sel_state.get_selection()
 
     if isinstance(sel, sel_types.RowIndex):
         row_index = sel_types.RowIndex(sel.value - 1)
@@ -54,7 +54,6 @@ def make_render_selected(session):
 
 
 def render_cell(
-    session,
     cell_position,
     render_selected=None,
     catch_failure=False,
@@ -72,7 +71,7 @@ def render_cell(
         renders.append("markdown")
 
     if render_selected is None:
-        render_selected = make_render_selected(session)
+        render_selected = make_render_selected()
     render_selected_state = render_selected(cell_position)
     if "selected-current" in render_selected_state:
         input_render = "selected"
@@ -123,7 +122,7 @@ def render_cell(
     )
 
 
-def render_corner_header(session, render_selected=None):
+def render_corner_header(render_selected=None):
     cell_position = sel_types.CellPosition(
         row_index=sel_types.RowIndex(-1),
         col_index=sel_types.ColIndex(-1),
@@ -131,7 +130,7 @@ def render_corner_header(session, render_selected=None):
 
     renders = []
     if render_selected is None:
-        render_selected = make_render_selected(session)
+        render_selected = make_render_selected()
     render_selected_state = render_selected(cell_position)
     renders.append(render_selected_state)
 
@@ -142,7 +141,7 @@ def render_corner_header(session, render_selected=None):
     )
 
 
-def render_row_header(session, row_index, render_selected=None):
+def render_row_header(row_index, render_selected=None):
     cell_position = sel_types.CellPosition(
         row_index=row_index,
         col_index=sel_types.ColIndex(-1),
@@ -150,7 +149,7 @@ def render_row_header(session, row_index, render_selected=None):
 
     renders = []
     if render_selected is None:
-        render_selected = make_render_selected(session)
+        render_selected = make_render_selected()
     render_selected_state = render_selected(cell_position)
     renders.append(render_selected_state)
 
@@ -162,7 +161,7 @@ def render_row_header(session, row_index, render_selected=None):
     )
 
 
-def render_col_header(session, col_index, render_selected=None):
+def render_col_header(col_index, render_selected=None):
     cell_position = sel_types.CellPosition(
         row_index=sel_types.RowIndex(-1),
         col_index=col_index,
@@ -170,7 +169,7 @@ def render_col_header(session, col_index, render_selected=None):
 
     renders = []
     if render_selected is None:
-        render_selected = make_render_selected(session)
+        render_selected = make_render_selected()
     render_selected_state = render_selected(cell_position)
     renders.append(render_selected_state)
 
@@ -183,7 +182,6 @@ def render_col_header(session, col_index, render_selected=None):
 
 
 def render_row(
-    session,
     leftmost,
     ncols,
     bounds,
@@ -192,7 +190,6 @@ def render_row(
     catch_failure=False,
 ):
     header = render_row_header(
-        session,
         leftmost.row_index,
         render_selected=render_selected,
     )
@@ -203,7 +200,6 @@ def render_row(
         min(leftmost.col_index.value+ncols, bounds.col.value)
     ):
         cell = render_cell(
-            session,
             sel_types.CellPosition(
                 row_index=leftmost.row_index,
                 col_index=sel_types.ColIndex(col),
@@ -222,13 +218,12 @@ def render_row(
 
 
 def render_table_header(
-    session,
     upperleft,
     ncols,
     bounds,
     render_selected,
 ):
-    corner = render_corner_header(session, render_selected=render_selected)
+    corner = render_corner_header(render_selected=render_selected)
 
     header = []
     for col in range(
@@ -236,7 +231,6 @@ def render_table_header(
         min(upperleft.col_index.value+ncols, bounds.col.value)
     ):
         h = render_col_header(
-            session,
             sel_types.ColIndex(col),
             render_selected=render_selected,
         )
@@ -251,17 +245,15 @@ def render_table_header(
 
 
 def render_table(
-    session,
     upperleft,
     nrows,
     ncols,
     bounds,
     catch_failure=False,
 ):
-    render_selected = make_render_selected(session)
+    render_selected = make_render_selected()
 
     header = render_table_header(
-        session,
         upperleft,
         ncols,
         bounds,
@@ -274,7 +266,6 @@ def render_table(
         min(upperleft.row_index.value+nrows, bounds.row.value)
     ):
         tablerow = render_row(
-            session,
             sel_types.CellPosition(
                 row_index=sel_types.RowIndex(row),
                 col_index=upperleft.col_index,

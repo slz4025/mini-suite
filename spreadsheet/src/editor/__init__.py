@@ -18,7 +18,7 @@ def is_editing(cell_position):
     return focused_cell_position.equals(cell_position)
 
 
-def render(session, op_name_str=None):
+def render(op_name_str=None):
     show_help = command_palette.state.get_show_help()
     show_editor = command_palette.state.get_show_editor()
 
@@ -46,11 +46,11 @@ def render(session, op_name_str=None):
 
         if op_name_str is not None:
             op_name = operations.from_input(op_name_str)
-            data = operations.get_formula_with_selection(session, op_name)
+            data = operations.get_formula_with_selection(op_name)
         else:
             data = sheet.data.get_cell_value(focused_cell)
 
-    operations_html = operations.render(session)
+    operations_html = operations.render()
     return render_template(
         "partials/editor.html",
         show_help=show_help,

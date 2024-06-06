@@ -8,14 +8,14 @@ import src.selector as selector
 import src.command_palette.state as state
 
 
-def render(session):
+def render():
     show_command_palette = state.get_show()
     show_help = state.get_show_help()
 
-    editor_html = editor.render(session)
-    selector_html = selector.render(session)
-    bulk_editor_html = bulk_editor.render(session)
-    viewer_html = viewer.render(session)
+    editor_html = editor.render()
+    selector_html = selector.render()
+    bulk_editor_html = bulk_editor.render()
+    viewer_html = viewer.render()
 
     command_palette = render_template(
             "partials/command_palette.html",

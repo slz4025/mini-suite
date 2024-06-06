@@ -9,8 +9,8 @@ import src.selector.types as sel_types
 import src.viewer.state as state
 
 
-def get_selection(session):
-    sel = sel_state.get_selection(session)
+def get_selection():
+    sel = sel_state.get_selection()
     if isinstance(sel, sel_types.CellPosition):
         return sel
     elif isinstance(sel, sel_types.Box):
@@ -26,11 +26,11 @@ def get_selection(session):
         return None
 
 
-def set(session):
+def set():
     nrows, ncols = state.get_dimensions()
 
-    selection_mode = sel_state.get_mode(session)
-    selection = get_selection(session)
+    selection_mode = sel_state.get_mode()
+    selection = get_selection()
     if selection is None:
         raise err_types.NotSupportedError(
             "Centering requires a cell position selection. "
@@ -52,9 +52,9 @@ def set(session):
     ))
 
 
-def render(session):
+def render():
     show_help = command_palette.state.get_show_help()
-    target = get_selection(session)
+    target = get_selection()
 
     show_target = False
     row = None

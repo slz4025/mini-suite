@@ -39,8 +39,8 @@ def get_operation(op_name):
     return all_operations[op_name]
 
 
-def show_operations(session):
-    sel = sel_state.get_selection(session)
+def show_operations():
+    sel = sel_state.get_selection()
     if isinstance(sel, sel_types.RowRange):
         return True
     elif isinstance(sel, sel_types.ColRange):
@@ -69,18 +69,18 @@ def get_selection_macro(sel):
         )
 
 
-def get_formula_with_selection(session, op_name):
+def get_formula_with_selection(op_name):
     operation = get_operation(op_name)
     template = operation.template
 
-    sel = sel_state.get_selection(session)
+    sel = sel_state.get_selection()
     sel_macro = get_selection_macro(sel)
     formula = template.format(sel_macro=sel_macro)
     return formula
 
 
-def render(session):
-    show_ops = show_operations(session)
+def render():
+    show_ops = show_operations()
     return render_template(
             "partials/editor/operations.html",
             show_operations=show_ops,

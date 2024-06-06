@@ -140,7 +140,7 @@ def validate_and_parse(inp):
     return selection
 
 
-def render(session, mode, sel=None):
+def render(mode, sel=None):
     show_help = command_palette.state.get_show_help()
 
     row_index = ""

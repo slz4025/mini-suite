@@ -1,49 +1,44 @@
-import jsonpickle
-
 import src.selector.modes as modes
 
 
-def get_mode(session):
-    if "selection-mode" not in session:
-        return None
-    mode_str = session["selection-mode"]
-    mode = modes.from_input(mode_str)
-    return mode
+selection_mode = None
+selection = None
+buffer_selection_mode = None
 
 
-def set_mode(session, mode):
-    session["selection-mode"] = mode.value
+def get_mode():
+    return selection_mode
 
 
-def reset_mode(session):
-    del session["selection-mode"]
+def set_mode(_selection_mode):
+    global selection_mode
+    selection_mode = _selection_mode
 
 
-def get_buffer_mode(session):
-    if "buffer-selection-mode" not in session:
-        return None
-    mode_str = session["buffer-selection-mode"]
-    mode = modes.from_input(mode_str)
-    return mode
+def reset_mode():
+    global selection_mode
+    selection_mode = None
 
 
-def set_buffer_mode(session, sel):
+def get_buffer_mode():
+    return buffer_selection_mode
+
+
+def set_buffer_mode(sel):
+    global buffer_selection_mode
     mode = modes.from_selection(sel)
-    session["buffer-selection-mode"] = mode.value
+    buffer_selection_mode = mode.value
 
 
-def get_selection(session):
-    if "selection" not in session:
-        return None
-    pickled = session["selection"]
-    sel = jsonpickle.decode(pickled)
-    return sel
+def get_selection():
+    return selection
 
 
-def set_selection(session, sel):
-    pickled = jsonpickle.encode(sel)
-    session["selection"] = pickled
+def set_selection(sel):
+    global selection
+    selection = sel
 
 
-def reset_selection(session):
-    del session["selection"]
+def reset_selection():
+    global selection
+    selection = None

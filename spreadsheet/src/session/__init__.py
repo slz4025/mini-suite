@@ -45,29 +45,28 @@ class Session:
         self.add_event(resp, "notification")
         notifications.state.reset()
 
-    def render_null_helper(self, session):
+    def render_null_helper(self):
         return render_template("partials/null.html")
 
-    def render_port_helper(self, resp, session, show_errors=True):
-        port_html = port.render(session, catch_failure=True)
+    def render_port_helper(self, resp, show_errors=True):
+        port_html = port.render(catch_failure=True)
 
         try:
             if show_errors:
-                port_html = port.render(session)
+                port_html = port.render()
         except err_types.UserError as e:
             self.notify_error(resp, e)
 
         return port_html
 
-    def render_cell_helper(self, resp, session, cell_position):
+    def render_cell_helper(self, resp, cell_position):
         cell_html = port.render_cell(
-            session,
             cell_position,
             catch_failure=True,
         )
 
         try:
-            cell_html = port.render_cell(session, cell_position)
+            cell_html = port.render_cell(cell_position)
         except err_types.UserError as e:
             self.notify_error(resp, e)
 
@@ -75,13 +74,13 @@ class Session:
       
         return cell_html
 
-    def render_body_helper(self, resp, session):
+    def render_body_helper(self, resp):
         dark_mode = Settings.DARK_MODE
         show_command_palette = command_palette.state.get_show()
 
-        null = self.render_null_helper(session)
-        command_palette_html = command_palette.render(session)
-        port_html = self.render_port_helper(resp, session)
+        null = self.render_null_helper()
+        command_palette_html = command_palette.render()
+        port_html = self.render_port_helper(resp)
         # render last in case set any notifications from previous steps
         notification_html = notifications.render(False)
 
@@ -122,62 +121,62 @@ class Session:
         resp.set_data(user_error_msg)
         return resp
 
-    def root(self, session):
+    def root(self):
         resp = Response()
 
         command_palette.state.init()
         viewer.state.init()
 
-        body_html = self.render_body_helper(resp, session)
+        body_html = self.render_body_helper(resp)
         resp.set_data(body_html)
         return resp
 
-    def toggle_command_palette(self, session):
+    def toggle_command_palette(self):
         resp = Response()
 
         show_command_palette = command_palette.state.get_show()
         command_palette.state.set_show(not show_command_palette)
 
-        body_html = self.render_body_helper(resp, session)
+        body_html = self.render_body_helper(resp)
         resp.set_data(body_html)
         return resp
 
-    def save(self, session):
+    def save(self):
         resp = Response()
 
         sheet.files.save()
 
         self.notify_info(resp, "Saved file.")
 
-        null_html = self.render_null_helper(session)
+        null_html = self.render_null_helper()
         resp.set_data(null_html)
         return resp
 
-    def toggle_help(self, session):
+    def toggle_help(self):
         resp = Response()
 
         show_help = command_palette.state.get_show_help()
         command_palette.state.set_show_help(not show_help)
 
-        command_palette_html = command_palette.render(session)
+        command_palette_html = command_palette.render()
         resp.set_data(command_palette_html)
         return resp
 
-    def render_port(self, session):
+    def render_port(self):
         resp = Response()
 
-        port_html = self.render_port_helper(resp, session)
+        port_html = self.render_port_helper(resp)
         resp.set_data(port_html)
         return resp
 
-    def render_cell(self, session, cell_position):
+    def render_cell(self, cell_position):
         resp = Response()
 
-        cell_html = self.render_cell_helper(resp, session, cell_position)
+        cell_html = self.render_cell_helper(resp, cell_position)
         resp.set_data(cell_html)
         return resp
 
-    def focus_cell(self, session, cell_position):
+    def focus_cell(self, cell_position):
         resp = Response()
 
         prev_focused_cell_position = editor.state.get_focused_cell_position()
@@ -192,11 +191,11 @@ class Session:
 
         self.add_event(resp, 'editor')
 
-        cell_html = self.render_cell_helper(resp, session, cell_position)
+        cell_html = self.render_cell_helper(resp, cell_position)
         resp.set_data(cell_html)
         return resp
 
-    def update_cell_helper(self, resp, session, cell_position, value):
+    def update_cell_helper(self, resp, cell_position, value):
         try:
             sheet.update_cell_value(cell_position, value)
             dep_cells = sheet.get_potential_dependents()
@@ -211,84 +210,83 @@ class Session:
             self.notify_error(resp, e)
             return False
 
-    def update_cell(self, session, cell_position, value):
+    def update_cell(self, cell_position, value):
         resp = Response()
 
-        success = self.update_cell_helper(resp, session, cell_position, value)
+        success = self.update_cell_helper(resp, cell_position, value)
         if success:
             self.notify_info(resp, "Updated cell value successfully.")
 
-        cell_html = self.render_cell_helper(resp, session, cell_position)
+        cell_html = self.render_cell_helper(resp, cell_position)
         resp.set_data(cell_html)
         return resp
 
-    def sync_cell(self, session, cell_position, value):
+    def sync_cell(self, cell_position, value):
         resp = Response()
 
-        success = self.update_cell_helper(resp, session, cell_position, value)
+        success = self.update_cell_helper(resp, cell_position, value)
         if success:
             # Clear errors, most likely caused by updating cell.
             # Note that this may clear unrelated errors too.
             self.reset_notifications(resp)
 
-        editor_html = editor.render(session)
+        editor_html = editor.render()
         resp.set_data(editor_html)
         return resp
 
-    def toggle_editor(self, session):
+    def toggle_editor(self):
         resp = Response()
 
         show_editor = command_palette.state.get_show_editor()
         command_palette.state.set_show_editor(not show_editor)
 
-        editor_html = editor.render(session)
+        editor_html = editor.render()
         resp.set_data(editor_html)
         return resp
 
-    def render_editor_operations(self, session):
+    def render_editor_operations(self):
         resp = Response()
 
-        editor_operations_html = editor.operations.render(session)
+        editor_operations_html = editor.operations.render()
         resp.set_data(editor_operations_html)
         return resp
 
-    def preview_editor_operation(self, session, op_name_str):
+    def preview_editor_operation(self, op_name_str):
         resp = Response()
 
-        editor_html = editor.render(session, op_name_str=op_name_str)
+        editor_html = editor.render(op_name_str=op_name_str)
         resp.set_data(editor_html)
         return resp
 
-    def render_editor(self, session):
+    def render_editor(self):
         resp = Response()
 
-        editor_html = editor.render(session)
+        editor_html = editor.render()
         resp.set_data(editor_html)
         return resp
 
-    def toggle_selector(self, session):
+    def toggle_selector(self):
         resp = Response()
 
         show_selector = command_palette.state.get_show_selector()
         command_palette.state.set_show_selector(not show_selector)
 
-        selector_html = selector.render(session)
+        selector_html = selector.render()
         resp.set_data(selector_html)
         return resp
 
-    def render_selector_input(self, session, mode_str):
+    def render_selector_input(self, mode_str):
         resp = Response()
 
         mode = selector.modes.from_input(mode_str)
 
-        selector_input_html = selector.inputs.render(session, mode)
+        selector_input_html = selector.inputs.render(mode)
         resp.set_data(selector_input_html)
         return resp
 
     def update_selection_helper(
         self,
         resp,
-        session,
         mode,
         sel,
         notify=False,
@@ -296,9 +294,9 @@ class Session:
         update_port=False,
     ):
         if reset:
-            selector.reset(session)
+            selector.reset()
         else:
-            selector.save(session, mode, sel)
+            selector.save(mode, sel)
 
         if notify:
             self.notify_info(resp, "Selection {}.".format(
@@ -316,43 +314,42 @@ class Session:
         # Update showing viewer target feature.
         self.add_event(resp, "viewer-target")
 
-    def update_selection_from_endpoints(self, session, start, end):
+    def update_selection_from_endpoints(self, start, end):
         resp = Response()
 
         try:
             mode, sel = selector.compute_from_endpoints(start, end)
 
-            self.update_selection_helper(resp, session, mode, sel)
+            self.update_selection_helper(resp, mode, sel)
         except (err_types.NotSupportedError) as e:
             self.notify_error(resp, e)
 
-        selector_html = selector.render(session)
+        selector_html = selector.render()
         resp.set_data(selector_html)
         return resp
 
-    def move_selection(self, session, direction):
+    def move_selection(self, direction):
         resp = Response()
 
         try:
-            mode, sel = selector.compute_updated_selector(session, direction)
+            mode, sel = selector.compute_updated_selector(direction)
 
-            self.update_selection_helper(resp, session, mode, sel, update_port=True)
+            self.update_selection_helper(resp, mode, sel, update_port=True)
         except (err_types.NotSupportedError) as e:
             self.notify_error(resp, e)
 
-        selector_html = selector.render(session)
+        selector_html = selector.render()
         resp.set_data(selector_html)
         return resp
 
-    def update_selection(self, session, form):
+    def update_selection(self, form):
         resp = Response()
 
         try:
-            mode, sel = selector.validate_and_parse(session, form)
+            mode, sel = selector.validate_and_parse(form)
 
             self.update_selection_helper(
                 resp,
-                session,
                 mode,
                 sel,
                 notify=True,
@@ -361,16 +358,15 @@ class Session:
         except (err_types.UserError, err_types.OutOfBoundsError) as e:
             self.notify_error(resp, e)
 
-        selector_html = selector.render(session)
+        selector_html = selector.render()
         resp.set_data(selector_html)
         return resp
 
-    def delete_selection(self, session):
+    def delete_selection(self):
         resp = Response()
 
         self.update_selection_helper(
             resp,
-            session,
             None,
             None,
             notify=True,
@@ -378,73 +374,72 @@ class Session:
             update_port=True,
         )
 
-        selector_html = selector.render(session)
+        selector_html = selector.render()
         resp.set_data(selector_html)
         return resp
 
-    def toggle_bulk_editor(self, session):
+    def toggle_bulk_editor(self):
         resp = Response()
 
         show_bulk_editor = command_palette.state.get_show_bulk_editor()
         command_palette.state.set_show_bulk_editor(not show_bulk_editor)
 
-        bulk_editor_html = bulk_editor.render(session)
+        bulk_editor_html = bulk_editor.render()
         resp.set_data(bulk_editor_html)
         return resp
 
-    def render_bulk_editor_operation(self, session, name_str):
+    def render_bulk_editor_operation(self, name_str):
         resp = Response()
 
-        bulk_editor_operations_html = bulk_editor.operations.render(session, name_str)
+        bulk_editor_operations_html = bulk_editor.operations.render(name_str)
         resp.set_data(bulk_editor_operations_html)
         return resp
 
-    def apply_bulk_editor_operation(self, session, name_str):
+    def apply_bulk_editor_operation(self, name_str):
         resp = Response()
 
         try:
             name = bulk_editor.operations.from_input(name_str)
-            modifications = bulk_editor.get_modifications(session, name)
+            modifications = bulk_editor.get_modifications(name)
 
-            bulk_editor.apply(session, name, modifications)
+            bulk_editor.apply(name, modifications)
             self.add_event(resp, "update-port")
             self.notify_info(resp, "Bulk operation complete.")
         except (err_types.NotSupportedError, err_types.DoesNotExistError) as e:
             self.notify_error(resp, e)
 
-        bulk_editor_html = bulk_editor.render(session)
+        bulk_editor_html = bulk_editor.render()
         resp.set_data(bulk_editor_html)
         return resp
 
-    def render_bulk_editor(self, session):
+    def render_bulk_editor(self):
         resp = Response()
 
-        bulk_editor_html = bulk_editor.render(session)
+        bulk_editor_html = bulk_editor.render()
         resp.set_data(bulk_editor_html)
         return resp
 
-    def apply_bulk_edit(self, session, form):
+    def apply_bulk_edit(self, form):
         resp = Response()
 
         try:
             name, modifications = bulk_editor.validate_and_parse(
-                session,
                 form,
             )
 
-            bulk_editor.apply(session, name, modifications)
+            bulk_editor.apply(name, modifications)
             self.add_event(resp, "update-port")
             self.notify_info(resp, "Bulk operation complete.")
         except (err_types.UserError) as e:
             self.notify_error(resp, e)
 
-        bulk_editor_html = bulk_editor.render(session)
+        bulk_editor_html = bulk_editor.render()
         resp.set_data(bulk_editor_html)
         return resp
 
     # TODO: Later, consider supporting an array of notifications
     # with timeouts we maintain server-side.
-    def render_notification(self, session, show):
+    def render_notification(self, show):
         resp = Response()
 
         show_notifications = show == "on"
@@ -455,39 +450,39 @@ class Session:
         resp.set_data(notification_html)
         return resp
 
-    def toggle_viewer(self, session):
+    def toggle_viewer(self):
         resp = Response()
 
         show_viewer = command_palette.state.get_show_viewer()
         command_palette.state.set_show_viewer(not show_viewer)
 
-        viewer_html = viewer.render(session)
+        viewer_html = viewer.render()
         resp.set_data(viewer_html)
         return resp
 
-    def render_cell_targeter(self, session):
+    def render_cell_targeter(self):
         resp = Response()
 
-        cell_targeter_html = viewer.target.render(session)
+        cell_targeter_html = viewer.target.render()
         resp.set_data(cell_targeter_html)
         return resp
 
-    def apply_cell_target(self, session):
+    def apply_cell_target(self):
         resp = Response()
 
         try:
-            viewer.target.set(session)
+            viewer.target.set()
 
             self.add_event(resp, "update-port")
             self.notify_info(resp, "Targeted cell position.")
         except err_types.NotSupportedError as e:
             self.notify_error(resp, e)
 
-        cell_targeter_html = viewer.target.render(session)
+        cell_targeter_html = viewer.target.render()
         resp.set_data(cell_targeter_html)
         return resp
 
-    def move_port(self, session, method):
+    def move_port(self, method):
         resp = Response()
 
         viewer.move_upperleft(method)
@@ -495,16 +490,16 @@ class Session:
         self.add_event(resp, "update-port")
         self.notify_info(resp, "Moved port.")
 
-        viewer_html = viewer.render(session)
+        viewer_html = viewer.render()
         resp.set_data(viewer_html)
         return resp
 
-    def update_dimensions(self, session, nrows, ncols):
+    def update_dimensions(self, nrows, ncols):
         resp = Response()
 
         viewer.state.set_dimensions(nrows, ncols)
         self.notify_info(resp, "Updated view dimensions.")
 
-        port_html = self.render_port_helper(resp, session)
+        port_html = self.render_port_helper(resp)
         resp.set_data(port_html)
         return resp

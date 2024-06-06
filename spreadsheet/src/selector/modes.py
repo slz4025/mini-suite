@@ -1,32 +1,21 @@
-from enum import Enum
-
 import src.errors.types as err_types
 
 import src.selector.types as types
 
 
-class Mode(Enum):
-    ROW_INDEX = "Row"
-    COLUMN_INDEX = "Column"
-    CELL_POSITION = "Cell Position"
-    ROWS = "Rows"
-    COLUMNS = "Columns"
-    BOX = "Box"
-
-
 def from_selection(sel):
     if isinstance(sel, types.RowIndex):
-        return Mode.ROW_INDEX
+        return types.Mode.ROW_INDEX
     elif isinstance(sel, types.ColIndex):
-        return Mode.COLUMN_INDEX
+        return types.Mode.COLUMN_INDEX
     elif isinstance(sel, types.CellPosition):
-        return Mode.CELL_POSITION
+        return types.Mode.CELL_POSITION
     elif isinstance(sel, types.RowRange):
-        return Mode.ROWS
+        return types.Mode.ROWS
     elif isinstance(sel, types.ColRange):
-        return Mode.COLUMNS
+        return types.Mode.COLUMNS
     elif isinstance(sel, types.Box):
-        return Mode.BOX
+        return types.Mode.BOX
     else:
         sel_type = type(sel)
         raise err_types.UnknownOptionError(
@@ -37,17 +26,17 @@ def from_selection(sel):
 def from_input(mode_str):
     match mode_str:
         case "Row":
-            return Mode.ROW_INDEX
+            return types.Mode.ROW_INDEX
         case "Column":
-            return Mode.COLUMN_INDEX
+            return types.Mode.COLUMN_INDEX
         case "Cell Position":
-            return Mode.CELL_POSITION
+            return types.Mode.CELL_POSITION
         case "Rows":
-            return Mode.ROWS
+            return types.Mode.ROWS
         case "Columns":
-            return Mode.COLUMNS
+            return types.Mode.COLUMNS
         case "Box":
-            return Mode.BOX
+            return types.Mode.BOX
         case _:
             raise err_types.UnknownOptionError(
                 f"Unknown selection mode: {mode_str}."

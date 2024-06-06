@@ -1,9 +1,19 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import Union
 
 import src.errors.types as err_types
 import src.sheet as sheet
 import src.sheet.types as sheet_types
+
+
+class Mode(Enum):
+    ROW_INDEX = "Row"
+    COLUMN_INDEX = "Column"
+    CELL_POSITION = "Cell Position"
+    ROWS = "Rows"
+    COLUMNS = "Columns"
+    BOX = "Box"
 
 
 class RowIndex(sheet_types.Index):

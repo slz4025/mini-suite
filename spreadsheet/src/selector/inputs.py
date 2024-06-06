@@ -92,39 +92,39 @@ def get_box(inp):
 
 @dataclass
 class Form:
-    mode: modes.Mode
+    mode: types.Mode
     template: str
     validate_and_parse: Callable[[object], types.Selection]
 
 
 forms = {
-    modes.Mode.ROWS: Form(
-        mode=modes.Mode.ROWS,
+    types.Mode.ROWS: Form(
+        mode=types.Mode.ROWS,
         template="row_range.html",
         validate_and_parse=get_row_range,
     ),
-    modes.Mode.COLUMNS: Form(
-        mode=modes.Mode.COLUMNS,
+    types.Mode.COLUMNS: Form(
+        mode=types.Mode.COLUMNS,
         template="col_range.html",
         validate_and_parse=get_col_range,
     ),
-    modes.Mode.BOX: Form(
-        mode=modes.Mode.BOX,
+    types.Mode.BOX: Form(
+        mode=types.Mode.BOX,
         template="box.html",
         validate_and_parse=get_box,
     ),
-    modes.Mode.ROW_INDEX: Form(
-        mode=modes.Mode.ROW_INDEX,
+    types.Mode.ROW_INDEX: Form(
+        mode=types.Mode.ROW_INDEX,
         template="row_index.html",
         validate_and_parse=get_row_index,
     ),
-    modes.Mode.COLUMN_INDEX: Form(
-        mode=modes.Mode.COLUMN_INDEX,
+    types.Mode.COLUMN_INDEX: Form(
+        mode=types.Mode.COLUMN_INDEX,
         template="col_index.html",
         validate_and_parse=get_col_index,
     ),
-    modes.Mode.CELL_POSITION: Form(
-        mode=modes.Mode.CELL_POSITION,
+    types.Mode.CELL_POSITION: Form(
+        mode=types.Mode.CELL_POSITION,
         template="cell_position.html",
         validate_and_parse=get_cell_position,
     ),

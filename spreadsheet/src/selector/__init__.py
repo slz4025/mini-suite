@@ -55,17 +55,17 @@ def render(session):
         selection = state.get_selection(session)
 
     show_adjustments = saved_mode in [
-        modes.Mode.BOX,
-        modes.Mode.ROWS,
-        modes.Mode.COLUMNS
+        types.Mode.BOX,
+        types.Mode.ROWS,
+        types.Mode.COLUMNS
     ]
     show_row_adjustments = saved_mode in [
-        modes.Mode.BOX,
-        modes.Mode.ROWS,
+        types.Mode.BOX,
+        types.Mode.ROWS,
     ]
     show_col_adjustments = saved_mode in [
-        modes.Mode.BOX,
-        modes.Mode.COLUMNS,
+        types.Mode.BOX,
+        types.Mode.COLUMNS,
     ]
 
     inp = inputs.render(session, mode, selection)

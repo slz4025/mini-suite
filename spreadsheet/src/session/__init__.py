@@ -218,17 +218,17 @@ class Session:
                 row = dc.row_index.value
                 col = dc.col_index.value
                 self.add_event(resp, f"cell-{row}-{col}")
-            return True
+
+            # Clear errors, most likely caused by updating cell.
+            # Note that this may clear unrelated errors too.
+            self.reset_notifications(resp)
         except (err_types.UserError) as e:
             self.notify_error(resp, e)
-            return False
 
     def update_cell(self, cell_position, value):
         resp = Response()
 
-        success = self.update_cell_helper(resp, cell_position, value)
-        if success:
-            self.notify_info(resp, "Updated cell value successfully.")
+        self.update_cell_helper(resp, cell_position, value)
 
         cell_html = self.render_cell_helper(resp, cell_position)
         resp.set_data(cell_html)
@@ -237,11 +237,7 @@ class Session:
     def sync_cell(self, cell_position, value):
         resp = Response()
 
-        success = self.update_cell_helper(resp, cell_position, value)
-        if success:
-            # Clear errors, most likely caused by updating cell.
-            # Note that this may clear unrelated errors too.
-            self.reset_notifications(resp)
+        self.update_cell_helper(resp, cell_position, value)
 
         editor_html = editor.render()
         resp.set_data(editor_html)
@@ -311,6 +307,7 @@ class Session:
         else:
             selector.save(mode, sel)
 
+        # TODO: Only notify if user can't see selection.
         if notify:
             self.notify_info(resp, "Selection {}.".format(
                 "cleared" if reset else "registered"
@@ -417,6 +414,8 @@ class Session:
 
             bulk_editor.apply(name, modifications)
             self.add_event(resp, "update-port")
+
+            # TODO: Specify which operation was performed. 
             self.notify_info(resp, "Bulk operation complete.")
         except (err_types.NotSupportedError, err_types.DoesNotExistError) as e:
             self.notify_error(resp, e)
@@ -442,6 +441,8 @@ class Session:
 
             bulk_editor.apply(name, modifications)
             self.add_event(resp, "update-port")
+
+            # TODO: Specify which operation was performed. 
             self.notify_info(resp, "Bulk operation complete.")
         except (err_types.UserError) as e:
             self.notify_error(resp, e)
@@ -474,7 +475,6 @@ class Session:
             viewer.target.set()
 
             self.add_event(resp, "update-port")
-            self.notify_info(resp, "Targeted cell position.")
         except err_types.NotSupportedError as e:
             self.notify_error(resp, e)
 
@@ -488,7 +488,6 @@ class Session:
         viewer.move_upperleft(method)
 
         self.add_event(resp, "update-port")
-        self.notify_info(resp, "Moved port.")
 
         viewer_html = viewer.render()
         resp.set_data(viewer_html)
@@ -498,7 +497,6 @@ class Session:
         resp = Response()
 
         viewer.state.set_dimensions(nrows, ncols)
-        self.notify_info(resp, "Updated view dimensions.")
 
         port_html = self.render_port_helper(resp)
         resp.set_data(port_html)

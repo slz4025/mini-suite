@@ -93,6 +93,65 @@ div.selected-pointer {
   border: 0;
   padding: 0;
 }
+div.grid {
+  width: 100%;
+  height: 100%;
+
+  border: 1px solid var(--secondary-color);
+  margin: 0;
+  padding: 0;
+
+  display: grid;
+}
+div.grid-item {
+  /* let selected-bottomright pointer be position absolute to parent (this) */
+  position: relative;
+
+  /* indicate selection is the main action */
+  cursor: crosshair;
+
+  border: 1px solid var(--secondary-color);
+  margin: 0;
+  padding: 0.5rem;
+}
+div.corner {
+}
+div.row {
+  border-right: 1px solid var(--main-color);
+
+  text-align: right;
+}
+div.col {
+  border-bottom: 1px solid var(--main-color);
+
+  text-align: center;
+}
+div.cell {
+  text-align: center;
+
+  /* contents fit perfectly in cell */
+  padding: 0;
+}
+
+/* define following in order of precedence */
+div.markdown {
+  background-color: var(--markdown-background-color);
+}
+div.selected-current {
+  background-color: var(--selected-background-color);
+}
+div.selected-next-row {
+  border-bottom: 2px solid var(--selected-pointer-color);
+}
+div.selected-next-col {
+  border-right: 2px solid var(--selected-pointer-color);
+}
+div.failure {
+  background-color: var(--failure-background-color);
+}
+div.editing-current {
+  background-color: var(--editing-background-color);
+}
 div#command-palette {
   float: left;
   width: 20%;
@@ -239,97 +298,6 @@ button#command-palette-toggler {
   border: 1px solid var(--secondary-color);
 
   cursor: pointer;
-}
-
-table {
-  width: 100%;
-  height: 100%;
-  table-layout: fixed;
-  border-spacing: 0;
-  border: 1px solid var(--secondary-color);
-  margin: 0;
-}
-tbody {
-  /* Setting the below
-   * will cause the textareas in the table cells
-   * to not fill up the height of the table cells
-   * in Firefox on MacOS. */
-  /* height: 100%; */
-}
-tr:nth-child(even) {
-  background-color: var(--shade-color);
-}
-th {
-  /* let selected-bottomright pointer be position absolute to parent (this) */
-  position: relative;
-
-  border: 1px solid var(--secondary-color);
-  padding: 0.25rem;
-}
-th.corner {
-  width: 50%;
-}
-th.row {
-  width: 50%;
-  border-right: 1px solid var(--main-color);
-
-  /* indicate selection is the main action */
-  cursor: crosshair;
-
-  text-align: right;
-}
-th.col {
-  width: 100%;
-  border-bottom: 1px solid var(--main-color);
-
-  /* indicate selection is the main action */
-  cursor: crosshair;
-
-  text-align: center;
-}
-
-th.selected-next-row {
-  border-bottom: 2px solid var(--selected-pointer-color);
-}
-th.selected-next-col {
-  border-right: 2px solid var(--selected-pointer-color);
-}
-
-td {
-  /* let selected-bottomright pointer be position absolute to parent (this) */
-  position: relative;
-
-  /* indicate selection is the main action */
-  cursor: crosshair;
-
-  padding: 0;
-  border: 1px solid var(--secondary-color);
-
-  text-align: center;
-
-  /* clip long text */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-/* define following in order of precedence  precendence */
-td.markdown {
-  background-color: var(--markdown-background-color);
-}
-td.selected-current {
-  background-color: var(--selected-background-color);
-}
-td.selected-next-row {
-  border-bottom: 2px solid var(--selected-pointer-color);
-}
-td.selected-next-col {
-  border-right: 2px solid var(--selected-pointer-color);
-}
-td.failure {
-  background-color: var(--failure-background-color);
-}
-td.editing-current {
-  background-color: var(--editing-background-color);
 }
 
 h1.command-palette {

@@ -194,7 +194,7 @@ def render_row(
         render_selected=render_selected,
     )
 
-    cells = []
+    row = [header]
     for col in range(
         leftmost.col_index.value,
         min(leftmost.col_index.value+ncols, bounds.col.value)
@@ -207,17 +207,12 @@ def render_row(
             render_selected=render_selected,
             catch_failure=catch_failure,
         )
-        cells.append(cell)
+        row.append(cell)
 
-    return render_template(
-            "partials/port/row.html",
-            header=header,
-            data="\n".join(cells),
-            height=f"{min_height}%",
-    )
+    return row
 
 
-def render_table_header(
+def render_header(
     upperleft,
     ncols,
     bounds,
@@ -225,23 +220,18 @@ def render_table_header(
 ):
     corner = render_corner_header(render_selected=render_selected)
 
-    header = []
+    row = [corner]
     for col in range(
         upperleft.col_index.value,
         min(upperleft.col_index.value+ncols, bounds.col.value)
     ):
-        h = render_col_header(
+        header = render_col_header(
             sel_types.ColIndex(col),
             render_selected=render_selected,
         )
-        header.append(h)
+        row.append(header)
 
-    return render_template(
-            "partials/port/row.html",
-            header=corner,
-            data="\n".join(header),
-            height="1rem",
-    )
+    return row
 
 
 def render_table(
@@ -253,19 +243,19 @@ def render_table(
 ):
     render_selected = make_render_selected()
 
-    header = render_table_header(
+    header = render_header(
         upperleft,
         ncols,
         bounds,
         render_selected,
     )
 
-    tablerows = []
+    gridrows = []
     for row in range(
         upperleft.row_index.value,
         min(upperleft.row_index.value+nrows, bounds.row.value)
     ):
-        tablerow = render_row(
+        gridrow = render_row(
             sel_types.CellPosition(
                 row_index=sel_types.RowIndex(row),
                 col_index=upperleft.col_index,
@@ -276,10 +266,13 @@ def render_table(
             min_height=100.0 / float(nrows + 1),
             catch_failure=catch_failure,
         )
-        tablerows.append(tablerow)
+        gridrows.append(gridrow)
 
+    grid = [header] + gridrows
+    data = "\n".join(["\n".join(row) for row in grid])
     return render_template(
-            "partials/port/table.html",
-            data="\n".join(tablerows),
-            header=header,
+            "partials/port/grid.html",
+            data=data,
+            num_rows=len(grid),
+            num_cols=len(header),
     )

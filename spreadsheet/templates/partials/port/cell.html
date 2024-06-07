@@ -1,6 +1,6 @@
-<td
+<div
   id="cell-{{ row }}-{{ col }}"
-  class="{{ ' '.join(renders) }}"
+  class="grid-item cell {{ ' '.join(renders) }}"
   hx-put="/cell/{{ row }}/{{ col }}"
   hx-trigger="cell-{{ row }}-{{ col }} from:body"
   hx-target="this"
@@ -82,4 +82,4 @@
       }
     });
   </script>
-</td>
+</div>

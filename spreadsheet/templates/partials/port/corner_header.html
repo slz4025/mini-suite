@@ -1,6 +1,6 @@
-<th
+<div
   id="header-corner"
-  class="corner {{ ' '.join(renders) }}"
+  class="grid-item corner {{ ' '.join(renders) }}"
 >
   <div
     id="header-corner-pointer"
@@ -8,4 +8,4 @@
     style="display: {{ 'inherit' if 'selected-bottomright' in renders else 'none' }};">
   </div>
   {{ data|safe }}
-</th>
+</div>

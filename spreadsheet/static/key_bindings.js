@@ -18,20 +18,13 @@ window.addEventListener('keydown', function(event) {
         document.getElementById("navigator-toggler").click();
         break;
 
+      // save
+      case 's':
+        document.getElementById("files-save").click();
+        break;
+
       // selector
       case 'q':
-        document.getElementById("up-selector-button")?.click();
-        break;
-      case 'w':
-        document.getElementById("down-selector-button")?.click();
-        break;
-      case 'e':
-        document.getElementById("left-selector-button")?.click();
-        break;
-      case 'r':
-        document.getElementById("right-selector-button")?.click();
-        break;
-      case 'y':
         document.getElementById("clear-selector-button")?.click();
         break;
 
@@ -60,6 +53,15 @@ window.addEventListener('keydown', function(event) {
           });
         }
         break;
+      // On a Mac, this is done via Fn+Backspace (which might say "delete").
+      case 'Delete':
+        if (!editing()) {
+          htmx.ajax('POST', `/bulk-editor/apply/Delete`, {
+            target: `#bulk-editor`,
+            swap: "outerHTML",
+          });
+        }
+        break;
 
       // view
       case 'h':
@@ -68,32 +70,19 @@ window.addEventListener('keydown', function(event) {
       case 't':
         document.getElementById("navigator-target-button").click();
         break;
-      case 'i':
+
+      // TODO: consider letting the user configure the following, since these are system defaults on MacOS
+      case 'ArrowUp':
         document.getElementById("up-button").click();
         break;
-      case 'k':
+      case 'ArrowDown':
         document.getElementById("down-button").click();
         break;
-      case 'j':
+      case 'ArrowLeft':
         document.getElementById("left-button").click();
         break;
-      case 'l':
+      case 'ArrowRight':
         document.getElementById("right-button").click();
-        break;
-
-      // save
-      case 's':
-        document.getElementById("files-save").click();
-        break;
-    }
-  } else {
-    switch (event.key) {
-      // On a Mac, this is done via Fn+Backspace (which might say "delete").
-      case 'Delete':
-        htmx.ajax('POST', `/bulk-editor/apply/Delete`, {
-          target: `#bulk-editor`,
-          swap: "outerHTML",
-        });
         break;
     }
   }

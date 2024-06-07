@@ -258,6 +258,31 @@ def validate_and_parse_insert(form):
     if sel is None:
         raise err_types.DoesNotExistError("Selection does not exist.")
 
+    # In multi-element selections, it is possible
+    # for the start value(s) to be greater than the end value(s).
+    # In single-element selections, the end value(s) is always
+    # greater than the start value(s).
+    sel_mode = sel_modes.from_selection(sel)
+    if isinstance(sel, sel_types.RowRange):
+        if sel.end.value - sel.start.value == 1:
+            pass
+            sel = sel_types.RowIndex(sel.start.value)
+        else:
+            raise err_types.NotSupportedError(
+                f"Selection mode {sel_mode} "
+                "is not supported with insert operation. "
+                "Select a single row instead."
+            )
+    elif isinstance(sel, sel_types.ColRange):
+        if sel.end.value - sel.start.value == 1:
+            sel = sel_types.ColIndex(sel.start.value)
+        else:
+            raise err_types.NotSupportedError(
+                f"Selection mode {sel_mode} "
+                "is not supported with insert operation. "
+                "Select a single column instead."
+            )
+
     sel_mode = sel_modes.from_selection(sel)
     if not allow_insert_with_selection(sel_mode):
         raise err_types.NotSupportedError(
@@ -512,6 +537,8 @@ def render_option(option):
                 return "{} [Ctrl+C]".format(option.value)
             case Name.PASTE:
                 return "{} [Ctrl+V]".format(option.value)
+            case Name.INSERT:
+                return "{} [Ctrl+I]".format(option.value)
             case Name.DELETE:
                 return "{} [Delete]".format(option.value)
             case _:
@@ -531,6 +558,9 @@ def get_modifications(name):
         case Name.PASTE:
             operation = get(name)
             modifications = operation.validate_and_parse(None)
+        case Name.INSERT:
+            operation = get(name)
+            modifications = operation.validate_and_parse({"insert-number": "1"})
         case Name.DELETE:
             operation = get(name)
             modifications = operation.validate_and_parse(None)

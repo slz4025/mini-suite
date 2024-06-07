@@ -53,6 +53,12 @@ window.addEventListener('keydown', function(event) {
           });
         }
         break;
+      case 'i':
+        htmx.ajax('POST', `/bulk-editor/apply/Insert`, {
+          target: `#bulk-editor`,
+          swap: "outerHTML",
+        });
+        break;
       // On a Mac, this is done via Fn+Backspace (which might say "delete").
       case 'Delete':
         if (!editing()) {

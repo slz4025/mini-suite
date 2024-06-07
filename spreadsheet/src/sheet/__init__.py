@@ -93,7 +93,7 @@ def update_cell_value(cell_position, value):
         cell_position.row_index.value, cell_position.col_index.value
     ]
 
-    ptr[cell_position.row_index.value, cell_position.col_index.value] = compiler.cast(value)
+    ptr[cell_position.row_index.value, cell_position.col_index.value] = compiler.user_string_to_value(value)
 
     # Determine if new value is valid.
     # If not, rollback to previous value.

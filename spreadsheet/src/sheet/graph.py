@@ -31,7 +31,7 @@ def evaluate_dependencies(cell_position, node):
         register = int(instance.group("register"))
         pos = node.get_dependency(register)
         value = try_compute(pos)
-        compiled_value = compiler.dump_value(value)
+        compiled_value = compiler.value_to_code(value)
         return compiled_value
 
     formula = compiler.replace_instances(

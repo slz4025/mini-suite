@@ -1,8 +1,7 @@
+import csv
 from flask import render_template
-import json
 import os
 import numpy as np
-import pandas as pd
 
 import src.errors.types as err_types
 
@@ -21,55 +20,24 @@ def setup(filepath, debug):
     FILE_PATH = filepath
 
     if os.path.exists(FILE_PATH):
-        open()
+        open_file()
     else:
         sheet_data.init(debug)
 
 
-def load(data):
-    num_rows = data.shape[0]
-    num_cols = data.shape[1]
-
-    converted = np.empty((num_rows, num_cols), dtype=object)
-    for i in range(num_rows):
-        for j in range(num_cols):
-            entry = data[i, j]
-            if not isinstance(entry, str) and np.isnan(entry):
-              entry = None
-            converted[i, j] = compiler.cast(entry)
-    return converted
+# csv file to numpy array of Python values
+def open_file():
+    # set newline='' so can properly handle newlines in strings
+    with open(FILE_PATH, newline='') as file:
+        reader = csv.reader(file, delimiter=',', quoting=csv.QUOTE_ALL)
+        data = np.array([row for row in reader], dtype=object)
+        sheet_data.set(data)
 
 
-def dump(data):
-    num_rows = data.shape[0]
-    num_cols = data.shape[1]
-
-    converted = np.empty((num_rows, num_cols), dtype=object)
-    for i in range(num_rows):
-        for j in range(num_cols):
-            entry = data[i, j]
-            if entry is not None:
-                converted[i, j] = json.dumps(entry)
-            else:
-                converted[i, j] = ""
-    return converted
-
-
-def open():
-    df = pd.read_csv(
-        FILE_PATH,
-        skipinitialspace=True,
-        header=None,
-        dtype=object,
-    )
-    data = df.to_numpy()
-    converted = load(data)
-
-    sheet_data.set(converted)
-
-
+# numpy array of Python values to csv file
 def save():
-    data = sheet_data.get()
-    converted = dump(data)
-
-    np.savetxt(FILE_PATH, converted, delimiter=",", fmt="%s")
+    # set newline='' so can properly handle newlines in strings
+    with open(FILE_PATH, 'w', newline='') as file:
+        writer = csv.writer(file, delimiter=',', quoting=csv.QUOTE_ALL)
+        data = sheet_data.get()
+        writer.writerows(data)

@@ -347,12 +347,12 @@ def selections(cell_position, node):
     return node
 
 
-# Cast string to basic value if possible.
-# If user insists on the value being a string,
+# Cast user string to basic value if possible.
+# If user insists on a non-string value being a string,
 # which is much more unlikely,
 # they should input the value as a
 # a string in a formula, e.g. ="4.0".
-def cast(value):
+def user_string_to_value(value):
     if value == "":
         return None
 
@@ -374,7 +374,8 @@ def cast(value):
     return value
 
 
-def dump_value(value):
+# Cast Python value to representation in Python code.
+def value_to_code(value):
     if value == None:
         return "None"
     elif value == True:

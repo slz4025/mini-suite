@@ -253,11 +253,11 @@ def validate_and_parse_move(sels, form):
       curr_pos = target.value
       if curr_pos < sel.start.value:
         adjusted_target = target
-      elif curr_pos >= sel.end.value:
+      elif curr_pos > sel.end.value:
         adjusted_target = sel_types.RowIndex(curr_pos - num)
       else:
         raise err_types.UserError(
-          f"Cannot move selection to a target within itself."
+          f"Cannot move selection to a target within original bounds."
         )
     elif isinstance(sel, sel_types.ColRange):
       if isinstance(target, sel_types.ColIndex):
@@ -281,11 +281,11 @@ def validate_and_parse_move(sels, form):
       curr_pos = target.value
       if curr_pos < sel.start.value:
         adjusted_target = target
-      elif curr_pos >= sel.end.value:
+      elif curr_pos > sel.end.value:
         adjusted_target = sel_types.ColIndex(curr_pos - num)
       else:
         raise err_types.UserError(
-          f"Cannot move selection to a target within itself."
+          f"Cannot move selection to a target within original bounds."
         )
     else:
         raise err_types.NotSupportedError(

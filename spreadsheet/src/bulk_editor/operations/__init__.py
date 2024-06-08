@@ -781,17 +781,21 @@ def get_modifications(name):
             op = types.Name.MOVE
             operation = get(op)
 
+            new_pos = sel.end.value + 1
             if isinstance(sel, sel_types.RowRange):
-              target = sel_types.RowIndex(sel.end.value + 1)
+              if new_pos > bounds.row.value:
+                raise err_types.UserError("Cannot move forward anymore.")
+              target = sel_types.RowIndex(new_pos)
             elif isinstance(sel, sel_types.ColRange):
-              target = sel_types.ColIndex(sel.end.value + 1)
+              if new_pos > bounds.col.value:
+                raise err_types.UserError("Cannot move forward anymore.")
+              target = sel_types.ColIndex(new_pos)
             else:
               sel_mode = sel_modes.from_selection(sel)
               raise err_types.NotSupportedError(
                   f"Selection mode {sel_mode} "
                   "is not supported with move operation."
               )
-            # TODO: check index is valid
             sels = {"default": sel, "target": target}
 
             mods = operation.validate_and_parse(sels, None)
@@ -799,17 +803,21 @@ def get_modifications(name):
             op = types.Name.MOVE
             operation = get(op)
 
+            new_pos = sel.start.value - 1
             if isinstance(sel, sel_types.RowRange):
-              target = sel_types.RowIndex(sel.start.value - 1)
+              if new_pos < 0:
+                raise err_types.UserError("Cannot move backward anymore.")
+              target = sel_types.RowIndex(new_pos)
             elif isinstance(sel, sel_types.ColRange):
-              target = sel_types.ColIndex(sel.start.value - 1)
+              if new_pos < 0:
+                raise err_types.UserError("Cannot move backward anymore.")
+              target = sel_types.ColIndex(new_pos)
             else:
               sel_mode = sel_modes.from_selection(sel)
               raise err_types.NotSupportedError(
                   f"Selection mode {sel_mode} "
                   "is not supported with move operation."
               )
-            # TODO: check index is valid
             sels = {"default": sel, "target": target}
 
             mods = operation.validate_and_parse(sels, None)

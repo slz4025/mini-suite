@@ -120,9 +120,9 @@ def validate_and_parse_copy(sels, form):
 
 
 def validate_and_parse_paste(sels, form):
-    if "pointer" not in sels:
-        raise err_types.DoesNotExistError("Pointer does not exist.")
-    sel = sels["pointer"]
+    if "target" not in sels:
+        raise err_types.DoesNotExistError("Target does not exist.")
+    sel = sels["target"]
 
     # In multi-element selections, it is possible
     # for the start value(s) to be greater than the end value(s).
@@ -222,70 +222,70 @@ def validate_and_parse_move(sels, form):
     if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
     sel = sels["default"]
-    if "pointer" not in sels:
-        raise err_types.DoesNotExistError("Pointer does not exist.")
-    pointer = sels["pointer"]
+    if "target" not in sels:
+        raise err_types.DoesNotExistError("Target does not exist.")
+    target = sels["target"]
 
     sel_mode = sel_modes.from_selection(sel)
-    pointer_mode = sel_modes.from_selection(pointer)
+    target_mode = sel_modes.from_selection(target)
     num = None
-    adjusted_pointer = None
+    adjusted_target = None
     if isinstance(sel, sel_types.RowRange):
-      if isinstance(pointer, sel_types.RowIndex):
+      if isinstance(target, sel_types.RowIndex):
         pass
-      elif isinstance(pointer, sel_types.RowRange):
-          if pointer.end.value - pointer.start.value == 1:
-              pointer = sel_types.RowIndex(pointer.start.value)
+      elif isinstance(target, sel_types.RowRange):
+          if target.end.value - target.start.value == 1:
+              target = sel_types.RowIndex(target.start.value)
           else:
               raise err_types.NotSupportedError(
-                  f"Selection mode {pointer_mode} "
-                  "is not supported as pointer for move operation. "
+                  f"Selection mode {target_mode} "
+                  "is not supported as target for move operation. "
                   "Select a single row instead."
               )
       else:
         raise err_types.NotSupportedError(
-            f"Selection mode {pointer_mode} "
-            "is not supported as pointer for move operation."
+            f"Selection mode {target_mode} "
+            "is not supported as target for move operation."
         )
     
       num = sel.end.value - sel.start.value
       
-      curr_pos = pointer.value
+      curr_pos = target.value
       if curr_pos < sel.start.value:
-        adjusted_pointer = pointer
+        adjusted_target = target
       elif curr_pos >= sel.end.value:
-        adjusted_pointer = sel_types.RowIndex(curr_pos - num)
+        adjusted_target = sel_types.RowIndex(curr_pos - num)
       else:
         raise err_types.UserError(
-          f"Cannot move selection to a pointer within itself."
+          f"Cannot move selection to a target within itself."
         )
     elif isinstance(sel, sel_types.ColRange):
-      if isinstance(pointer, sel_types.ColIndex):
+      if isinstance(target, sel_types.ColIndex):
         pass
-      elif isinstance(pointer, sel_types.ColRange):
-          if pointer.end.value - pointer.start.value == 1:
-              pointer = sel_types.ColIndex(pointer.start.value)
+      elif isinstance(target, sel_types.ColRange):
+          if target.end.value - target.start.value == 1:
+              target = sel_types.ColIndex(target.start.value)
           else:
               raise err_types.NotSupportedError(
-                  f"Selection mode {pointer_mode} "
-                  "is not supported as pointer for move operation. "
+                  f"Selection mode {target_mode} "
+                  "is not supported as target for move operation. "
                   "Select a single column instead."
               )
       else:
         raise err_types.NotSupportedError(
-            f"Selection mode {pointer_mode} "
-            "is not supported as pointer for move operation."
+            f"Selection mode {target_mode} "
+            "is not supported as target for move operation."
         )
 
       num = sel.end.value - sel.start.value
-      curr_pos = pointer.value
+      curr_pos = target.value
       if curr_pos < sel.start.value:
-        adjusted_pointer = pointer
+        adjusted_target = target
       elif curr_pos >= sel.end.value:
-        adjusted_pointer = sel_types.ColIndex(curr_pos - num)
+        adjusted_target = sel_types.ColIndex(curr_pos - num)
       else:
         raise err_types.UserError(
-          f"Cannot move selection to a pointer within itself."
+          f"Cannot move selection to a target within itself."
         )
     else:
         raise err_types.NotSupportedError(
@@ -293,7 +293,7 @@ def validate_and_parse_move(sels, form):
             "is not supported with move operation."
         )
     assert num is not None
-    assert adjusted_pointer is not None
+    assert adjusted_target is not None
 
     mods = [
       modifications.Modification(
@@ -307,22 +307,22 @@ def validate_and_parse_move(sels, form):
       modifications.Modification(
           operation=modifications.Type.INSERT,
           input=modifications.InsertInput(
-              selection=adjusted_pointer,
+              selection=adjusted_target,
               number=num,
           )
       ),
       modifications.Modification(
           operation=modifications.Type.PASTE,
-          input=adjusted_pointer,
+          input=adjusted_target,
       ),
     ]
     return mods
 
 
 def validate_and_parse_insert(sels, form):
-    if "pointer" not in sels:
-        raise err_types.DoesNotExistError("Pointer does not exist.")
-    sel = sels["pointer"]
+    if "target" not in sels:
+        raise err_types.DoesNotExistError("Target does not exist.")
+    sel = sels["target"]
 
     # In multi-element selections, it is possible
     # for the start value(s) to be greater than the end value(s).
@@ -545,7 +545,7 @@ def render_copy_inputs():
 
 
 def render_paste_inputs():
-    use_sel = render_use_selection("paste", "pointer")
+    use_sel = render_use_selection("paste", "target")
     return render_template(
             "partials/bulk_editor/paste.html",
             use_sel=use_sel,
@@ -562,16 +562,16 @@ def render_delete_inputs():
 
 def render_move_inputs():
     use_sel_default = render_use_selection("move", "default")
-    use_sel_pointer = render_use_selection("move", "pointer")
+    use_sel_target = render_use_selection("move", "target")
     return render_template(
             "partials/bulk_editor/move.html",
             use_sel_default=use_sel_default,
-            use_sel_pointer=use_sel_pointer,
+            use_sel_target=use_sel_target,
     )
 
 
 def render_insert_inputs():
-    use_sel = render_use_selection("insert", "pointer")
+    use_sel = render_use_selection("insert", "target")
     return render_template(
             "partials/bulk_editor/insert.html",
             use_sel=use_sel,

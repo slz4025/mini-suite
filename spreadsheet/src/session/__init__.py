@@ -288,8 +288,6 @@ class Session:
 
         # Rerender what editor operations are allowed based on selection.
         self.add_event(resp, "editor-operations")
-        # Rerender what bulk-editor operations are allowed based on selection.
-        self.add_event(resp, "bulk-editor")
         # Update showing viewer target feature.
         self.add_event(resp, "viewer-target")
 
@@ -444,7 +442,8 @@ class Session:
 
             # TODO: Specify which operation was performed. 
             self.notify_info(resp, "Bulk operation complete.")
-        except (err_types.UserError) as e:
+        except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError) as e:
+            self.notify_error(resp, e)
             self.notify_error(resp, e)
 
         bulk_editor_html = bulk_editor.render()

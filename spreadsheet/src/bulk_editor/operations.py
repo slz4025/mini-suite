@@ -56,91 +56,9 @@ def from_input(name_str):
 class Operation:
     name: Name
     icon: str
-    allow_with_selection: Callable[[Optional[str]], bool]
     validate_and_parse: Callable[[object], List[modifications.Modification]]
     apply: Callable[[List[modifications.Modification]], None]
     render: Callable[[], str]
-
-
-def allow_cut_with_selection(mode):
-    selection_mode_options = [
-        sel_types.Mode.ROWS,
-        sel_types.Mode.COLUMNS,
-        sel_types.Mode.BOX,
-    ]
-    return mode in selection_mode_options
-
-
-def allow_copy_with_selection(mode):
-    selection_mode_options = [
-        sel_types.Mode.ROWS,
-        sel_types.Mode.COLUMNS,
-        sel_types.Mode.BOX,
-    ]
-    return mode in selection_mode_options
-
-
-def allow_paste_with_selection(mode):
-    copy_to_paste = {
-        sel_types.Mode.ROWS: sel_types.Mode.ROW_INDEX,
-        sel_types.Mode.COLUMNS: sel_types.Mode.COLUMN_INDEX,
-        sel_types.Mode.BOX: sel_types.Mode.CELL_POSITION,
-    }
-    copy_selection_mode = sel_state.get_buffer_mode()
-
-    selection_mode_options = []
-    if copy_selection_mode is None:
-        pass
-    elif copy_selection_mode not in copy_to_paste:
-        raise err_types.NotSupportedError(
-            f"Unexpected copy type {copy_selection_mode} "
-            "is not supported by paste."
-        )
-    else:
-        selection_mode_options = [copy_to_paste[copy_selection_mode]]
-    return mode in selection_mode_options
-
-
-def allow_delete_with_selection(mode):
-    selection_mode_options = [
-        sel_types.Mode.ROWS,
-        sel_types.Mode.COLUMNS,
-    ]
-    return mode in selection_mode_options
-
-
-def allow_insert_with_selection(mode):
-    selection_mode_options = [
-        sel_types.Mode.ROW_INDEX,
-        sel_types.Mode.COLUMN_INDEX,
-    ]
-    return mode in selection_mode_options
-
-
-def allow_insert_end_rows_with_selection(mode):
-    return True
-
-
-def allow_insert_end_cols_with_selection(mode):
-    return True
-
-
-def allow_erase_with_selection(mode):
-    selection_mode_options = [
-        sel_types.Mode.ROWS,
-        sel_types.Mode.COLUMNS,
-        sel_types.Mode.BOX,
-    ]
-    return mode in selection_mode_options
-
-
-def allow_value_with_selection(mode):
-    selection_mode_options = [
-        sel_types.Mode.ROWS,
-        sel_types.Mode.COLUMNS,
-        sel_types.Mode.BOX,
-    ]
-    return mode in selection_mode_options
 
 
 def validate_and_parse_cut(form):
@@ -149,7 +67,12 @@ def validate_and_parse_cut(form):
         raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_cut_with_selection(sel_mode):
+    selection_mode_options = [
+        sel_types.Mode.ROWS,
+        sel_types.Mode.COLUMNS,
+        sel_types.Mode.BOX,
+    ]
+    if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with cut operation."
@@ -179,7 +102,12 @@ def validate_and_parse_copy(form):
         raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_copy_with_selection(sel_mode):
+    selection_mode_options = [
+        sel_types.Mode.ROWS,
+        sel_types.Mode.COLUMNS,
+        sel_types.Mode.BOX,
+    ]
+    if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with copy operation."
@@ -236,7 +164,26 @@ def validate_and_parse_paste(form):
             )
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_paste_with_selection(sel_mode):
+
+    copy_to_paste = {
+        sel_types.Mode.ROWS: sel_types.Mode.ROW_INDEX,
+        sel_types.Mode.COLUMNS: sel_types.Mode.COLUMN_INDEX,
+        sel_types.Mode.BOX: sel_types.Mode.CELL_POSITION,
+    }
+    copy_selection_mode = sel_state.get_buffer_mode()
+
+    selection_mode_options = []
+    if copy_selection_mode is None:
+        pass
+    elif copy_selection_mode not in copy_to_paste:
+        raise err_types.NotSupportedError(
+            f"Unexpected copy type {copy_selection_mode} "
+            "is not supported by paste."
+        )
+    else:
+        selection_mode_options = [copy_to_paste[copy_selection_mode]]
+
+    if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with paste operation."
@@ -255,7 +202,11 @@ def validate_and_parse_delete(form):
         raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_delete_with_selection(sel_mode):
+    selection_mode_options = [
+        sel_types.Mode.ROWS,
+        sel_types.Mode.COLUMNS,
+    ]
+    if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with delete operation."
@@ -299,7 +250,11 @@ def validate_and_parse_insert(form):
             )
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_insert_with_selection(sel_mode):
+    selection_mode_options = [
+        sel_types.Mode.ROW_INDEX,
+        sel_types.Mode.COLUMN_INDEX,
+    ]
+    if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with insert operation."
@@ -364,7 +319,12 @@ def validate_and_parse_erase(form):
         raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_erase_with_selection(sel_mode):
+    selection_mode_options = [
+        sel_types.Mode.ROWS,
+        sel_types.Mode.COLUMNS,
+        sel_types.Mode.BOX,
+    ]
+    if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with erase operation."
@@ -384,7 +344,12 @@ def validate_and_parse_value(form):
         raise err_types.DoesNotExistError("Selection does not exist.")
 
     sel_mode = sel_modes.from_selection(sel)
-    if not allow_value_with_selection(sel_mode):
+    selection_mode_options = [
+        sel_types.Mode.ROWS,
+        sel_types.Mode.COLUMNS,
+        sel_types.Mode.BOX,
+    ]
+    if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
             "is not supported with value operation."
@@ -520,7 +485,6 @@ all_operations = {
     Name.CUT: Operation(
         name=Name.CUT,
         icon="✂",
-        allow_with_selection=allow_cut_with_selection,
         validate_and_parse=validate_and_parse_cut,
         apply=apply_cut,
         render=render_cut_inputs,
@@ -528,7 +492,6 @@ all_operations = {
     Name.COPY: Operation(
         name=Name.COPY,
         icon="⧉",
-        allow_with_selection=allow_copy_with_selection,
         validate_and_parse=validate_and_parse_copy,
         apply=apply_copy,
         render=render_copy_inputs,
@@ -536,7 +499,6 @@ all_operations = {
     Name.PASTE: Operation(
         name=Name.PASTE,
         icon="📋",
-        allow_with_selection=allow_paste_with_selection,
         validate_and_parse=validate_and_parse_paste,
         apply=apply_paste,
         render=render_paste_inputs,
@@ -544,7 +506,6 @@ all_operations = {
     Name.DELETE: Operation(
         name=Name.DELETE,
         icon="❌",
-        allow_with_selection=allow_delete_with_selection,
         validate_and_parse=validate_and_parse_delete,
         apply=apply_delete,
         render=render_delete_inputs,
@@ -552,7 +513,6 @@ all_operations = {
     Name.INSERT: Operation(
         name=Name.INSERT,
         icon="➕",
-        allow_with_selection=allow_insert_with_selection,
         validate_and_parse=validate_and_parse_insert,
         apply=apply_insert,
         render=render_insert_inputs,
@@ -560,7 +520,6 @@ all_operations = {
     Name.INSERT_END_ROWS: Operation(
         name=Name.INSERT_END_ROWS,
         icon="➕",
-        allow_with_selection=allow_insert_end_rows_with_selection,
         validate_and_parse=validate_and_parse_insert_end_rows,
         apply=apply_insert_end_rows,
         render=render_insert_end_rows_inputs,
@@ -568,7 +527,6 @@ all_operations = {
     Name.INSERT_END_COLS: Operation(
         name=Name.INSERT_END_COLS,
         icon="➕",
-        allow_with_selection=allow_insert_end_cols_with_selection,
         validate_and_parse=validate_and_parse_insert_end_cols,
         apply=apply_insert_end_cols,
         render=render_insert_end_cols_inputs,
@@ -576,7 +534,6 @@ all_operations = {
     Name.ERASE: Operation(
         name=Name.ERASE,
         icon="🗑",
-        allow_with_selection=allow_erase_with_selection,
         validate_and_parse=validate_and_parse_erase,
         apply=apply_erase,
         render=render_erase_inputs,
@@ -584,7 +541,6 @@ all_operations = {
     Name.VALUE: Operation(
         name=Name.VALUE,
         icon="½",
-        allow_with_selection=allow_value_with_selection,
         validate_and_parse=validate_and_parse_value,
         apply=apply_value,
         render=render_value_inputs,
@@ -602,16 +558,8 @@ def get(name):
     return operation
 
 
-def get_allowed_options():
-    allowed_options = []
-
-    selection_mode = sel_state.get_mode()
-    for o in options:
-        operation = get(o)
-        if operation.allow_with_selection(selection_mode):
-            allowed_options.append(o)
-
-    return allowed_options
+def get_all():
+    return options
 
 
 def render_option(option):

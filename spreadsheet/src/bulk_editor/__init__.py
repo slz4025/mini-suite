@@ -11,10 +11,9 @@ def render():
     default = None
     operation_html = None
 
-    options = operations.get_allowed_options()
-    if len(options) > 0:
-        default = options[0]
-        operation_html = operations.render(default.value)
+    options = operations.get_all()
+    default = options[0]
+    operation_html = operations.render(default.value)
 
     return render_template(
             "partials/bulk_editor.html",

@@ -396,10 +396,13 @@ class Session:
         resp.set_data(bulk_editor_html)
         return resp
 
-    def render_bulk_editor_operation(self, name_str):
+    def use_bulk_editor_operation(self, name_str):
         resp = Response()
 
-        bulk_editor_operations_html = bulk_editor.operations.render(name_str)
+        name = bulk_editor.operations.from_input(name_str)
+        bulk_editor.operations.set_current_operation(name)
+
+        bulk_editor_operations_html = bulk_editor.operations.render(name)
         resp.set_data(bulk_editor_operations_html)
         return resp
 
@@ -410,7 +413,7 @@ class Session:
             name = bulk_editor.operations.from_input(name_str)
             bulk_editor.apply_operation(name)
             self.add_event(resp, "update-port")
-            self.notify_info(resp, f"{name_str} complete.")
+            self.notify_info(resp, f"{name.value} complete.")
         except (err_types.NotSupportedError, err_types.DoesNotExistError) as e:
             self.notify_error(resp, e)
 
@@ -429,11 +432,9 @@ class Session:
         resp = Response()
 
         try:
-            import src.utils.form as form_helpers
-            name_str = form_helpers.extract(form, "operation")
-            name = bulk_editor.operations.from_input(name_str)
+            name = bulk_editor.operations.get_current_operation()
             bulk_editor.apply(name, form)
-            self.notify_info(resp, f"{name_str} complete.")
+            self.notify_info(resp, f"{name.value} complete.")
             self.add_event(resp, "update-port")
         except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError) as e:
             self.notify_error(resp, e)

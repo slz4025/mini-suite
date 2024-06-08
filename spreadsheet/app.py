@@ -233,16 +233,16 @@ def toggle_bulk_editor():
     return _session.toggle_bulk_editor()
 
 
-# Though this updates the shown operation form,
+# Though this updates the shown operation form and underlying state,
 # we use 'GET' in order to retrieve the request argument.
 @app.route("/bulk-editor/operation", methods=['GET'])
 @errors.handler
-def render_bulk_editor_operation():
+def use_bulk_editor_operation():
     assert htmx is not None
 
     name_str = request.args["operation"]
 
-    return _session.render_bulk_editor_operation(name_str)
+    return _session.use_bulk_editor_operation(name_str)
 
 
 # Bulk-editor operations that do not require further inputs.

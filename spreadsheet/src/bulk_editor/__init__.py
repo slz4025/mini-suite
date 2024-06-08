@@ -12,13 +12,13 @@ def render():
     operation_html = None
 
     options = operations.get_all()
-    default = options[0]
-    operation_html = operations.render(default.value)
+    operation = operations.get_current_operation()
+    operation_html = operations.render(operation)
 
     return render_template(
             "partials/bulk_editor.html",
             show_bulk_editor=show_bulk_editor,
-            operation=default.value if default else '',
+            operation=operation.value,
             operation_options={
                 o.value: operations.render_option(o) for o in options
             },

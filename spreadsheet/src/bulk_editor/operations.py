@@ -549,6 +549,16 @@ all_operations = {
 
 
 options = list(all_operations.keys())
+current_operation = Name.INSERT_END_ROWS
+
+
+def set_current_operation(op):
+  global current_operation
+  current_operation = op
+
+
+def get_current_operation():
+  return current_operation
 
 
 def get(name):
@@ -633,7 +643,6 @@ def apply(name, modifications):
     operation.apply(modifications)
 
 
-def render(name_str):
-    name = from_input(name_str)
+def render(name):
     operation = get(name)
     return operation.render()

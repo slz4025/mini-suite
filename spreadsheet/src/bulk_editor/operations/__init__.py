@@ -148,7 +148,7 @@ def validate_and_parse_paste(form):
         sel_types.Mode.COLUMNS: sel_types.Mode.COLUMN_INDEX,
         sel_types.Mode.BOX: sel_types.Mode.CELL_POSITION,
     }
-    copy_selection_mode = sel_state.get_buffer_mode()
+    copy_selection_mode = state.get_buffer_mode()
 
     selection_mode_options = []
     if copy_selection_mode is None:
@@ -351,7 +351,7 @@ def apply_cut(mods):
     assert copy_mod.operation == modifications.Type.COPY
     sel = copy_mod.input
 
-    sel_state.set_buffer_mode(sel)
+    state.set_buffer_mode(sel)
     for modification in mods:
         modifications.apply_modification(modification)
 
@@ -362,7 +362,7 @@ def apply_copy(mods):
     assert copy_mod.operation == modifications.Type.COPY
     sel = copy_mod.input
 
-    sel_state.set_buffer_mode(sel)
+    state.set_buffer_mode(sel)
     for modification in mods:
         modifications.apply_modification(modification)
 

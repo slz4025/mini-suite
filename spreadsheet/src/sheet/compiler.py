@@ -356,11 +356,6 @@ def user_string_to_value(value):
     if value == "":
         return None
 
-    if value == "False":
-        return False
-    if value == "True":
-        return True
-
     try:
         return int(value)
     except:
@@ -371,6 +366,11 @@ def user_string_to_value(value):
     except:
         pass
 
+    if value == "False":
+        return False
+    if value == "True":
+        return True
+
     return value
 
 
@@ -378,14 +378,14 @@ def user_string_to_value(value):
 def value_to_code(value):
     if value == None:
         return "None"
-    elif value == True:
-        return "True"
-    elif value == False:
-        return "False"
     elif isinstance(value, int):
         return f"{value}"
     elif isinstance(value, float):
         return f"{value}"
+    elif value == True:
+        return "True"
+    elif value == False:
+        return "False"
     else: # treat as string
         return f"\"{value}\""
 

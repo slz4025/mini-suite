@@ -11,14 +11,14 @@
     class="icon"
     hx-post="/viewer/target"
     hx-trigger="click"
-    hx-target="#viewer-target"
+    hx-target="#viewer"
     hx-swap="outerHTML"
-    title="target selected cell"
+    title="target selection"
     style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
   >
     ⌖
     {% if show_help %}
-    <span>Target Cell ({{ row }}, {{ col }}) [Ctrl+T]</span>
+    <span>Target Selection [Ctrl+T]</span>
     {% endif %}
   </button>
 </span>

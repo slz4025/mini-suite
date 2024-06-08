@@ -478,8 +478,8 @@ class Session:
         except err_types.NotSupportedError as e:
             self.notify_error(resp, e)
 
-        cell_targeter_html = viewer.target.render()
-        resp.set_data(cell_targeter_html)
+        viewer_html = viewer.render()
+        resp.set_data(viewer_html)
         return resp
 
     def move_port(self, method):

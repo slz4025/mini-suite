@@ -3,7 +3,6 @@ from flask import (
     request,
 )
 from flask_htmx import HTMX
-import secrets
 from waitress import serve
 
 import src.errors as errors
@@ -334,7 +333,5 @@ def update_dimensions():
 def start(port, path, debug):
     global _session
     _session = Session(path, debug)
-    # key for this session
-    app.secret_key = secrets.token_hex()
     app.logger.info("Starting server")
     serve(app, host='0.0.0.0', port=port)

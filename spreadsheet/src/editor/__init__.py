@@ -46,7 +46,7 @@ def render(op_name_str=None):
 
         if op_name_str is not None:
             op_name = operations.from_input(op_name_str)
-            data = operations.get_formula_with_selection(op_name)
+            data = operations.get_value(op_name)
         else:
             data = sheet.data.get_cell_value(focused_cell)
 

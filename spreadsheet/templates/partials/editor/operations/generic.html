@@ -1,0 +1,9 @@
+<button
+  id="editor-operation-{{ operation }}-button"
+  {{'' if show else 'disabled'}}
+  hx-put="/editor/operation/{{ operation }}"
+  hx-trigger="click"
+  hx-target="#editor"
+  hx-swap="outerHTML"
+  title="{{ operation }}"
+>{{ operation }}</button>

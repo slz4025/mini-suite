@@ -8,7 +8,7 @@ import src.selector.types as sel_types
 import src.editor.operations.types as types
 
 
-def show_sum():
+def show_selection():
     sel = sel_state.get_selection()
     if isinstance(sel, sel_types.RowRange):
         return True
@@ -20,53 +20,76 @@ def show_sum():
         return False
 
 
-def show_avg():
+def get_selection_macro():
     sel = sel_state.get_selection()
     if isinstance(sel, sel_types.RowRange):
-        return True
+        macro = "<R#{}:{}>".format(sel.start.value, sel.end.value-1)
     elif isinstance(sel, sel_types.ColRange):
-        return True
+        macro = "<C#{}:{}>".format(sel.start.value, sel.end.value-1)
     elif isinstance(sel, sel_types.Box):
-        return True
+        macro = "<R#{}:{}><C#{}:{}>".format(
+            sel.row_range.start.value, sel.row_range.end.value-1,
+            sel.col_range.start.value, sel.col_range.end.value-1,
+        )
     else:
-        return False
+        sel_mode = sel_modes.from_selection(sel)
+        raise err_types.NotSupportedError(
+            f"Selection mode {sel_mode.value} is not supported in formulas."
+        )
+    return macro
 
 
-def render_sum():
+def render_operation(op_name):
+    show = show_selection() if op_name == types.Name.SELECTION else True
     return render_template(
-            "partials/editor/operations/sum.html",
-            show=show_sum(),
-    )
-
-
-def render_avg():
-    return render_template(
-            "partials/editor/operations/avg.html",
-            show=show_avg(),
+            "partials/editor/operations/generic.html",
+            operation=op_name.value,
+            show=show,
     )
 
 
 all_operations = {
-    types.Name.SUM: types.Operation(
-        name=types.Name.SUM,
-        template="=sum({sel_macro})",
-        render=render_sum,
+    types.Name.TRUE: types.Operation(
+        name=types.Name.TRUE,
+        template=lambda: "True",
     ),
-    types.Name.AVERAGE: types.Operation(
-        name=types.Name.AVERAGE,
-        template="=float(sum([e for e in {sel_macro}])) "
-        + "/ float(len({sel_macro}))",
-        render=render_avg,
+    types.Name.FALSE: types.Operation(
+        name=types.Name.FALSE,
+        template=lambda: "False",
+    ),
+    types.Name.MARKDOWN: types.Operation(
+        name=types.Name.MARKDOWN,
+        template=lambda: "!**hello world**",
+    ),
+    types.Name.FORMULA: types.Operation(
+        name=types.Name.FORMULA,
+        template=lambda: "=1+2",
+    ),
+    types.Name.NEIGHBORS: types.Operation(
+        name=types.Name.NEIGHBORS,
+        template=lambda: "= <R#<ROW>-1:<ROW>-1><C#<COL>-1:<COL>> + <R#<ROW>-1:<ROW>><C#<COL>+1:<COL>+1> + <R#<ROW>+1:<ROW>+1><C#<COL>:<COL>+1> + <R#<ROW>:<ROW>+1><C#<COL>-1:<COL>-1>",
+    ),
+    types.Name.SELECTION: types.Operation(
+        name=types.Name.SELECTION,
+        template=lambda: "=" + get_selection_macro(),
     ),
 }
 
 
 def from_input(name_str):
     match name_str:
-        case "Sum":
-            return types.Name.SUM
-        case "Average":
-            return types.Name.AVERAGE
+        case "true":
+            return types.Name.TRUE
+        case "false":
+            return types.Name.FALSE
+        case "markdown":
+            return types.Name.MARKDOWN
+        case "formula":
+            return types.Name.FORMULA
+        case "neighbors":
+            return types.Name.NEIGHBORS
+        case "selection":
+            return types.Name.SELECTION
         case _:
             raise err_types.UnknownOptionError(
                 f"Unknown operation: {name_str}."
@@ -79,38 +102,15 @@ def get_operation(op_name):
     return all_operations[op_name]
 
 
-def get_selection_macro(sel):
-    if isinstance(sel, sel_types.RowRange):
-        return "<R#{}:{}>".format(sel.start.value, sel.end.value-1)
-    elif isinstance(sel, sel_types.ColRange):
-        return "<C#{}:{}>".format(sel.start.value, sel.end.value-1)
-    elif isinstance(sel, sel_types.Box):
-        return "<R#{}:{}><C#{}:{}>".format(
-            sel.row_range.start.value, sel.row_range.end.value-1,
-            sel.col_range.start.value, sel.col_range.end.value-1,
-        )
-    else:
-        sel_mode = sel_modes.from_selection(sel)
-        raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode.value} is not supported in formulas."
-        )
-
-
-def get_formula_with_selection(op_name):
+def get_value(op_name):
     operation = get_operation(op_name)
-    template = operation.template
-
-    sel = sel_state.get_selection()
-    sel_macro = get_selection_macro(sel)
-    formula = template.format(sel_macro=sel_macro)
-    return formula
+    value = operation.template()
+    return value
 
 
 def render():
-    sum_html = all_operations[types.Name.SUM].render()
-    avg_html = all_operations[types.Name.AVERAGE].render()
+    operations_html = "\n".join([render_operation(op_name) for op_name in all_operations])
     return render_template(
             "partials/editor/operations.html",
-            sum=sum_html,
-            avg=avg_html,
+            operations=operations_html,
     )

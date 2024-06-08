@@ -4,12 +4,15 @@ from typing import Callable
 
 
 class Name(Enum):
-    SUM = "Sum"
-    AVERAGE = "Average"
+    TRUE = "true"
+    FALSE = "false"
+    MARKDOWN = "markdown"
+    FORMULA = "formula"
+    NEIGHBORS = "neighbors"
+    SELECTION = "selection"
 
 
 @dataclass
 class Operation:
     name: Name
-    template: str
-    render: Callable[[], str]
+    template: Callable[[], str]

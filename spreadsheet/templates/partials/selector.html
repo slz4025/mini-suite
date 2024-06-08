@@ -54,6 +54,7 @@
         id="selector-submit"
         style="margin: 0.25rem;"
       />
+      {% if show_clear %}
       <button
           id="clear-selector-button"
           class="icon justify"
@@ -68,7 +69,8 @@
         {% if show_help %}
           <span>Clear [Ctrl+Q]</span>
         {% endif %}
-    </button>
+      </button>
+      {% endif %}
     </div>
 
     {% if show_adjustments %}

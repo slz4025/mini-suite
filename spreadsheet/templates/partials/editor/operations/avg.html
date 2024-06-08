@@ -1,0 +1,9 @@
+<button
+  id="editor-operation-avg-button"
+  {{'' if show else 'disabled'}}
+  hx-put="/editor/operation/Average"
+  hx-trigger="click"
+  hx-target="#editor"
+  hx-swap="outerHTML"
+  title="average selection"
+>Average Selection</button>

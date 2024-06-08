@@ -5,21 +5,7 @@
   hx-trigger="editor-operations from:body"
   hx-target="this"
   hx-swap="outerHTML"
-  style="display: {{ 'inherit' if show_operations else 'none' }};"
 >
-  <button
-      hx-put="/editor/operation/Sum"
-      hx-trigger="click"
-      hx-target="#editor"
-      hx-swap="outerHTML"
-      title="sum selected cells"
-  >SUM</button>
-
-  <button
-      hx-put="/editor/operation/Average"
-      hx-trigger="click"
-      hx-target="#editor"
-      hx-swap="outerHTML"
-      title="average selected cells"
-  >AVG</button>
+  {{ sum|safe }}
+  {{ avg|safe }}
 </div>

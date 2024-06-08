@@ -1,5 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass
+from typing import Callable
 
 
 class Name(Enum):
@@ -11,3 +12,4 @@ class Name(Enum):
 class Operation:
     name: Name
     template: str
+    render: Callable[[], str]

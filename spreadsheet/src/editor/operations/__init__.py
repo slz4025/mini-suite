@@ -8,15 +8,55 @@ import src.selector.types as sel_types
 import src.editor.operations.types as types
 
 
+def show_sum():
+    sel = sel_state.get_selection()
+    if isinstance(sel, sel_types.RowRange):
+        return True
+    elif isinstance(sel, sel_types.ColRange):
+        return True
+    elif isinstance(sel, sel_types.Box):
+        return True
+    else:
+        return False
+
+
+def show_avg():
+    sel = sel_state.get_selection()
+    if isinstance(sel, sel_types.RowRange):
+        return True
+    elif isinstance(sel, sel_types.ColRange):
+        return True
+    elif isinstance(sel, sel_types.Box):
+        return True
+    else:
+        return False
+
+
+def render_sum():
+    return render_template(
+            "partials/editor/operations/sum.html",
+            show=show_sum(),
+    )
+
+
+def render_avg():
+    return render_template(
+            "partials/editor/operations/avg.html",
+            show=show_avg(),
+    )
+
+
 all_operations = {
     types.Name.SUM: types.Operation(
         name=types.Name.SUM,
         template="=sum({sel_macro})",
+        render=render_sum,
     ),
     types.Name.AVERAGE: types.Operation(
         name=types.Name.AVERAGE,
         template="=float(sum([e for e in {sel_macro}])) "
         + "/ float(len({sel_macro}))",
+        render=render_avg,
     ),
 }
 
@@ -37,18 +77,6 @@ def get_operation(op_name):
     if op_name not in all_operations:
         raise err_types.UnknownOptionError(f"Unknown operation: {op_name.value}.")
     return all_operations[op_name]
-
-
-def show_operations():
-    sel = sel_state.get_selection()
-    if isinstance(sel, sel_types.RowRange):
-        return True
-    elif isinstance(sel, sel_types.ColRange):
-        return True
-    elif isinstance(sel, sel_types.Box):
-        return True
-    else:
-        return False
 
 
 def get_selection_macro(sel):
@@ -80,8 +108,10 @@ def get_formula_with_selection(op_name):
 
 
 def render():
-    show_ops = show_operations()
+    sum_html = all_operations[types.Name.SUM].render()
+    avg_html = all_operations[types.Name.AVERAGE].render()
     return render_template(
             "partials/editor/operations.html",
-            show_operations=show_ops,
+            sum=sum_html,
+            avg=avg_html,
     )

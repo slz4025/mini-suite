@@ -34,22 +34,6 @@
     </span>
   </button>
   <button
-    id="editor-toggler"
-    class="command"
-    hx-put="/editor/toggle"
-    hx-trigger="click"
-    hx-target="#editor"
-    hx-swap="outerHTML"
-  >
-    <span>
-      ✎ EDIT
-      {% if show_help %}
-      [Ctrl+1]
-      {% endif %}
-    </span>
-  </button>
-  {{ editor|safe }}
-  <button
     id="selector-toggler"
     class="command"
     hx-put="/selector/toggle"
@@ -60,11 +44,27 @@
     <span>
       ✛ SELECT
       {% if show_help %}
-      [Ctrl+2]
+      [Ctrl+1]
       {% endif %}
     </span>
   </button>
   {{ selector|safe }}
+  <button
+    id="editor-toggler"
+    class="command"
+    hx-put="/editor/toggle"
+    hx-trigger="click"
+    hx-target="#editor"
+    hx-swap="outerHTML"
+  >
+    <span>
+      ✎ EDIT
+      {% if show_help %}
+      [Ctrl+2]
+      {% endif %}
+    </span>
+  </button>
+  {{ editor|safe }}
   <button
     id="bulk-editor-toggler"
     class="command"

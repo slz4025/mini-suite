@@ -128,38 +128,6 @@ def sync_cell(row, col):
     return _session.sync_cell(cell_position, value)
 
 
-@app.route("/editor/toggle", methods=['PUT'])
-@errors.handler
-def toggle_editor():
-    assert htmx is not None
-
-    return _session.toggle_editor()
-
-
-@app.route("/editor/operations", methods=['PUT'])
-@errors.handler
-def render_editor_operations():
-    assert htmx is not None
-
-    return _session.render_editor_operations()
-
-
-@app.route("/editor/operation/<op_name_str>", methods=['PUT'])
-@errors.handler
-def preview_editor_operation(op_name_str):
-    assert htmx is not None
-
-    return _session.preview_editor_operation(op_name_str)
-
-
-@app.route("/editor", methods=['PUT'])
-@errors.handler
-def render_editor():
-    assert htmx is not None
-
-    return _session.render_editor()
-
-
 @app.route("/selector/toggle", methods=['PUT'])
 @errors.handler
 def toggle_selector():
@@ -223,6 +191,38 @@ def delete_selection():
     assert htmx is not None
 
     return _session.delete_selection()
+
+
+@app.route("/editor/toggle", methods=['PUT'])
+@errors.handler
+def toggle_editor():
+    assert htmx is not None
+
+    return _session.toggle_editor()
+
+
+@app.route("/editor/operations", methods=['PUT'])
+@errors.handler
+def render_editor_operations():
+    assert htmx is not None
+
+    return _session.render_editor_operations()
+
+
+@app.route("/editor/operation/<op_name_str>", methods=['PUT'])
+@errors.handler
+def preview_editor_operation(op_name_str):
+    assert htmx is not None
+
+    return _session.preview_editor_operation(op_name_str)
+
+
+@app.route("/editor", methods=['PUT'])
+@errors.handler
+def render_editor():
+    assert htmx is not None
+
+    return _session.render_editor()
 
 
 @app.route("/bulk-editor/toggle", methods=['PUT'])

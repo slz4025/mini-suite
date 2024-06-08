@@ -243,37 +243,6 @@ class Session:
         resp.set_data(editor_html)
         return resp
 
-    def toggle_editor(self):
-        resp = Response()
-
-        show_editor = command_palette.state.get_show_editor()
-        command_palette.state.set_show_editor(not show_editor)
-
-        editor_html = editor.render()
-        resp.set_data(editor_html)
-        return resp
-
-    def render_editor_operations(self):
-        resp = Response()
-
-        editor_operations_html = editor.operations.render()
-        resp.set_data(editor_operations_html)
-        return resp
-
-    def preview_editor_operation(self, op_name_str):
-        resp = Response()
-
-        editor_html = editor.render(op_name_str=op_name_str)
-        resp.set_data(editor_html)
-        return resp
-
-    def render_editor(self):
-        resp = Response()
-
-        editor_html = editor.render()
-        resp.set_data(editor_html)
-        return resp
-
     def toggle_selector(self):
         resp = Response()
 
@@ -386,6 +355,37 @@ class Session:
 
         selector_html = selector.render()
         resp.set_data(selector_html)
+        return resp
+
+    def toggle_editor(self):
+        resp = Response()
+
+        show_editor = command_palette.state.get_show_editor()
+        command_palette.state.set_show_editor(not show_editor)
+
+        editor_html = editor.render()
+        resp.set_data(editor_html)
+        return resp
+
+    def render_editor_operations(self):
+        resp = Response()
+
+        editor_operations_html = editor.operations.render()
+        resp.set_data(editor_operations_html)
+        return resp
+
+    def preview_editor_operation(self, op_name_str):
+        resp = Response()
+
+        editor_html = editor.render(op_name_str=op_name_str)
+        resp.set_data(editor_html)
+        return resp
+
+    def render_editor(self):
+        resp = Response()
+
+        editor_html = editor.render()
+        resp.set_data(editor_html)
         return resp
 
     def toggle_bulk_editor(self):

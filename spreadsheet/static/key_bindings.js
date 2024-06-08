@@ -6,10 +6,10 @@ window.addEventListener('keydown', function(event) {
         document.getElementById("help-toggler").click();
         break;
       case '1':
-        document.getElementById("editor-toggler").click();
+        document.getElementById("selector-toggler").click();
         break;
       case '2':
-        document.getElementById("selector-toggler").click();
+        document.getElementById("editor-toggler").click();
         break;
       case '3':
         document.getElementById("bulk-editor-toggler").click();

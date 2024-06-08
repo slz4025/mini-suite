@@ -27,7 +27,7 @@ def get_buffer_mode():
 def set_buffer_mode(sel):
     global buffer_selection_mode
     mode = modes.from_selection(sel)
-    buffer_selection_mode = mode.value
+    buffer_selection_mode = mode
 
 
 def get_selection():

@@ -6,3 +6,5 @@ class Settings(object):
     DIM_PORT_COLS = 10
     DIM_SHEET_ROWS = 20
     DIM_SHEET_COLS = 20
+    MIN_PORT = 15000
+    MAX_PORT = 15100

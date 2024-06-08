@@ -1,5 +1,27 @@
 import argparse
+import socket
 import sys
+
+from settings import Settings
+
+
+def find_port():
+  min_port = Settings.MIN_PORT
+  max_port = Settings.MAX_PORT
+
+  for port in range(min_port, max_port+1):
+    s = socket.socket()
+    success = True
+    try:
+      s.bind(("127.0.0.1", port))
+    except OSError:
+      success = False
+
+    if success:
+      s.close()
+      return port
+
+  raise Exception(f"Could not find usable port in range {min_port} to {max_port}.")
 
 
 if __name__ == "__main__":
@@ -12,7 +34,7 @@ if __name__ == "__main__":
             '-p',
             '--port',
             type=int,
-            default=5000,
+            default=0,
             help="port for application to run on",
             )
 
@@ -30,9 +52,15 @@ if __name__ == "__main__":
             )
 
     args = parser.parse_args(sys.argv[1:])
+
+    port = args.port
+    if args.port == 0:
+      port = find_port()
+    print(f"Serving on port {port}")
+
     import app
     app.start(
-            port=args.port,
+            port=port,
             path=args.path,
             debug=args.debug,
             )

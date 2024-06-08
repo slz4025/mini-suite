@@ -4,3 +4,5 @@ class Config(object):
 
     # SETTINGS
     DARK_MODE = False
+    MIN_PORT = 15000
+    MAX_PORT = 15100

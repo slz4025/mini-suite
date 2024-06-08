@@ -7,6 +7,7 @@ import src.selector.modes as sel_modes
 import src.selector.state as sel_state
 import src.selector.types as sel_types
 import src.sheet as sheet
+import src.sheet.types as sheet_types
 
 import src.bulk_editor.modifications as modifications
 import src.bulk_editor.operations.state as state
@@ -506,6 +507,31 @@ def apply_move(mods):
     for modification in mods:
         modifications.apply_modification(modification)
 
+    # update selection to wherever cells ended up
+    copy_mod = mods[0]
+    assert copy_mod.operation == modifications.Type.COPY
+    sel = copy_mod.input
+    
+    paste_mod = mods[-1]
+    assert paste_mod.operation == modifications.Type.PASTE
+    target = paste_mod.input
+
+    new_start = target.value
+    if isinstance(sel, sel_types.RowRange): 
+      num = sel.end.value - sel.start.value
+      new_sel = sel_types.RowRange(
+        start=sheet_types.Index(new_start),
+        end=sheet_types.Bound(new_start + num),
+      )
+      sel_state.set_selection(new_sel)
+    elif isinstance(sel, sel_types.ColRange): 
+      num = sel.end.value - sel.start.value
+      new_sel = sel_types.ColRange(
+        start=sheet_types.Index(new_start),
+        end=sheet_types.Bound(new_start + num),
+      )
+      sel_state.set_selection(new_sel)
+    
 
 def apply_insert(mods):
     for modification in mods:

@@ -174,7 +174,7 @@ def validate_and_parse_paste(form):
 
     selection_mode_options = []
     if copy_selection_mode is None:
-        pass
+        raise err_types.UserError("Cannot paste because nothing is copied to buffer yet.")
     elif copy_selection_mode not in copy_to_paste:
         raise err_types.NotSupportedError(
             f"Unexpected copy type {copy_selection_mode} "
@@ -186,7 +186,7 @@ def validate_and_parse_paste(form):
     if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
             f"Selection mode {sel_mode} "
-            "is not supported with paste operation."
+            "is not supported with paste operation for copied buffer."
         )
 
     modification = modifications.Modification(

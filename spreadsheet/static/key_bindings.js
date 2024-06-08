@@ -59,6 +59,18 @@ window.addEventListener('keydown', function(event) {
           swap: "outerHTML",
         });
         break;
+      case 'l':
+        htmx.ajax('POST', `/bulk-editor/apply/Insert End Rows`, {
+          target: `#bulk-editor`,
+          swap: "outerHTML",
+        });
+        break;
+      case 'L':
+        htmx.ajax('POST', `/bulk-editor/apply/Insert End Columns`, {
+          target: `#bulk-editor`,
+          swap: "outerHTML",
+        });
+        break;
       // On a Mac, this is done via Fn+Backspace (which might say "delete").
       case 'Delete':
         if (!editing()) {

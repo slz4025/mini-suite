@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from flask import render_template
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 import src.command_palette as command_palette
 import src.errors.types as err_types
@@ -9,6 +9,7 @@ import src.utils.form as form_helpers
 import src.selector.modes as sel_modes
 import src.selector.state as sel_state
 import src.selector.types as sel_types
+import src.sheet as sheet
 
 import src.bulk_editor.modifications as modifications
 
@@ -19,6 +20,8 @@ class Name(Enum):
     PASTE = 'Paste'
     DELETE = 'Delete'
     INSERT = 'Insert'
+    INSERT_END_ROWS = 'Insert End Rows'
+    INSERT_END_COLS = 'Insert End Columns'
     ERASE = 'Erase'
     VALUE = 'Value'
 
@@ -35,6 +38,10 @@ def from_input(name_str):
             return Name.DELETE
         case "Insert":
             return Name.INSERT
+        case "Insert End Rows":
+            return Name.INSERT_END_ROWS
+        case "Insert End Columns":
+            return Name.INSERT_END_COLS
         case "Erase":
             return Name.ERASE
         case "Value":
@@ -49,7 +56,7 @@ def from_input(name_str):
 class Operation:
     name: Name
     icon: str
-    allow_with_selection: Callable[[str], bool]
+    allow_with_selection: Callable[[Optional[str]], bool]
     validate_and_parse: Callable[[object], List[modifications.Modification]]
     apply: Callable[[List[modifications.Modification]], None]
     render: Callable[[], str]
@@ -108,6 +115,14 @@ def allow_insert_with_selection(mode):
         sel_types.Mode.COLUMN_INDEX,
     ]
     return mode in selection_mode_options
+
+
+def allow_insert_end_rows_with_selection(mode):
+    return True
+
+
+def allow_insert_end_cols_with_selection(mode):
+    return True
 
 
 def allow_erase_with_selection(mode):
@@ -305,6 +320,44 @@ def validate_and_parse_insert(form):
     return [modification]
 
 
+def validate_and_parse_insert_end_rows(form):
+    number = form_helpers.extract(form, "insert-number", name="number")
+    form_helpers.validate_nonempty(number, name="number")
+    number = form_helpers.parse_int(number, name="number")
+
+    bounds = sheet.data.get_bounds()
+    sel = sel_types.RowIndex(bounds.row.value)
+
+    inp = modifications.InsertInput(
+        selection=sel,
+        number=number,
+    )
+    modification = modifications.Modification(
+        operation=modifications.Type.INSERT,
+        input=inp,
+    )
+    return [modification]
+
+
+def validate_and_parse_insert_end_cols(form):
+    number = form_helpers.extract(form, "insert-number", name="number")
+    form_helpers.validate_nonempty(number, name="number")
+    number = form_helpers.parse_int(number, name="number")
+
+    bounds = sheet.data.get_bounds()
+    sel = sel_types.ColIndex(bounds.col.value)
+
+    inp = modifications.InsertInput(
+        selection=sel,
+        number=number,
+    )
+    modification = modifications.Modification(
+        operation=modifications.Type.INSERT,
+        input=inp,
+    )
+    return [modification]
+
+
 def validate_and_parse_erase(form):
     sel = sel_state.get_selection()
     if sel is None:
@@ -386,6 +439,16 @@ def apply_insert(mods):
         modifications.apply_modification(modification)
 
 
+def apply_insert_end_rows(mods):
+    for modification in mods:
+        modifications.apply_modification(modification)
+
+
+def apply_insert_end_cols(mods):
+    for modification in mods:
+        modifications.apply_modification(modification)
+
+
 def apply_erase(mods):
     for modification in mods:
         modifications.apply_modification(modification)
@@ -421,6 +484,18 @@ def render_delete_inputs():
 
 
 def render_insert_inputs():
+    return render_template(
+            "partials/bulk_editor/insert.html",
+    )
+
+
+def render_insert_end_rows_inputs():
+    return render_template(
+            "partials/bulk_editor/insert.html",
+    )
+
+
+def render_insert_end_cols_inputs():
     return render_template(
             "partials/bulk_editor/insert.html",
     )
@@ -482,6 +557,22 @@ all_operations = {
         apply=apply_insert,
         render=render_insert_inputs,
     ),
+    Name.INSERT_END_ROWS: Operation(
+        name=Name.INSERT_END_ROWS,
+        icon="➕",
+        allow_with_selection=allow_insert_end_rows_with_selection,
+        validate_and_parse=validate_and_parse_insert_end_rows,
+        apply=apply_insert_end_rows,
+        render=render_insert_end_rows_inputs,
+    ),
+    Name.INSERT_END_COLS: Operation(
+        name=Name.INSERT_END_COLS,
+        icon="➕",
+        allow_with_selection=allow_insert_end_cols_with_selection,
+        validate_and_parse=validate_and_parse_insert_end_cols,
+        apply=apply_insert_end_cols,
+        render=render_insert_end_cols_inputs,
+    ),
     Name.ERASE: Operation(
         name=Name.ERASE,
         icon="🗑",
@@ -515,11 +606,10 @@ def get_allowed_options():
     allowed_options = []
 
     selection_mode = sel_state.get_mode()
-    if selection_mode is not None:
-        for o in options:
-            operation = get(o)
-            if operation.allow_with_selection(selection_mode):
-                allowed_options.append(o)
+    for o in options:
+        operation = get(o)
+        if operation.allow_with_selection(selection_mode):
+            allowed_options.append(o)
 
     return allowed_options
 
@@ -539,6 +629,10 @@ def render_option(option):
                 return "{} [Ctrl+V]".format(option.value)
             case Name.INSERT:
                 return "{} [Ctrl+I]".format(option.value)
+            case Name.INSERT_END_ROWS:
+                return "{} [Ctrl+L]".format(option.value)
+            case Name.INSERT_END_COLS:
+                return "{} [Ctrl+Shift+L]".format(option.value)
             case Name.DELETE:
                 return "{} [Delete]".format(option.value)
             case _:
@@ -559,6 +653,12 @@ def get_modifications(name):
             operation = get(name)
             modifications = operation.validate_and_parse(None)
         case Name.INSERT:
+            operation = get(name)
+            modifications = operation.validate_and_parse({"insert-number": "1"})
+        case Name.INSERT_END_ROWS:
+            operation = get(name)
+            modifications = operation.validate_and_parse({"insert-number": "1"})
+        case Name.INSERT_END_COLS:
             operation = get(name)
             modifications = operation.validate_and_parse({"insert-number": "1"})
         case Name.DELETE:

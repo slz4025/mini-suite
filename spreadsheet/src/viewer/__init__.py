@@ -31,10 +31,7 @@ def move_upperleft(method):
     mrows, mcols = state.get_move_increments()
 
     if method == 'home':
-        moved = sel_types.CellPosition(
-            row_index=sel_types.RowIndex(0),
-            col_index=sel_types.ColIndex(0),
-        )
+        state.init()
     else:
         delta_row = 0
         delta_col = 0
@@ -68,8 +65,7 @@ def move_upperleft(method):
             row_index=sel_types.RowIndex(row),
             col_index=sel_types.ColIndex(col),
         )
-
-    state.set_upperleft(moved)
+        state.set_upperleft(moved)
 
 
 def render():

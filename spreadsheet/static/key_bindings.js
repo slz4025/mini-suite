@@ -1,6 +1,7 @@
-function in_focus() {
-    const activeId = document.activeElement.id;
-    return activeId !== "" && activeId !== undefined;
+function inputting() {
+    const activeEle = document.activeElement;
+    const nodeType = activeEle.nodeName;
+    return ["INPUT", "TEXTAREA"].includes(nodeType);
 }
 
 window.addEventListener('keydown', function(event) {
@@ -35,7 +36,7 @@ window.addEventListener('keydown', function(event) {
 
       // bulk edit
       case 'x':
-        if (!in_focus()) {
+        if (!inputting()) {
           htmx.ajax('POST', `/bulk-editor/apply/Cut`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
@@ -43,7 +44,7 @@ window.addEventListener('keydown', function(event) {
         }
         break;
       case 'c':
-        if (!in_focus()) {
+        if (!inputting()) {
           htmx.ajax('POST', `/bulk-editor/apply/Copy`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
@@ -51,7 +52,7 @@ window.addEventListener('keydown', function(event) {
         }
         break;
       case 'v':
-        if (!in_focus()) {
+        if (!inputting()) {
           htmx.ajax('POST', `/bulk-editor/apply/Paste`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
@@ -90,7 +91,7 @@ window.addEventListener('keydown', function(event) {
         break;
       // On a Mac, this is done via Fn+Backspace (which might say "delete").
       case 'Delete':
-        if (!in_focus()) {
+        if (!inputting()) {
           htmx.ajax('POST', `/bulk-editor/apply/Delete`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
@@ -110,22 +111,22 @@ window.addEventListener('keydown', function(event) {
     switch (event.key) {
       // move around port
       case 'ArrowUp':
-        if (!in_focus()) {
+        if (!inputting()) {
           document.getElementById("up-button").click();
         }
         break;
       case 'ArrowDown':
-        if (!in_focus()) {
+        if (!inputting()) {
           document.getElementById("down-button").click();
         }
         break;
       case 'ArrowLeft':
-        if (!in_focus()) {
+        if (!inputting()) {
           document.getElementById("left-button").click();
         }
         break;
       case 'ArrowRight':
-        if (!in_focus()) {
+        if (!inputting()) {
           document.getElementById("right-button").click();
         }
         break;

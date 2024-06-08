@@ -92,8 +92,7 @@ def get_selection_macro(sel):
     else:
         sel_mode = sel_modes.from_selection(sel)
         raise err_types.NotSupportedError(
-            "Selection mode {} is not supported in formulas."
-            .format(sel_mode.value)
+            f"Selection mode {sel_mode.value} is not supported in formulas."
         )
 
 

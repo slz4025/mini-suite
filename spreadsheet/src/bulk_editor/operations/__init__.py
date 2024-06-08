@@ -78,7 +78,7 @@ def validate_and_parse_cut(sels, form):
     ]
     if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode} "
+            f"Selection mode {sel_mode.value} "
             "is not supported with cut operation."
         )
 
@@ -113,7 +113,7 @@ def validate_and_parse_copy(sels, form):
     ]
     if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode} "
+            f"Selection mode {sel_mode.value} "
             "is not supported with copy operation."
         )
 
@@ -140,7 +140,7 @@ def validate_and_parse_paste(sels, form):
             sel = sel_types.RowIndex(sel.start.value)
         else:
             raise err_types.NotSupportedError(
-                f"Selection mode {sel_mode} "
+                f"Selection mode {sel_mode.value} "
                 "is not supported with paste operation. "
                 "Select a single row instead."
             )
@@ -149,7 +149,7 @@ def validate_and_parse_paste(sels, form):
             sel = sel_types.ColIndex(sel.start.value)
         else:
             raise err_types.NotSupportedError(
-                f"Selection mode {sel_mode} "
+                f"Selection mode {sel_mode.value} "
                 "is not supported with paste operation. "
                 "Select a single column instead."
             )
@@ -162,7 +162,7 @@ def validate_and_parse_paste(sels, form):
             )
         else:
             raise err_types.NotSupportedError(
-                f"Selection mode {sel_mode} "
+                f"Selection mode {sel_mode.value} "
                 "is not supported with paste operation. "
                 "Select a single cell instead."
             )
@@ -189,7 +189,7 @@ def validate_and_parse_paste(sels, form):
 
     if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode} "
+            f"Selection mode {sel_mode.value} "
             "is not supported with paste operation for copied buffer."
         )
 
@@ -212,7 +212,7 @@ def validate_and_parse_delete(sels, form):
     ]
     if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode} "
+            f"Selection mode {sel_mode.value} "
             "is not supported with delete operation."
         )
 
@@ -294,7 +294,7 @@ def validate_and_parse_move(sels, form):
         )
     else:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode} "
+            f"Selection mode {sel_mode.value} "
             "is not supported with move operation."
         )
     assert num is not None
@@ -339,7 +339,7 @@ def validate_and_parse_insert(sels, form):
             sel = sel_types.RowIndex(sel.start.value)
         else:
             raise err_types.NotSupportedError(
-                f"Selection mode {sel_mode} "
+                f"Selection mode {sel_mode.value} "
                 "is not supported with insert operation. "
                 "Select a single row instead."
             )
@@ -348,7 +348,7 @@ def validate_and_parse_insert(sels, form):
             sel = sel_types.ColIndex(sel.start.value)
         else:
             raise err_types.NotSupportedError(
-                f"Selection mode {sel_mode} "
+                f"Selection mode {sel_mode.value} "
                 "is not supported with insert operation. "
                 "Select a single column instead."
             )
@@ -360,7 +360,7 @@ def validate_and_parse_insert(sels, form):
     ]
     if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode} "
+            f"Selection mode {sel_mode.value} "
             "is not supported with insert operation."
         )
 
@@ -430,7 +430,7 @@ def validate_and_parse_erase(sels, form):
     ]
     if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode} "
+            f"Selection mode {sel_mode.value} "
             "is not supported with erase operation."
         )
 
@@ -455,7 +455,7 @@ def validate_and_parse_value(sels, form):
     ]
     if not sel_mode in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode} "
+            f"Selection mode {sel_mode.value} "
             "is not supported with value operation."
         )
 
@@ -793,7 +793,7 @@ def get_modifications(name):
             else:
               sel_mode = sel_modes.from_selection(sel)
               raise err_types.NotSupportedError(
-                  f"Selection mode {sel_mode} "
+                  f"Selection mode {sel_mode.value} "
                   "is not supported with move operation."
               )
             sels = {"default": sel, "target": target}
@@ -815,7 +815,7 @@ def get_modifications(name):
             else:
               sel_mode = sel_modes.from_selection(sel)
               raise err_types.NotSupportedError(
-                  f"Selection mode {sel_mode} "
+                  f"Selection mode {sel_mode.value} "
                   "is not supported with move operation."
               )
             sels = {"default": sel, "target": target}

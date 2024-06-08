@@ -727,49 +727,49 @@ def render_option(option):
 def get_modifications(name):
     sels_for_op = state.get_selections()
 
-    modifications = None
+    mods = None
     match name:
         case types.Name.CUT:
             operation = get(name)
-            modifications = operation.validate_and_parse(sels_for_op, None)
+            mods = operation.validate_and_parse(sels_for_op, None)
         case types.Name.COPY:
             operation = get(name)
-            modifications = operation.validate_and_parse(sels_for_op, None)
+            mods = operation.validate_and_parse(sels_for_op, None)
         case types.Name.PASTE:
             operation = get(name)
-            modifications = operation.validate_and_parse(sels_for_op, None)
+            mods = operation.validate_and_parse(sels_for_op, None)
         case types.Name.INSERT:
             operation = get(name)
-            modifications = operation.validate_and_parse(sels_for_op, {"insert-number": "1"})
+            mods = operation.validate_and_parse(sels_for_op, {"insert-number": "1"})
         case types.Name.INSERT_END_ROWS:
             operation = get(name)
-            modifications = operation.validate_and_parse(sels_for_op, {"insert-number": "1"})
+            mods = operation.validate_and_parse(sels_for_op, {"insert-number": "1"})
         case types.Name.INSERT_END_COLS:
             operation = get(name)
-            modifications = operation.validate_and_parse(sels_for_op, {"insert-number": "1"})
+            mods = operation.validate_and_parse(sels_for_op, {"insert-number": "1"})
         case types.Name.DELETE:
             operation = get(name)
-            modifications = operation.validate_and_parse(sels_for_op, None)
+            mods = operation.validate_and_parse(sels_for_op, None)
         case _:
             raise err_types.NotSupportedError(
                 f"Cannot get modifications for operation {name.value} "
                 "without additional inputs."
             )
 
-    assert modifications is not None
-    return modifications
+    assert mods is not None
+    return mods
 
 
 def validate_and_parse(name, form):
     operation = get(name)
     sels_for_op = state.get_selections()
-    modifications = operation.validate_and_parse(sels_for_op, form)
-    return modifications
+    mods = operation.validate_and_parse(sels_for_op, form)
+    return mods
 
 
-def apply(name, modifications):
+def apply(name, mods):
     operation = get(name)
-    operation.apply(modifications)
+    operation.apply(mods)
 
 
 def render(name):

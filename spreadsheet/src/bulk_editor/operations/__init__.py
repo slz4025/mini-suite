@@ -725,31 +725,38 @@ def render_option(option):
 
 
 def get_modifications(name):
-    sels_for_op = state.get_selections()
+    sel = sel_state.get_selection()
 
     mods = None
     match name:
         case types.Name.CUT:
+            sels = {"default": sel}
             operation = get(name)
-            mods = operation.validate_and_parse(sels_for_op, None)
+            mods = operation.validate_and_parse(sels, None)
         case types.Name.COPY:
+            sels = {"default": sel}
             operation = get(name)
-            mods = operation.validate_and_parse(sels_for_op, None)
+            mods = operation.validate_and_parse(sels, None)
         case types.Name.PASTE:
+            sels = {"target": sel}
             operation = get(name)
-            mods = operation.validate_and_parse(sels_for_op, None)
+            mods = operation.validate_and_parse(sels, None)
         case types.Name.INSERT:
+            sels = {"target": sel}
             operation = get(name)
-            mods = operation.validate_and_parse(sels_for_op, {"insert-number": "1"})
+            mods = operation.validate_and_parse(sels, {"insert-number": "1"})
         case types.Name.INSERT_END_ROWS:
+            sels = {"target": sel}
             operation = get(name)
-            mods = operation.validate_and_parse(sels_for_op, {"insert-number": "1"})
+            mods = operation.validate_and_parse(sels, {"insert-number": "1"})
         case types.Name.INSERT_END_COLS:
+            sels = {"target": sel}
             operation = get(name)
-            mods = operation.validate_and_parse(sels_for_op, {"insert-number": "1"})
+            mods = operation.validate_and_parse(sels, {"insert-number": "1"})
         case types.Name.DELETE:
+            sels = {"default": sel}
             operation = get(name)
-            mods = operation.validate_and_parse(sels_for_op, None)
+            mods = operation.validate_and_parse(sels, None)
         case _:
             raise err_types.NotSupportedError(
                 f"Cannot get modifications for operation {name.value} "

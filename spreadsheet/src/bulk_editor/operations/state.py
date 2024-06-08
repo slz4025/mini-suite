@@ -6,7 +6,7 @@ import src.selector.types as sel_types
 import src.bulk_editor.operations.types as types
 
 
-current_operation = types.Name.INSERT_END_ROWS
+current_operation = types.Name.DELETE
 buffer_selection_mode = None
 selections: Dict[str, sel_types.Selection] = {}
 

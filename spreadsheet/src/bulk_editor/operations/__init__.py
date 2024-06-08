@@ -46,14 +46,18 @@ def from_input(name_str):
             return types.Name.MOVE
         case "Insert":
             return types.Name.INSERT
-        case "Insert End Rows":
-            return types.Name.INSERT_END_ROWS
-        case "Insert End Columns":
-            return types.Name.INSERT_END_COLS
         case "Erase":
             return types.Name.ERASE
         case "Value":
             return types.Name.VALUE
+        case "Move Forward":
+            return types.Name.MOVE_FORWARD
+        case "Move Backward":
+            return types.Name.MOVE_BACKWARD
+        case "Insert End Rows":
+            return types.Name.INSERT_END_ROWS
+        case "Insert End Columns":
+            return types.Name.INSERT_END_COLS
         case _:
             raise err_types.UnknownOptionError(
                 f"Unknown operation: {name_str}."
@@ -654,20 +658,6 @@ all_operations = {
         apply=apply_insert,
         render=render_insert_inputs,
     ),
-    types.Name.INSERT_END_ROWS: types.Operation(
-        name=types.Name.INSERT_END_ROWS,
-        icon="➕",
-        validate_and_parse=validate_and_parse_insert_end_rows,
-        apply=apply_insert_end_rows,
-        render=render_insert_end_rows_inputs,
-    ),
-    types.Name.INSERT_END_COLS: types.Operation(
-        name=types.Name.INSERT_END_COLS,
-        icon="➕",
-        validate_and_parse=validate_and_parse_insert_end_cols,
-        apply=apply_insert_end_cols,
-        render=render_insert_end_cols_inputs,
-    ),
     types.Name.ERASE: types.Operation(
         name=types.Name.ERASE,
         icon="🗑",
@@ -714,57 +704,111 @@ def render_option(option):
                 return "{} [Ctrl+V]".format(option.value)
             case types.Name.INSERT:
                 return "{} [Ctrl+I]".format(option.value)
+            case types.Name.DELETE:
+                return "{} [Delete]".format(option.value)
+            # TODO: Think of where else to surface this.
+            case types.Name.MOVE_FORWARD:
+                return "{} [Ctrl+M]".format(option.value)
+            case types.Name.MOVE_BACKWARD:
+                return "{} [Ctrl+N]".format(option.value)
             case types.Name.INSERT_END_ROWS:
                 return "{} [Ctrl+L]".format(option.value)
             case types.Name.INSERT_END_COLS:
                 return "{} [Ctrl+Shift+L]".format(option.value)
-            case types.Name.DELETE:
-                return "{} [Delete]".format(option.value)
             case _:
                 return option.value
 
 
 def get_modifications(name):
+    bounds = sheet.data.get_bounds()
     sel = sel_state.get_selection()
 
+    op = None
     mods = None
     match name:
         case types.Name.CUT:
             sels = {"default": sel}
-            operation = get(name)
+            op = types.Name.CUT
+            operation = get(op)
             mods = operation.validate_and_parse(sels, None)
         case types.Name.COPY:
             sels = {"default": sel}
-            operation = get(name)
+            op = types.Name.COPY
+            operation = get(op)
             mods = operation.validate_and_parse(sels, None)
         case types.Name.PASTE:
             sels = {"target": sel}
-            operation = get(name)
+            op = types.Name.PASTE
+            operation = get(op)
             mods = operation.validate_and_parse(sels, None)
         case types.Name.INSERT:
             sels = {"target": sel}
-            operation = get(name)
-            mods = operation.validate_and_parse(sels, {"insert-number": "1"})
-        case types.Name.INSERT_END_ROWS:
-            sels = {"target": sel}
-            operation = get(name)
-            mods = operation.validate_and_parse(sels, {"insert-number": "1"})
-        case types.Name.INSERT_END_COLS:
-            sels = {"target": sel}
-            operation = get(name)
+            op = types.Name.INSERT
+            operation = get(op)
             mods = operation.validate_and_parse(sels, {"insert-number": "1"})
         case types.Name.DELETE:
             sels = {"default": sel}
-            operation = get(name)
+            op = types.Name.DELETE
+            operation = get(op)
             mods = operation.validate_and_parse(sels, None)
+        case types.Name.MOVE_FORWARD:
+            op = types.Name.MOVE
+            operation = get(op)
+
+            if isinstance(sel, sel_types.RowRange):
+              target = sel_types.RowIndex(sel.end.value + 1)
+            elif isinstance(sel, sel_types.ColRange):
+              target = sel_types.ColIndex(sel.end.value + 1)
+            else:
+              sel_mode = sel_modes.from_selection(sel)
+              raise err_types.NotSupportedError(
+                  f"Selection mode {sel_mode} "
+                  "is not supported with move operation."
+              )
+            # TODO: check index is valid
+            sels = {"default": sel, "target": target}
+
+            mods = operation.validate_and_parse(sels, None)
+        case types.Name.MOVE_BACKWARD:
+            op = types.Name.MOVE
+            operation = get(op)
+
+            if isinstance(sel, sel_types.RowRange):
+              target = sel_types.RowIndex(sel.start.value - 1)
+            elif isinstance(sel, sel_types.ColRange):
+              target = sel_types.ColIndex(sel.start.value - 1)
+            else:
+              sel_mode = sel_modes.from_selection(sel)
+              raise err_types.NotSupportedError(
+                  f"Selection mode {sel_mode} "
+                  "is not supported with move operation."
+              )
+            # TODO: check index is valid
+            sels = {"default": sel, "target": target}
+
+            mods = operation.validate_and_parse(sels, None)
+        case types.Name.INSERT_END_ROWS:
+            op = types.Name.INSERT
+            operation = get(op)
+            target = sel_types.RowIndex(bounds.row.value)
+            sels = {"target": target}
+            mods = operation.validate_and_parse(sels, {"insert-number": "1"})
+        case types.Name.INSERT_END_COLS:
+            op = types.Name.INSERT
+            operation = get(op)
+            target = sel_types.ColIndex(bounds.col.value)
+            sels = {"target": target}
+            mods = operation.validate_and_parse(sels, {"insert-number": "1"})
         case _:
             raise err_types.NotSupportedError(
                 f"Cannot get modifications for operation {name.value} "
                 "without additional inputs."
             )
 
+    assert op is not None
     assert mods is not None
-    return mods
+
+    return op, mods
 
 
 def validate_and_parse(name, form):

@@ -27,7 +27,7 @@ def render():
 
 
 def apply_operation(name):
-    modifications = operations.get_modifications(name)
+    name, modifications = operations.get_modifications(name)
     operations.apply(name, modifications)
 
 

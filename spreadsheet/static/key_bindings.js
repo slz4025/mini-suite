@@ -58,6 +58,18 @@ window.addEventListener('keydown', function(event) {
           });
         }
         break;
+      case 'm':
+        htmx.ajax('POST', `/bulk-editor/apply/Move Forward`, {
+          target: `#bulk-editor`,
+          swap: "outerHTML",
+        });
+        break;
+      case 'n':
+        htmx.ajax('POST', `/bulk-editor/apply/Move Backward`, {
+          target: `#bulk-editor`,
+          swap: "outerHTML",
+        });
+        break;
       case 'i':
         htmx.ajax('POST', `/bulk-editor/apply/Insert`, {
           target: `#bulk-editor`,

@@ -14,10 +14,13 @@ class Name(Enum):
     DELETE = 'Delete'
     MOVE = 'Move'
     INSERT = 'Insert'
-    INSERT_END_ROWS = 'Insert End Rows'
-    INSERT_END_COLS = 'Insert End Columns'
     ERASE = 'Erase'
     VALUE = 'Value'
+    # The following are only shortcuts.
+    MOVE_FORWARD = 'Move Forward'
+    MOVE_BACKWARD = 'Move Backward'
+    INSERT_END_ROWS = 'Insert End Rows'
+    INSERT_END_COLS = 'Insert End Columns'
 
 
 @dataclass

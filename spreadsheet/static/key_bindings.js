@@ -88,19 +88,29 @@ window.addEventListener('keydown', function(event) {
       case 't':
         document.getElementById("navigator-target-button").click();
         break;
-
-      // TODO: consider letting the user configure the following, since these are system defaults on MacOS
+    }
+  } else {
+    switch (event.key) {
+      // move around port
       case 'ArrowUp':
-        document.getElementById("up-button").click();
+        if (!editing()) {
+          document.getElementById("up-button").click();
+        }
         break;
       case 'ArrowDown':
-        document.getElementById("down-button").click();
+        if (!editing()) {
+          document.getElementById("down-button").click();
+        }
         break;
       case 'ArrowLeft':
-        document.getElementById("left-button").click();
+        if (!editing()) {
+          document.getElementById("left-button").click();
+        }
         break;
       case 'ArrowRight':
-        document.getElementById("right-button").click();
+        if (!editing()) {
+          document.getElementById("right-button").click();
+        }
         break;
     }
   }

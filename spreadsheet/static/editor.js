@@ -42,22 +42,6 @@ function get_focused_cell() {
   }
 }
 
-function editing() {
-  const activeId = document.activeElement.id;
-  if (activeId == "editor-contents") {
-    return true;
-  }
-  else if (activeId == "value-contents") {
-    return true;
-  }
-  else if (activeId.startsWith("input-cell-")) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
-
 async function update_focus(row, col) {
   await htmx.ajax('POST', `/cell/${row}/${col}/focus`, {
     target: `#cell-${row}-${col}`,

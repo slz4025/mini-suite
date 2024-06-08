@@ -114,6 +114,9 @@ div.grid-item {
   margin: 0;
   padding: 0.5rem;
 }
+div.grid-item:hover {
+  border: 2px solid var(--main-color);
+}
 div.corner {
 }
 div.row {

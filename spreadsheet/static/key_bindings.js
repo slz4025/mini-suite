@@ -86,7 +86,7 @@ window.addEventListener('keydown', function(event) {
         document.getElementById("home-button").click();
         break;
       case 't':
-        document.getElementById("navigator-target-button").click();
+        document.getElementById("viewer-target-button").click();
         break;
     }
   } else {

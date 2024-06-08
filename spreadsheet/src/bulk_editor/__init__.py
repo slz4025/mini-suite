@@ -12,7 +12,7 @@ def render():
     operation_html = None
 
     options = operations.get_all()
-    operation = operations.get_current_operation()
+    operation = operations.state.get_current_operation()
     operation_html = operations.render(operation)
 
     return render_template(

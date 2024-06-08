@@ -1,7 +1,4 @@
-from dataclasses import dataclass
-from enum import Enum
 from flask import render_template
-from typing import Callable, List, Optional
 
 import src.command_palette as command_palette
 import src.errors.types as err_types
@@ -12,53 +9,34 @@ import src.selector.types as sel_types
 import src.sheet as sheet
 
 import src.bulk_editor.modifications as modifications
-
-
-class Name(Enum):
-    CUT = 'Cut'
-    COPY = 'Copy'
-    PASTE = 'Paste'
-    DELETE = 'Delete'
-    INSERT = 'Insert'
-    INSERT_END_ROWS = 'Insert End Rows'
-    INSERT_END_COLS = 'Insert End Columns'
-    ERASE = 'Erase'
-    VALUE = 'Value'
+import src.bulk_editor.operations.state as state
+import src.bulk_editor.operations.types as types
 
 
 def from_input(name_str):
     match name_str:
         case "Cut":
-            return Name.CUT
+            return types.Name.CUT
         case "Copy":
-            return Name.COPY
+            return types.Name.COPY
         case "Paste":
-            return Name.PASTE
+            return types.Name.PASTE
         case "Delete":
-            return Name.DELETE
+            return types.Name.DELETE
         case "Insert":
-            return Name.INSERT
+            return types.Name.INSERT
         case "Insert End Rows":
-            return Name.INSERT_END_ROWS
+            return types.Name.INSERT_END_ROWS
         case "Insert End Columns":
-            return Name.INSERT_END_COLS
+            return types.Name.INSERT_END_COLS
         case "Erase":
-            return Name.ERASE
+            return types.Name.ERASE
         case "Value":
-            return Name.VALUE
+            return types.Name.VALUE
         case _:
             raise err_types.UnknownOptionError(
                 f"Unknown operation: {name_str}."
             )
-
-
-@dataclass
-class Operation:
-    name: Name
-    icon: str
-    validate_and_parse: Callable[[object], List[modifications.Modification]]
-    apply: Callable[[List[modifications.Modification]], None]
-    render: Callable[[], str]
 
 
 def validate_and_parse_cut(form):
@@ -482,64 +460,64 @@ def render_value_inputs():
 
 
 all_operations = {
-    Name.CUT: Operation(
-        name=Name.CUT,
+    types.Name.CUT: types.Operation(
+        name=types.Name.CUT,
         icon="✂",
         validate_and_parse=validate_and_parse_cut,
         apply=apply_cut,
         render=render_cut_inputs,
     ),
-    Name.COPY: Operation(
-        name=Name.COPY,
+    types.Name.COPY: types.Operation(
+        name=types.Name.COPY,
         icon="⧉",
         validate_and_parse=validate_and_parse_copy,
         apply=apply_copy,
         render=render_copy_inputs,
     ),
-    Name.PASTE: Operation(
-        name=Name.PASTE,
+    types.Name.PASTE: types.Operation(
+        name=types.Name.PASTE,
         icon="📋",
         validate_and_parse=validate_and_parse_paste,
         apply=apply_paste,
         render=render_paste_inputs,
     ),
-    Name.DELETE: Operation(
-        name=Name.DELETE,
+    types.Name.DELETE: types.Operation(
+        name=types.Name.DELETE,
         icon="❌",
         validate_and_parse=validate_and_parse_delete,
         apply=apply_delete,
         render=render_delete_inputs,
     ),
-    Name.INSERT: Operation(
-        name=Name.INSERT,
+    types.Name.INSERT: types.Operation(
+        name=types.Name.INSERT,
         icon="➕",
         validate_and_parse=validate_and_parse_insert,
         apply=apply_insert,
         render=render_insert_inputs,
     ),
-    Name.INSERT_END_ROWS: Operation(
-        name=Name.INSERT_END_ROWS,
+    types.Name.INSERT_END_ROWS: types.Operation(
+        name=types.Name.INSERT_END_ROWS,
         icon="➕",
         validate_and_parse=validate_and_parse_insert_end_rows,
         apply=apply_insert_end_rows,
         render=render_insert_end_rows_inputs,
     ),
-    Name.INSERT_END_COLS: Operation(
-        name=Name.INSERT_END_COLS,
+    types.Name.INSERT_END_COLS: types.Operation(
+        name=types.Name.INSERT_END_COLS,
         icon="➕",
         validate_and_parse=validate_and_parse_insert_end_cols,
         apply=apply_insert_end_cols,
         render=render_insert_end_cols_inputs,
     ),
-    Name.ERASE: Operation(
-        name=Name.ERASE,
+    types.Name.ERASE: types.Operation(
+        name=types.Name.ERASE,
         icon="🗑",
         validate_and_parse=validate_and_parse_erase,
         apply=apply_erase,
         render=render_erase_inputs,
     ),
-    Name.VALUE: Operation(
-        name=Name.VALUE,
+    types.Name.VALUE: types.Operation(
+        name=types.Name.VALUE,
         icon="½",
         validate_and_parse=validate_and_parse_value,
         apply=apply_value,
@@ -549,16 +527,6 @@ all_operations = {
 
 
 options = list(all_operations.keys())
-current_operation = Name.INSERT_END_ROWS
-
-
-def set_current_operation(op):
-  global current_operation
-  current_operation = op
-
-
-def get_current_operation():
-  return current_operation
 
 
 def get(name):
@@ -579,19 +547,19 @@ def render_option(option):
         return option.value
     else:
         match option:
-            case Name.CUT:
+            case types.Name.CUT:
                 return "{} [Ctrl+X]".format(option.value)
-            case Name.COPY:
+            case types.Name.COPY:
                 return "{} [Ctrl+C]".format(option.value)
-            case Name.PASTE:
+            case types.Name.PASTE:
                 return "{} [Ctrl+V]".format(option.value)
-            case Name.INSERT:
+            case types.Name.INSERT:
                 return "{} [Ctrl+I]".format(option.value)
-            case Name.INSERT_END_ROWS:
+            case types.Name.INSERT_END_ROWS:
                 return "{} [Ctrl+L]".format(option.value)
-            case Name.INSERT_END_COLS:
+            case types.Name.INSERT_END_COLS:
                 return "{} [Ctrl+Shift+L]".format(option.value)
-            case Name.DELETE:
+            case types.Name.DELETE:
                 return "{} [Delete]".format(option.value)
             case _:
                 return option.value
@@ -601,25 +569,25 @@ def get_modifications(name):
     modifications = None
 
     match name:
-        case Name.CUT:
+        case types.Name.CUT:
             operation = get(name)
             modifications = operation.validate_and_parse(None)
-        case Name.COPY:
+        case types.Name.COPY:
             operation = get(name)
             modifications = operation.validate_and_parse(None)
-        case Name.PASTE:
+        case types.Name.PASTE:
             operation = get(name)
             modifications = operation.validate_and_parse(None)
-        case Name.INSERT:
+        case types.Name.INSERT:
             operation = get(name)
             modifications = operation.validate_and_parse({"insert-number": "1"})
-        case Name.INSERT_END_ROWS:
+        case types.Name.INSERT_END_ROWS:
             operation = get(name)
             modifications = operation.validate_and_parse({"insert-number": "1"})
-        case Name.INSERT_END_COLS:
+        case types.Name.INSERT_END_COLS:
             operation = get(name)
             modifications = operation.validate_and_parse({"insert-number": "1"})
-        case Name.DELETE:
+        case types.Name.DELETE:
             operation = get(name)
             modifications = operation.validate_and_parse(None)
         case _:

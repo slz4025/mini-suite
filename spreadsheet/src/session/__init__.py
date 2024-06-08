@@ -400,7 +400,7 @@ class Session:
         resp = Response()
 
         name = bulk_editor.operations.from_input(name_str)
-        bulk_editor.operations.set_current_operation(name)
+        bulk_editor.operations.state.set_current_operation(name)
 
         bulk_editor_operations_html = bulk_editor.operations.render(name)
         resp.set_data(bulk_editor_operations_html)
@@ -432,7 +432,7 @@ class Session:
         resp = Response()
 
         try:
-            name = bulk_editor.operations.get_current_operation()
+            name = bulk_editor.operations.state.get_current_operation()
             bulk_editor.apply(name, form)
             self.notify_info(resp, f"{name.value} complete.")
             self.add_event(resp, "update-port")

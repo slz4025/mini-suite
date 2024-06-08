@@ -454,6 +454,10 @@ class Session:
         try:
             name = bulk_editor.operations.state.get_current_operation()
             bulk_editor.apply(name, form)
+
+            # Let user perform new operation with new selections if successful.
+            bulk_editor.operations.state.reset_selections()
+
             self.notify_info(resp, f"{name.value} complete.")
             self.add_event(resp, "update-port")
         except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError) as e:

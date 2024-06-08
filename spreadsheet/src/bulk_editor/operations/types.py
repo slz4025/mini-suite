@@ -12,6 +12,7 @@ class Name(Enum):
     COPY = 'Copy'
     PASTE = 'Paste'
     DELETE = 'Delete'
+    MOVE = 'Move'
     INSERT = 'Insert'
     INSERT_END_ROWS = 'Insert End Rows'
     INSERT_END_COLS = 'Insert End Columns'

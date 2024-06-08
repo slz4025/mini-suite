@@ -42,6 +42,8 @@ def from_input(name_str):
             return types.Name.PASTE
         case "Delete":
             return types.Name.DELETE
+        case "Move":
+            return types.Name.MOVE
         case "Insert":
             return types.Name.INSERT
         case "Insert End Rows":
@@ -216,6 +218,107 @@ def validate_and_parse_delete(sels, form):
     return [modification]
 
 
+def validate_and_parse_move(sels, form):
+    if "default" not in sels:
+        raise err_types.DoesNotExistError("Selection does not exist.")
+    sel = sels["default"]
+    if "pointer" not in sels:
+        raise err_types.DoesNotExistError("Pointer does not exist.")
+    pointer = sels["pointer"]
+
+    sel_mode = sel_modes.from_selection(sel)
+    pointer_mode = sel_modes.from_selection(pointer)
+    num = None
+    adjusted_pointer = None
+    if isinstance(sel, sel_types.RowRange):
+      if isinstance(pointer, sel_types.RowIndex):
+        pass
+      elif isinstance(pointer, sel_types.RowRange):
+          if pointer.end.value - pointer.start.value == 1:
+              pointer = sel_types.RowIndex(pointer.start.value)
+          else:
+              raise err_types.NotSupportedError(
+                  f"Selection mode {pointer_mode} "
+                  "is not supported as pointer for move operation. "
+                  "Select a single row instead."
+              )
+      else:
+        raise err_types.NotSupportedError(
+            f"Selection mode {pointer_mode} "
+            "is not supported as pointer for move operation."
+        )
+    
+      num = sel.end.value - sel.start.value
+      
+      curr_pos = pointer.value
+      if curr_pos < sel.start.value:
+        adjusted_pointer = pointer
+      elif curr_pos >= sel.end.value:
+        adjusted_pointer = sel_types.RowIndex(curr_pos - num)
+      else:
+        raise err_types.UserError(
+          f"Cannot move selection to a pointer within itself."
+        )
+    elif isinstance(sel, sel_types.ColRange):
+      if isinstance(pointer, sel_types.ColIndex):
+        pass
+      elif isinstance(pointer, sel_types.ColRange):
+          if pointer.end.value - pointer.start.value == 1:
+              pointer = sel_types.ColIndex(pointer.start.value)
+          else:
+              raise err_types.NotSupportedError(
+                  f"Selection mode {pointer_mode} "
+                  "is not supported as pointer for move operation. "
+                  "Select a single column instead."
+              )
+      else:
+        raise err_types.NotSupportedError(
+            f"Selection mode {pointer_mode} "
+            "is not supported as pointer for move operation."
+        )
+
+      num = sel.end.value - sel.start.value
+      curr_pos = pointer.value
+      if curr_pos < sel.start.value:
+        adjusted_pointer = pointer
+      elif curr_pos >= sel.end.value:
+        adjusted_pointer = sel_types.ColIndex(curr_pos - num)
+      else:
+        raise err_types.UserError(
+          f"Cannot move selection to a pointer within itself."
+        )
+    else:
+        raise err_types.NotSupportedError(
+            f"Selection mode {sel_mode} "
+            "is not supported with move operation."
+        )
+    assert num is not None
+    assert adjusted_pointer is not None
+
+    mods = [
+      modifications.Modification(
+          operation=modifications.Type.COPY,
+          input=sel,
+      ),
+      modifications.Modification(
+          operation=modifications.Type.DELETE,
+          input=sel,
+      ),
+      modifications.Modification(
+          operation=modifications.Type.INSERT,
+          input=modifications.InsertInput(
+              selection=adjusted_pointer,
+              number=num,
+          )
+      ),
+      modifications.Modification(
+          operation=modifications.Type.PASTE,
+          input=adjusted_pointer,
+      ),
+    ]
+    return mods
+
+
 def validate_and_parse_insert(sels, form):
     if "pointer" not in sels:
         raise err_types.DoesNotExistError("Pointer does not exist.")
@@ -228,7 +331,6 @@ def validate_and_parse_insert(sels, form):
     sel_mode = sel_modes.from_selection(sel)
     if isinstance(sel, sel_types.RowRange):
         if sel.end.value - sel.start.value == 1:
-            pass
             sel = sel_types.RowIndex(sel.start.value)
         else:
             raise err_types.NotSupportedError(
@@ -396,6 +498,11 @@ def apply_delete(mods):
         modifications.apply_modification(modification)
 
 
+def apply_move(mods):
+    for modification in mods:
+        modifications.apply_modification(modification)
+
+
 def apply_insert(mods):
     for modification in mods:
         modifications.apply_modification(modification)
@@ -450,6 +557,16 @@ def render_delete_inputs():
     return render_template(
             "partials/bulk_editor/delete.html",
             use_sel=use_sel,
+    )
+
+
+def render_move_inputs():
+    use_sel_default = render_use_selection("move", "default")
+    use_sel_pointer = render_use_selection("move", "pointer")
+    return render_template(
+            "partials/bulk_editor/move.html",
+            use_sel_default=use_sel_default,
+            use_sel_pointer=use_sel_pointer,
     )
 
 
@@ -522,6 +639,13 @@ all_operations = {
         validate_and_parse=validate_and_parse_delete,
         apply=apply_delete,
         render=render_delete_inputs,
+    ),
+    types.Name.MOVE: types.Operation(
+        name=types.Name.MOVE,
+        icon="❖",
+        validate_and_parse=validate_and_parse_move,
+        apply=apply_move,
+        render=render_move_inputs,
     ),
     types.Name.INSERT: types.Operation(
         name=types.Name.INSERT,

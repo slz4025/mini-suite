@@ -13,6 +13,25 @@ import src.bulk_editor.operations.state as state
 import src.bulk_editor.operations.types as types
 
 
+def add_selection(use):
+    sel = sel_state.get_selection()
+    state.add_selection(use, sel)
+
+
+def render_use_selection(op, use):
+    sel = sel_state.get_selection()
+    disable = sel is None
+    selections = state.get_selections()
+    used = use in selections
+    return render_template(
+            "partials/bulk_editor/use_selection.html",
+            op=op,
+            use=use,
+            disable=disable,
+            used=used,
+    )
+
+
 def from_input(name_str):
     match name_str:
         case "Cut":
@@ -39,10 +58,10 @@ def from_input(name_str):
             )
 
 
-def validate_and_parse_cut(form):
-    sel = sel_state.get_selection()
-    if sel is None:
+def validate_and_parse_cut(sels, form):
+    if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
+    sel = sels["default"]
 
     sel_mode = sel_modes.from_selection(sel)
     selection_mode_options = [
@@ -74,10 +93,10 @@ def validate_and_parse_cut(form):
     return mods
 
 
-def validate_and_parse_copy(form):
-    sel = sel_state.get_selection()
-    if sel is None:
+def validate_and_parse_copy(sels, form):
+    if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
+    sel = sels["default"]
 
     sel_mode = sel_modes.from_selection(sel)
     selection_mode_options = [
@@ -98,10 +117,10 @@ def validate_and_parse_copy(form):
     return [modification]
 
 
-def validate_and_parse_paste(form):
-    sel = sel_state.get_selection()
-    if sel is None:
-        raise err_types.DoesNotExistError("Selection does not exist.")
+def validate_and_parse_paste(sels, form):
+    if "pointer" not in sels:
+        raise err_types.DoesNotExistError("Pointer does not exist.")
+    sel = sels["pointer"]
 
     # In multi-element selections, it is possible
     # for the start value(s) to be greater than the end value(s).
@@ -174,10 +193,10 @@ def validate_and_parse_paste(form):
     return [modification]
 
 
-def validate_and_parse_delete(form):
-    sel = sel_state.get_selection()
-    if sel is None:
+def validate_and_parse_delete(sels, form):
+    if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
+    sel = sels["default"]
 
     sel_mode = sel_modes.from_selection(sel)
     selection_mode_options = [
@@ -197,10 +216,10 @@ def validate_and_parse_delete(form):
     return [modification]
 
 
-def validate_and_parse_insert(form):
-    sel = sel_state.get_selection()
-    if sel is None:
-        raise err_types.DoesNotExistError("Selection does not exist.")
+def validate_and_parse_insert(sels, form):
+    if "pointer" not in sels:
+        raise err_types.DoesNotExistError("Pointer does not exist.")
+    sel = sels["pointer"]
 
     # In multi-element selections, it is possible
     # for the start value(s) to be greater than the end value(s).
@@ -253,7 +272,7 @@ def validate_and_parse_insert(form):
     return [modification]
 
 
-def validate_and_parse_insert_end_rows(form):
+def validate_and_parse_insert_end_rows(sels, form):
     number = form_helpers.extract(form, "insert-number", name="number")
     form_helpers.validate_nonempty(number, name="number")
     number = form_helpers.parse_int(number, name="number")
@@ -272,7 +291,7 @@ def validate_and_parse_insert_end_rows(form):
     return [modification]
 
 
-def validate_and_parse_insert_end_cols(form):
+def validate_and_parse_insert_end_cols(sels, form):
     number = form_helpers.extract(form, "insert-number", name="number")
     form_helpers.validate_nonempty(number, name="number")
     number = form_helpers.parse_int(number, name="number")
@@ -291,10 +310,10 @@ def validate_and_parse_insert_end_cols(form):
     return [modification]
 
 
-def validate_and_parse_erase(form):
-    sel = sel_state.get_selection()
-    if sel is None:
+def validate_and_parse_erase(sels, form):
+    if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
+    sel = sels["default"]
 
     sel_mode = sel_modes.from_selection(sel)
     selection_mode_options = [
@@ -316,10 +335,10 @@ def validate_and_parse_erase(form):
     return [modification]
 
 
-def validate_and_parse_value(form):
-    sel = sel_state.get_selection()
-    if sel is None:
+def validate_and_parse_value(sels, form):
+    if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
+    sel = sels["default"]
 
     sel_mode = sel_modes.from_selection(sel)
     selection_mode_options = [
@@ -403,58 +422,74 @@ def apply_value(mods):
 
 
 def render_cut_inputs():
+    use_sel = render_use_selection("cut", "default")
     return render_template(
             "partials/bulk_editor/cut.html",
+            use_sel=use_sel,
     )
 
 
 def render_copy_inputs():
+    use_sel = render_use_selection("copy", "default")
     return render_template(
             "partials/bulk_editor/copy.html",
+            use_sel=use_sel,
     )
 
 
 def render_paste_inputs():
+    use_sel = render_use_selection("paste", "pointer")
     return render_template(
             "partials/bulk_editor/paste.html",
+            use_sel=use_sel,
     )
 
 
 def render_delete_inputs():
+    use_sel = render_use_selection("delete", "default")
     return render_template(
             "partials/bulk_editor/delete.html",
+            use_sel=use_sel,
     )
 
 
 def render_insert_inputs():
+    use_sel = render_use_selection("insert", "pointer")
     return render_template(
             "partials/bulk_editor/insert.html",
+            use_sel=use_sel,
     )
 
 
 def render_insert_end_rows_inputs():
     return render_template(
-            "partials/bulk_editor/insert.html",
+            "partials/bulk_editor/insert_end.html",
+            use_sel="",
     )
 
 
 def render_insert_end_cols_inputs():
     return render_template(
-            "partials/bulk_editor/insert.html",
+            "partials/bulk_editor/insert_end.html",
+            use_sel="",
     )
 
 
 def render_erase_inputs():
+    use_sel = render_use_selection("erase", "default")
     return render_template(
             "partials/bulk_editor/erase.html",
+            use_sel=use_sel,
     )
 
 
 def render_value_inputs():
     show_help = command_palette.state.get_show_help()
+    use_sel = render_use_selection("value", "default")
     return render_template(
             "partials/bulk_editor/value.html",
             show_help=show_help,
+            use_sel=use_sel,
             value="",
     )
 
@@ -566,30 +601,31 @@ def render_option(option):
 
 
 def get_modifications(name):
-    modifications = None
+    sels_for_op = state.get_selections()
 
+    modifications = None
     match name:
         case types.Name.CUT:
             operation = get(name)
-            modifications = operation.validate_and_parse(None)
+            modifications = operation.validate_and_parse(sels_for_op, None)
         case types.Name.COPY:
             operation = get(name)
-            modifications = operation.validate_and_parse(None)
+            modifications = operation.validate_and_parse(sels_for_op, None)
         case types.Name.PASTE:
             operation = get(name)
-            modifications = operation.validate_and_parse(None)
+            modifications = operation.validate_and_parse(sels_for_op, None)
         case types.Name.INSERT:
             operation = get(name)
-            modifications = operation.validate_and_parse({"insert-number": "1"})
+            modifications = operation.validate_and_parse(sels_for_op, {"insert-number": "1"})
         case types.Name.INSERT_END_ROWS:
             operation = get(name)
-            modifications = operation.validate_and_parse({"insert-number": "1"})
+            modifications = operation.validate_and_parse(sels_for_op, {"insert-number": "1"})
         case types.Name.INSERT_END_COLS:
             operation = get(name)
-            modifications = operation.validate_and_parse({"insert-number": "1"})
+            modifications = operation.validate_and_parse(sels_for_op, {"insert-number": "1"})
         case types.Name.DELETE:
             operation = get(name)
-            modifications = operation.validate_and_parse(None)
+            modifications = operation.validate_and_parse(sels_for_op, None)
         case _:
             raise err_types.NotSupportedError(
                 f"Cannot get modifications for operation {name.value} "
@@ -602,7 +638,8 @@ def get_modifications(name):
 
 def validate_and_parse(name, form):
     operation = get(name)
-    modifications = operation.validate_and_parse(form)
+    sels_for_op = state.get_selections()
+    modifications = operation.validate_and_parse(sels_for_op, form)
     return modifications
 
 

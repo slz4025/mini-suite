@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Callable, List, Optional
 
+import src.selector.types as sel_types
+
 import src.bulk_editor.modifications as modifications
 
 
@@ -21,6 +23,6 @@ class Name(Enum):
 class Operation:
     name: Name
     icon: str
-    validate_and_parse: Callable[[object], List[modifications.Modification]]
+    validate_and_parse: Callable[[List[sel_types.Selection], object], List[modifications.Modification]]
     apply: Callable[[List[modifications.Modification]], None]
     render: Callable[[], str]

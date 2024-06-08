@@ -288,6 +288,8 @@ class Session:
 
         # Rerender what editor operations are allowed based on selection.
         self.add_event(resp, "editor-operations")
+        # Rerender bulk-editor selection users.
+        self.add_event(resp, "use-bulk-edit-selection")
         # Update showing viewer target feature.
         self.add_event(resp, "viewer-target")
 
@@ -401,6 +403,7 @@ class Session:
 
         name = bulk_editor.operations.from_input(name_str)
         bulk_editor.operations.state.set_current_operation(name)
+        bulk_editor.operations.state.reset_selections()
 
         bulk_editor_operations_html = bulk_editor.operations.render(name)
         resp.set_data(bulk_editor_operations_html)
@@ -420,6 +423,23 @@ class Session:
         bulk_editor_html = bulk_editor.render()
         resp.set_data(bulk_editor_html)
         return resp
+
+    def render_bulk_editor_use_selection(self, op, use):
+        resp = Response()
+
+        use_selection_html = bulk_editor.operations.render_use_selection(op, use)
+        resp.set_data(use_selection_html)
+        return resp
+
+    def add_bulk_editor_selection(self, op, use):
+        resp = Response()
+
+        bulk_editor.operations.add_selection(use)
+
+        use_selection_html = bulk_editor.operations.render_use_selection(op, use)
+        resp.set_data(use_selection_html)
+        return resp
+
 
     def render_bulk_editor(self):
         resp = Response()

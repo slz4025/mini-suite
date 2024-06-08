@@ -9,6 +9,9 @@
   {% endif %}
 
   <div class="inner">
+    {{ use_sel|safe }}
+  </div>
+  <div class="inner">
     <label for="bulk-editor-value">Value</label>
     <textarea
       id="value-contents"

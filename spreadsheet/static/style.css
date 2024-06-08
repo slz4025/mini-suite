@@ -297,6 +297,10 @@ button.command {
   cursor: pointer;
   text-align: left;
 }
+button.applied {
+  color: var(--info-color);
+  background-color: var(--info-background-color);
+}
 button#command-palette-toggler {
   float: left;
   width: 2%;

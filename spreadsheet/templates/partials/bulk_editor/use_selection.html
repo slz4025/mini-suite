@@ -1,0 +1,21 @@
+<span
+  id="bulk-editor-use-selection-{{ op }}-{{ use }}"
+  hx-put="/bulk-editor/use-selection/{{ op }}/{{ use }}"
+  hx-trigger="use-bulk-edit-selection from:body"
+  hx-target="this"
+  hx-swap="outerHTML"
+>
+  <button 
+    {{ 'disabled' if disable else '' }}
+    class="{{ 'applied' if used else '' }}"
+    id="bulk-editor-use-selection-button-{{ op }}-{{ use }}"
+    hx-post="/bulk-editor/use-selection/{{ op }}/{{ use }}"
+    hx-trigger="click"
+    hx-target="#bulk-editor-use-selection-{{ op }}-{{ use }}"
+    hx-swap="outerHTML"
+    title="use selection"
+    style="width: 100%;"
+  >
+    {{ 'Selection Inputted' if used else 'Input Selection' }}
+  </button>
+</span>

@@ -1,10 +1,14 @@
+from typing import Dict
+
 import src.selector.modes as sel_modes
+import src.selector.types as sel_types
 
 import src.bulk_editor.operations.types as types
 
 
 current_operation = types.Name.INSERT_END_ROWS
 buffer_selection_mode = None
+selections: Dict[str, sel_types.Selection] = {}
 
 
 def set_current_operation(op):
@@ -24,3 +28,17 @@ def set_buffer_mode(sel):
     global buffer_selection_mode
     mode = sel_modes.from_selection(sel)
     buffer_selection_mode = mode
+
+
+def add_selection(use, sel):
+  global selections
+  selections[use] = sel
+
+
+def get_selections():
+  return selections
+
+
+def reset_selections():
+  global selections
+  selections = {}

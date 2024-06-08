@@ -254,6 +254,22 @@ def apply_bulk_editor_operation(name_str):
     return _session.apply_bulk_editor_operation(name_str)
 
 
+@app.route("/bulk-editor/use-selection/<op>/<use>", methods=['PUT'])
+@errors.handler
+def render_bulk_editor_use_selection(op, use):
+    assert htmx is not None
+
+    return _session.render_bulk_editor_use_selection(op, use)
+
+
+@app.route("/bulk-editor/use-selection/<op>/<use>", methods=['POST'])
+@errors.handler
+def add_bulk_editor_selection(op, use):
+    assert htmx is not None
+
+    return _session.add_bulk_editor_selection(op, use)
+
+
 @app.route("/bulk-editor", methods=['PUT'])
 @errors.handler
 def render_bulk_editor():

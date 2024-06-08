@@ -3,7 +3,7 @@ from flask import render_template, Response, redirect, send_from_directory
 
 import os
 
-from config import Config
+from settings import Settings
 import src.block as block
 import src.command_palette as command_palette
 import src.entry as entry
@@ -71,7 +71,7 @@ def render_null(session):
 
 
 def render_body(session):
-    dark_mode = Config.DARK_MODE
+    dark_mode = Settings.DARK_MODE
     null = render_null(session)
     notification_banner_html = notifications.render(session)
     show_command_palette = command_palette.get_show()

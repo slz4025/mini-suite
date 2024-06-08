@@ -4,12 +4,12 @@ import socket
 import sys
 
 import app
-from config import Config
+from settings import Settings
 
 
 def find_port():
-  min_port = Config.MIN_PORT
-  max_port = Config.MAX_PORT
+  min_port = Settings.MIN_PORT
+  max_port = Settings.MAX_PORT
 
   for port in range(min_port, max_port+1):
     s = socket.socket()

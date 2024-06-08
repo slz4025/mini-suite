@@ -1,5 +1,6 @@
 from flask import Flask, session, request, redirect
 from flask_htmx import HTMX
+import secrets
 from waitress import serve
 
 import src.errors as errors
@@ -8,7 +9,6 @@ import src.project as project
 
 app = Flask(__name__)
 htmx = HTMX(app)
-app.config.from_object('config.Config')
 
 
 @app.route("/error")
@@ -243,5 +243,7 @@ def export_html():
 
 def start(port, wiki_path, one_off_file=None):
     project.setup(wiki_path, one_off_file)
+    # key for this session
+    app.secret_key = secrets.token_hex()
     app.logger.info("Starting server")
     serve(app, host='0.0.0.0', port=port)

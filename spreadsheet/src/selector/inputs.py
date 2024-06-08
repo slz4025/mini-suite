@@ -8,6 +8,7 @@ import src.errors.types as err_types
 import src.utils.form as form_helpers
 
 import src.selector.modes as modes
+import src.selector.search as search
 import src.selector.types as types
 import src.sheet.types as sheet_types
 
@@ -180,6 +181,8 @@ def render(mode, sel=None):
             )
 
     form = forms[mode]
+    search_html = search.render()
+
     template_path = os.path.join(
         "partials/selector",
         form.template,
@@ -193,5 +196,7 @@ def render(mode, sel=None):
         row_end=row_end,
         col_start=col_start,
         col_end=col_end,
+        # only applicable for cell position
+        search=search_html,
     )
     return html

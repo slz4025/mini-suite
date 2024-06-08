@@ -1,6 +1,7 @@
 from flask import render_template
 
 import src.command_palette as command_palette
+
 import src.selector.helpers as helpers
 import src.selector.inputs as inputs
 import src.selector.modes as modes

@@ -147,6 +147,32 @@ def render_selector_input():
     return _session.render_selector_input(mode_str)
 
 
+@app.route("/selector/search/text", methods=['POST'])
+@errors.handler
+def update_search_results():
+    assert htmx is not None
+
+    text = request.form["text-search"]
+
+    return _session.update_search_results(text) 
+
+
+@app.route(
+    "/selector/search/cell-position/<row>/<col>",
+    methods=['POST'],
+)
+@errors.handler
+def update_cell_position(row, col):
+    assert htmx is not None
+
+    pos = sel_types.CellPosition(
+        row_index=sel_types.RowIndex(int(row)),
+        col_index=sel_types.ColIndex(int(col)),
+    )
+
+    return _session.update_cell_position(pos) 
+
+
 @app.route(
     "/selector/start/<start_row>/<start_col>/end/<end_row>/<end_col>",
     methods=['POST'],

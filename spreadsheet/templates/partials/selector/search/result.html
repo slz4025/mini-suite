@@ -1,0 +1,10 @@
+<button
+  id="selector-search-result-{{ row }}-{{ col }}-button"
+  hx-post="/selector/search/cell-position/{{ row }}/{{ col }}"
+  hx-trigger="click"
+  hx-target="#selector"
+  hx-swap="outerHTML"
+  style="width: 100%;"
+>
+{{ data }}
+</button>

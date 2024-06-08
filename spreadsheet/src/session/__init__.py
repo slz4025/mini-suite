@@ -293,6 +293,27 @@ class Session:
         # Update showing viewer target feature.
         self.add_event(resp, "viewer-target")
 
+    def update_search_results(self, text):
+        resp = Response()
+
+        selector.search.set_text(text)
+
+        search_results_html = selector.search.render_results()
+        resp.set_data(search_results_html)
+        return resp
+
+    def update_cell_position(self, pos):
+        resp = Response()
+
+        try:
+            self.update_selection_helper(resp, selector.types.Mode.CELL_POSITION, pos)
+        except (err_types.NotSupportedError) as e:
+            self.notify_error(resp, e)
+
+        selector_html = selector.render()
+        resp.set_data(selector_html)
+        return resp
+
     def update_selection_from_endpoints(self, start, end):
         resp = Response()
 

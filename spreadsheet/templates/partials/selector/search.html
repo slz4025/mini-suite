@@ -1,0 +1,21 @@
+<fieldset id="selector-search">
+  <legend>Search</legend>
+
+  <input
+    id="selector-text-search"
+    name="text-search"
+    hx-post="/selector/search/text"
+    hx-trigger="keyup changed delay:500ms"
+    hx-target="#selector-search-results"
+    hx-swap="innerHTML"
+    title="text search"
+    style="width: 100%;"
+  >
+
+  <div
+    id="selector-search-results"
+    class="inner"
+  >
+    {{ results|safe }}
+  </div>
+</fieldset>

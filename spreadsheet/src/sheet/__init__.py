@@ -61,6 +61,22 @@ def get_all_cells_computed():
     return data
 
 
+def get_cells_containing_text(text):
+    relevant = []
+
+    computed_data = get_all_cells_computed()
+    for row in range(computed_data.shape[0]):
+        for col in range(computed_data.shape[1]):
+            computed = computed_data[row, col]
+            if isinstance(computed, str) and text in computed:
+                pos = sel_types.CellPosition(
+                    row_index=sel_types.RowIndex(int(row)),
+                    col_index=sel_types.ColIndex(int(col)),
+                )
+                relevant.append(pos)
+    return relevant
+
+
 def get_potential_dependents():
     upperleft = viewer.state.get_upperleft()
     nrows, ncols = viewer.state.get_dimensions()

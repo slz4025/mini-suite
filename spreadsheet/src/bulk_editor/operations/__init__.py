@@ -23,13 +23,19 @@ def render_use_selection(op, use):
     sel = sel_state.get_selection()
     disable = sel is None
     selections = state.get_selections()
-    used = use in selections
+
+    message = "Input Selection"
+    if use in selections:
+      message = "✓ Selection Inputted"
+    else:
+      message = "Input Selection"
+
     return render_template(
             "partials/bulk_editor/use_selection.html",
             op=op,
             use=use,
             disable=disable,
-            used=used,
+            message=message,
     )
 
 

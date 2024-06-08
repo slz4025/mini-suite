@@ -269,7 +269,7 @@ button {
 button:disabled {
   cursor: not-allowed;
   pointer-events: none;
-  background-color: var(--secondary-color);
+  opacity: 0.5;
 }
 button:hover {
   background-color: var(--secondary-color);
@@ -296,10 +296,6 @@ button.command {
 
   cursor: pointer;
   text-align: left;
-}
-button.applied {
-  color: var(--info-color);
-  background-color: var(--info-background-color);
 }
 button#command-palette-toggler {
   float: left;

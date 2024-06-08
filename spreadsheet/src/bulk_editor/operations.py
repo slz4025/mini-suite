@@ -622,12 +622,10 @@ def get_modifications(name):
     return modifications
 
 
-def validate_and_parse(form):
-    name_str = form_helpers.extract(form, "operation")
-    name = from_input(name_str)
+def validate_and_parse(name, form):
     operation = get(name)
     modifications = operation.validate_and_parse(form)
-    return name, modifications
+    return modifications
 
 
 def apply(name, modifications):

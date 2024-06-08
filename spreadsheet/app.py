@@ -245,6 +245,7 @@ def render_bulk_editor_operation():
     return _session.render_bulk_editor_operation(name_str)
 
 
+# Bulk-editor operations that do not require further inputs.
 @app.route("/bulk-editor/apply/<name_str>", methods=['POST'])
 @errors.handler
 def apply_bulk_editor_operation(name_str):

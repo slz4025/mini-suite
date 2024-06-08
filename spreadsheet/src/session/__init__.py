@@ -408,13 +408,9 @@ class Session:
 
         try:
             name = bulk_editor.operations.from_input(name_str)
-            modifications = bulk_editor.get_modifications(name)
-
-            bulk_editor.apply(name, modifications)
+            bulk_editor.apply_operation(name)
             self.add_event(resp, "update-port")
-
-            # TODO: Specify which operation was performed. 
-            self.notify_info(resp, "Bulk operation complete.")
+            self.notify_info(resp, f"{name_str} complete.")
         except (err_types.NotSupportedError, err_types.DoesNotExistError) as e:
             self.notify_error(resp, e)
 
@@ -433,15 +429,12 @@ class Session:
         resp = Response()
 
         try:
-            name, modifications = bulk_editor.validate_and_parse(
-                form,
-            )
-
-            bulk_editor.apply(name, modifications)
+            import src.utils.form as form_helpers
+            name_str = form_helpers.extract(form, "operation")
+            name = bulk_editor.operations.from_input(name_str)
+            bulk_editor.apply(name, form)
+            self.notify_info(resp, f"{name_str} complete.")
             self.add_event(resp, "update-port")
-
-            # TODO: Specify which operation was performed. 
-            self.notify_info(resp, "Bulk operation complete.")
         except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError) as e:
             self.notify_error(resp, e)
             self.notify_error(resp, e)

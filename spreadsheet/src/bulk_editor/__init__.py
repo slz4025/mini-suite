@@ -26,13 +26,11 @@ def render():
     )
 
 
-def get_modifications(name):
-    return operations.get_modifications(name)
+def apply_operation(name):
+    modifications = operations.get_modifications(name)
+    operations.apply(name, modifications)
 
 
-def validate_and_parse(form):
-    return operations.validate_and_parse(form)
-
-
-def apply(name, modifications):
+def apply(name, form):
+    modifications = operations.validate_and_parse(name, form)
     operations.apply(name, modifications)

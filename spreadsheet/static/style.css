@@ -266,6 +266,11 @@ button {
   color: var(--main-color);
   cursor: pointer;
 }
+button:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  background-color: var(--secondary-color);
+}
 button:hover {
   background-color: var(--secondary-color);
 }

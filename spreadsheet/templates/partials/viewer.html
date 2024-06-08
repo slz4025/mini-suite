@@ -6,92 +6,89 @@
   <h1 class="command-palette">VIEWER</h1>
 
   <div class="inner">
-    <span
-      style="margin-right: 1rem;"
+    <button
+      id="home-button"
+      class="icon"
+      hx-post="/viewer/move/home"
+      hx-trigger="click"
+      hx-target="#viewer"
+      hx-swap="outerHTML"
+      title="go home"
+      style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
     >
-      <button
-        id="home-button"
-        class="icon"
-        hx-post="/viewer/move/home"
-        hx-trigger="click"
-        hx-target="#viewer"
-        hx-swap="outerHTML"
-        title="go home"
-        style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
-      >
-        <span>☗</span>
-        {% if show_help %}
-          <span>Go Home [Ctrl+H]</span>
-        {% endif %}
-      </button>
-      {{ target|safe }}
-    </span>
+      <span>☗</span>
+      {% if show_help %}
+        <span>Go Home [Ctrl+H]</span>
+      {% endif %}
+    </button>
 
-    <span>
-      <button
-        id="up-button"
-        class="icon"
-        hx-post="/viewer/move/up"
-        hx-trigger="click"
-        hx-target="#viewer"
-        hx-swap="outerHTML"
-        title="move up"
-        style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
-      >
-        <span>▲</span>
-        {% if show_help %}
-          <span>Move Up [Ctrl+Up]</span>
-        {% endif %}
-      </button>
+    <button
+      id="up-button"
+      class="icon"
+      hx-post="/viewer/move/up"
+      hx-trigger="click"
+      hx-target="#viewer"
+      hx-swap="outerHTML"
+      title="move up"
+      style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
+    >
+      <span>▲</span>
+      {% if show_help %}
+        <span>Move Up [Ctrl+Up]</span>
+      {% endif %}
+    </button>
 
-      <button
-        id="down-button"
-        class="icon"
-        hx-post="/viewer/move/down"
-        hx-trigger="click"
-        hx-target="#viewer"
-        hx-swap="outerHTML"
-        title="move down"
-        style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
-      >
-        <span>▼</span>
-        {% if show_help %}
-          <span>Move Down [Ctrl+Down]</span>
-        {% endif %}
-      </button>
+    <button
+      id="down-button"
+      class="icon"
+      hx-post="/viewer/move/down"
+      hx-trigger="click"
+      hx-target="#viewer"
+      hx-swap="outerHTML"
+      title="move down"
+      style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
+    >
+      <span>▼</span>
+      {% if show_help %}
+        <span>Move Down [Ctrl+Down]</span>
+      {% endif %}
+    </button>
 
-      <button
-        id="left-button"
-        class="icon"
-        hx-post="/viewer/move/left"
-        hx-trigger="click"
-        hx-target="#viewer"
-        hx-swap="outerHTML"
-        title="move left"
-        style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
-      >
-        <span>◀</span>
-        {% if show_help %}
-          <span>Move Left [Ctrl+Left]</span>
-        {% endif %}
-      </button>
+    <button
+      id="left-button"
+      class="icon"
+      hx-post="/viewer/move/left"
+      hx-trigger="click"
+      hx-target="#viewer"
+      hx-swap="outerHTML"
+      title="move left"
+      style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
+    >
+      <span>◀</span>
+      {% if show_help %}
+        <span>Move Left [Ctrl+Left]</span>
+      {% endif %}
+    </button>
 
-      <button
-        id="right-button"
-        class="icon"
-        hx-post="/viewer/move/right"
-        hx-trigger="click"
-        hx-target="#viewer"
-        hx-swap="outerHTML"
-        title="move right"
-        style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
-      >
-        <span>▶</span>
-        {% if show_help %}
-          <span>Move Right [Ctrl+Right]</span>
-        {% endif %}
-      </button>
-    </span>
+    <button
+      id="right-button"
+      class="icon"
+      hx-post="/viewer/move/right"
+      hx-trigger="click"
+      hx-target="#viewer"
+      hx-swap="outerHTML"
+      title="move right"
+      style="width: {{ 'auto' if show_help else '' }}; height: {{ 'auto' if show_help else '' }};"
+    >
+      <span>▶</span>
+      {% if show_help %}
+        <span>Move Right [Ctrl+Right]</span>
+      {% endif %}
+    </button>
+  </div>
+
+  <div class="inner">
+    {{ target|safe }}
   </div>
 
   <form

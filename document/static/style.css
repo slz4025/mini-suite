@@ -34,10 +34,10 @@ div {
   padding: 1rem;
 }
 div#wrapper {
-  z-index: 0;
-
   position: absolute;
-  top: 8%;
+  top: 7.5%;
+  bottom: 0;
+  z-index: 0;
 
   margin: 0;
   border: 0;
@@ -283,7 +283,7 @@ span {
   left: 0;
   right: 0;
   width: 100%;
-  min-height: 6%;
+  height: 7.5%;
   z-index: 2;
 
   margin: 0;

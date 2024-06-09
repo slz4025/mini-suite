@@ -1,33 +1,41 @@
 window.addEventListener('keyup', async function(event) {
-  if (event.shiftKey) {
-    const resp = await fetch("/block/infocus");
-    const json = await resp.json();
-    const id = json.id;
+  const resp = await fetch("/block/infocus");
+  const json = await resp.json();
+  const id = json.id;
 
+  if (event.shiftKey) {
     switch (event.key) {
-      case 'Enter':
-        htmx.ajax('POST', `/block/unfocus`, {
-          target: `#block-${id}`,
-          swap: "outerHTML",
-        });
-        break;
       case 'ArrowUp':
-        htmx.ajax('POST', `/block/prev`, {
-          target: `#block-${id}`,
-          swap: "outerHTML",
-        });
+        if (id !== undefined) {
+          htmx.ajax('POST', `/block/prev`, {
+            target: `#block-${id}`,
+            swap: "outerHTML",
+          });
+        }
         break;
       case 'ArrowDown':
-        htmx.ajax('POST', `/block/next`, {
-          target: `#block-${id}`,
-          swap: "outerHTML",
-        });
+        if (id !== undefined) {
+          htmx.ajax('POST', `/block/next`, {
+            target: `#block-${id}`,
+            swap: "outerHTML",
+          });
+        }
         break;
     }
-  } else if (event.ctrlKey) {
+  } else {
     switch (event.key) {
       case 's':
-        document.getElementById("save").click();
+        if (id === undefined) {
+          document.getElementById("save").click();
+        }
+        break;
+      case 'Escape':
+        if (id !== undefined) {
+          htmx.ajax('POST', `/block/unfocus`, {
+            target: `#block-${id}`,
+            swap: "outerHTML",
+          });
+        }
         break;
     }
   }

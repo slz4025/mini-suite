@@ -45,6 +45,10 @@
       </select>
     </fieldset>
 
+    {% if show_search %}
+    {{ search|safe }}
+    {% endif %}
+
     {{ input|safe }}
 
     <div class="inner" style="display: flex;">

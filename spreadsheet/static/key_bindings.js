@@ -4,7 +4,7 @@ function inputting() {
     return ["INPUT", "TEXTAREA"].includes(nodeType);
 }
 
-window.addEventListener('keydown', function(event) {
+window.addEventListener('keydown', async function(event) {
   if (event.ctrlKey) {
     switch (event.key) {
       // modes
@@ -33,6 +33,27 @@ window.addEventListener('keydown', function(event) {
         break;
 
       // selector
+      case 'F': // differentiate from Ctrl+f which is native to browsers
+        if (document.getElementById("command-palette").style.display == 'none') {
+          await htmx.ajax('PUT', `/command-palette/toggle`, {
+            target: `body`,
+            swap: "outerHTML",
+          });
+        }
+        if (document.getElementById("selector").style.display == 'none') {
+          await htmx.ajax('PUT', `/selector/toggle`, {
+            target: `#selector`,
+            swap: "outerHTML",
+          });
+        }
+        await htmx.ajax('GET', `/selector/input`, {
+          target: `#selector`,
+          swap: "outerHTML",
+          values: {"mode": "Cell Position"},
+        });
+
+        // attempt to focus on searchbar if possible
+        document.getElementById("selector-text-search")?.focus();
       case 'q':
         document.getElementById("clear-selector-button")?.click();
         break;

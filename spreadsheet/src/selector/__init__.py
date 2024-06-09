@@ -5,6 +5,7 @@ import src.command_palette as command_palette
 import src.selector.helpers as helpers
 import src.selector.inputs as inputs
 import src.selector.modes as modes
+import src.selector.search as search
 import src.selector.state as state
 import src.selector.types as types
 
@@ -73,6 +74,9 @@ def render(mode=None):
         types.Mode.COLUMNS,
     ]
 
+    show_search = mode == types.Mode.CELL_POSITION
+    search_html = search.render()
+
     inp = inputs.render(mode, selection)
 
     return render_template(
@@ -81,6 +85,8 @@ def render(mode=None):
             show_selector=show_selector,
             mode_options=[mo.value for mo in mode_options],
             mode=mode.value,
+            show_search=show_search,
+            search=search_html,
             input=inp,
             show_clear=has_selection,
             show_adjustments=show_adjustments,

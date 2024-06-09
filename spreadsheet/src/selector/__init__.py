@@ -41,19 +41,23 @@ def reset():
     state.reset_mode()
 
 
-def render():
+def render(mode=None):
     show_help = command_palette.state.get_show_help()
     show_selector = command_palette.state.get_show_selector()
 
     mode_options = inputs.options
 
-    mode = mode_options[0]
+    has_selection = False
+    saved_mode = None
     selection = None
-    saved_mode = state.get_mode()
-    has_selection = saved_mode is not None
-    if has_selection:
-        mode = saved_mode
-        selection = state.get_selection()
+    if mode is None:
+        mode = mode_options[0]
+
+        saved_mode = state.get_mode()
+        has_selection = saved_mode is not None
+        if has_selection:
+            mode = saved_mode
+            selection = state.get_selection()
 
     show_adjustments = saved_mode in [
         types.Mode.BOX,

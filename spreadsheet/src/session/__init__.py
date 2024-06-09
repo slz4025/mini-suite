@@ -254,13 +254,13 @@ class Session:
         resp.set_data(selector_html)
         return resp
 
-    def render_selector_input(self, mode_str):
+    def use_selector_input(self, mode_str):
         resp = Response()
 
         mode = selector.modes.from_input(mode_str)
 
-        selector_input_html = selector.inputs.render(mode)
-        resp.set_data(selector_input_html)
+        selector_html = selector.render(mode)
+        resp.set_data(selector_html)
         return resp
 
     def update_selection_helper(

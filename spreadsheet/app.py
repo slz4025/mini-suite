@@ -139,12 +139,12 @@ def toggle_selector():
 # we use 'GET' in order to retrieve the request argument.
 @app.route("/selector/input", methods=['GET'])
 @errors.handler
-def render_selector_input():
+def use_selector_input():
     assert htmx is not None
 
     mode_str = request.args["mode"]
 
-    return _session.render_selector_input(mode_str)
+    return _session.use_selector_input(mode_str)
 
 
 @app.route("/selector/search/text", methods=['POST'])

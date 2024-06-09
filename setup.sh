@@ -6,7 +6,7 @@ echo "Setting up document editor..."
 doc_dir="${repo_dir}/document"
 cd "${doc_dir}"
 rm -rf .venv
-python -m venv .venv
+python -m venv .venv --system-site-packages
 source .venv/bin/activate
 pip install -r requirements.txt
 deactivate
@@ -17,7 +17,7 @@ echo "Setting up spreadsheet editor..."
 sheet_dir="${repo_dir}/spreadsheet"
 cd "${sheet_dir}"
 rm -rf .venv
-python -m venv .venv
+python -m venv .venv --system-site-packages
 source .venv/bin/activate
 pip install -r requirements.txt
 deactivate

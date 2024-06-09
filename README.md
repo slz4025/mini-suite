@@ -41,6 +41,7 @@ After you [setup](#setup) your environment, you can edit a csv file via `sheet m
 
 ## Setup
 
+1. Install numpy (1.26.4) and pandas (2.2.2) locally. These are dependencies of the spreadsheet editor.
 1. Prepare the environment: `$ bash setup.sh`.
 1. Find the path of the repository: `$ pwd`.
 1. Export the path: `$ export MINISUITE_PATH=<path>`.

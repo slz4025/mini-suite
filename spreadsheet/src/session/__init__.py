@@ -77,6 +77,7 @@ class Session:
     def render_body_helper(self, resp):
         dark_mode = Settings.DARK_MODE
         show_command_palette = command_palette.state.get_show()
+        show_help = command_palette.state.get_show_help()
 
         null = self.render_null_helper()
         command_palette_html = command_palette.render()
@@ -84,7 +85,7 @@ class Session:
         # render last in case set any notifications from previous steps
         notification_html = notifications.render(False)
 
-        body = render_template(
+        body_html = render_template(
                 "partials/body.html",
                 dark_mode=dark_mode,
                 null=null,
@@ -92,14 +93,8 @@ class Session:
                 command_palette=command_palette_html,
                 data=port_html,
                 show_command_palette=show_command_palette,
+                show_help=show_help,
                 )
-
-        _, basename = os.path.split(self.path)
-        body_html = render_template(
-            "index.html",
-            body=body,
-            tab_name=basename,
-            )
         return body_html
 
     def render_error(self, logger):
@@ -128,7 +123,13 @@ class Session:
         viewer.state.init()
 
         body_html = self.render_body_helper(resp)
-        resp.set_data(body_html)
+        _, basename = os.path.split(self.path)
+        index_html = render_template(
+            "index.html",
+            body=body_html,
+            tab_name=basename,
+            )
+        resp.set_data(index_html)
         return resp
 
     # TODO: Later, consider supporting an array of notifications
@@ -171,8 +172,8 @@ class Session:
         show_help = command_palette.state.get_show_help()
         command_palette.state.set_show_help(not show_help)
 
-        command_palette_html = command_palette.render()
-        resp.set_data(command_palette_html)
+        body_html = self.render_body_helper(resp)
+        resp.set_data(body_html)
         return resp
 
     def render_port(self):

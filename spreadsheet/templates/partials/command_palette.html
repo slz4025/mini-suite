@@ -23,13 +23,13 @@
     class="command"
     hx-put="/help/toggle"
     hx-trigger="click"
-    hx-target="#command-palette"
+    hx-target="body"
     hx-swap="outerHTML"
   >
     <span>
       ☛ HELP
       {% if show_help %}
-      [Ctrl+0]
+      [Ctrl+1]
       {% endif %}
     </span>
   </button>
@@ -44,7 +44,7 @@
     <span>
       ✛ SELECT
       {% if show_help %}
-      [Ctrl+1]
+      [Ctrl+2]
       {% endif %}
     </span>
   </button>
@@ -60,7 +60,7 @@
     <span>
       ✎ EDIT
       {% if show_help %}
-      [Ctrl+2]
+      [Ctrl+3]
       {% endif %}
     </span>
   </button>
@@ -76,7 +76,7 @@
     <span>
       ⊂ BULK EDIT
       {% if show_help %}
-      [Ctrl+3]
+      [Ctrl+4]
       {% endif %}
     </span>
   </button>
@@ -92,7 +92,7 @@
     <span>
       ❖ VIEW
       {% if show_help %}
-      [Ctrl+4]
+      [Ctrl+5]
       {% endif %}
     </span>
   </button>

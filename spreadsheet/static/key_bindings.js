@@ -9,18 +9,21 @@ window.addEventListener('keydown', function(event) {
     switch (event.key) {
       // modes
       case '0':
-        document.getElementById("help-toggler").click();
+        document.getElementById("command-palette-toggler").click();
         break;
       case '1':
-        document.getElementById("selector-toggler").click();
+        document.getElementById("help-toggler").click();
         break;
       case '2':
-        document.getElementById("editor-toggler").click();
+        document.getElementById("selector-toggler").click();
         break;
       case '3':
-        document.getElementById("bulk-editor-toggler").click();
+        document.getElementById("editor-toggler").click();
         break;
       case '4':
+        document.getElementById("bulk-editor-toggler").click();
+        break;
+      case '5':
         document.getElementById("navigator-toggler").click();
         break;
 

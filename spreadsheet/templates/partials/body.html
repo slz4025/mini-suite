@@ -18,6 +18,11 @@
     >
       <p class="command-palette" style="writing-mode: vertical-rl; text-orientation: mixed;">
         {{ 'COLLAPSE' if show_command_palette else 'EXPAND' }}
+        <span>
+          {% if show_help %}
+          [Ctrl+0]
+          {% endif %}
+        </span>
       </p>
     </button>
 

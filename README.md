@@ -55,7 +55,7 @@ You can also configure dark-mode for each tool by going to the `settings.py` in 
 
 Each tool runs as a web application so it can be used on any standard operating system. It uses HTML/CSS that I would expect to be compatible with most browsers.
 
-I'm testing this with [qutebrowser](https://www.qutebrowser.org/) on [OpenBSD 7.3](https://www.openbsd.org/73.html) and Firefox on MacOS.
+I'm testing this with Firefox and [qutebrowser](https://www.qutebrowser.org/) on [OpenBSD 7.3](https://www.openbsd.org/73.html) and Firefox on MacOS. The tools offer key shortcuts which can be pressed with the Ctrl or Meta key. Note that because qutebrowser is modal, the key shortcuts will not work.
 
 The server is written in [Python 3.10](https://www.python.org/downloads/release/python-3100/) using [flask](https://flask.palletsprojects.com/en/3.0.x/). The frontend has some JavaScript and communicates with the backend using [htmx](https://htmx.org/).
 

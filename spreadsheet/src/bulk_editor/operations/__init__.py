@@ -721,36 +721,6 @@ def get_all():
     return options
 
 
-def render_option(option):
-    show_help = command_palette.state.get_show_help()
-
-    if not show_help:
-        return option.value
-    else:
-        match option:
-            case types.Name.CUT:
-                return "{} [Ctrl+X]".format(option.value)
-            case types.Name.COPY:
-                return "{} [Ctrl+C]".format(option.value)
-            case types.Name.PASTE:
-                return "{} [Ctrl+V]".format(option.value)
-            case types.Name.INSERT:
-                return "{} [Ctrl+I]".format(option.value)
-            case types.Name.DELETE:
-                return "{} [Delete]".format(option.value)
-            # TODO: Think of where else to surface this.
-            case types.Name.MOVE_FORWARD:
-                return "{} [Ctrl+M]".format(option.value)
-            case types.Name.MOVE_BACKWARD:
-                return "{} [Ctrl+N]".format(option.value)
-            case types.Name.INSERT_END_ROWS:
-                return "{} [Ctrl+L]".format(option.value)
-            case types.Name.INSERT_END_COLS:
-                return "{} [Ctrl+Shift+L]".format(option.value)
-            case _:
-                return option.value
-
-
 def get_modifications(name):
     bounds = sheet.data.get_bounds()
     sel = sel_state.get_selection()

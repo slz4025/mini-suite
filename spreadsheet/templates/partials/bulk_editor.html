@@ -17,6 +17,23 @@
   >
     <fieldset>
       <legend>Operation</legend>
+      {% if show_help %}
+      <p class="command-palette">
+        Use the following short-cuts on an existing selection:
+      </p>
+      <ul class="command-palette">
+        <li class="command-palette">[x]: Cut</li>
+        <li class="command-palette">[c]: Copy</li>
+        <li class="command-palette">[v]: Paste</li>
+        <li class="command-palette">[i]: Insert one row/column before</li>
+        <li class="command-palette">[Del]: Delete</li>
+        <li class="command-palette">[m]: Move row/column one forward</li>
+        <li class="command-palette">[n]: Move row/column one backward</li>
+        <li class="command-palette">[l]: Insert row at end</li>
+        <li class="command-palette">[L]: Insert column at end</li>
+      </ul>
+      <br>
+      {% endif %}
       <select
         id="bulk-editor-operation"
         name="operation"
@@ -24,11 +41,11 @@
         hx-target="#bulk-editor-operation-form"
         hx-swap="outerHTML"
       >
-        {% for operation_option, operation_name in operation_options.items() %}
+        {% for operation_option in operation_options %}
         {% if operation_option == operation or (not operation and loop.index == 0) %}
-        <option value="{{ operation_option }}" selected>{{ operation_name }}</option>
+        <option value="{{ operation_option }}" selected>{{ operation_option }}</option>
         {% else %}
-        <option value="{{ operation_option }}">{{ operation_name }}</option>
+        <option value="{{ operation_option }}">{{ operation_option }}</option>
         {% endif %}
         {% endfor %}
       </select>

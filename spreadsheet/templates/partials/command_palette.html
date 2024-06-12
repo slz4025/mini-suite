@@ -13,7 +13,7 @@
     <span>
       ◼ SAVE
       {% if show_help %}
-      [Ctrl+S]
+      [s]
       {% endif %}
     </span>
   </button>
@@ -29,10 +29,17 @@
     <span>
       ☛ HELP
       {% if show_help %}
-      [Ctrl+1]
+      [1]
       {% endif %}
     </span>
   </button>
+  <div
+    id="help"
+    class="section"
+    style="display: {{ 'inherit' if show_help else 'none' }};"
+  >
+    Press Esc to remove focus on an element and use the key-bindings.
+  </div>
   <button
     id="selector-toggler"
     class="command"
@@ -44,7 +51,7 @@
     <span>
       ✛ SELECT
       {% if show_help %}
-      [Ctrl+2]
+      [2]
       {% endif %}
     </span>
   </button>
@@ -60,7 +67,7 @@
     <span>
       ✎ EDIT
       {% if show_help %}
-      [Ctrl+3]
+      [3]
       {% endif %}
     </span>
   </button>
@@ -76,7 +83,7 @@
     <span>
       ⊂ BULK EDIT
       {% if show_help %}
-      [Ctrl+4]
+      [4]
       {% endif %}
     </span>
   </button>
@@ -92,7 +99,7 @@
     <span>
       ❖ VIEW
       {% if show_help %}
-      [Ctrl+5]
+      [5]
       {% endif %}
     </span>
   </button>

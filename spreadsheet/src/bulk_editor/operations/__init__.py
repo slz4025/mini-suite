@@ -392,44 +392,6 @@ def validate_and_parse_insert(sels, form):
     return [modification]
 
 
-def validate_and_parse_insert_end_rows(sels, form):
-    number = form_helpers.extract(form, "insert-number", name="number")
-    form_helpers.validate_nonempty(number, name="number")
-    number = form_helpers.parse_int(number, name="number")
-
-    bounds = sheet.data.get_bounds()
-    sel = sel_types.RowIndex(bounds.row.value)
-
-    inp = modifications.InsertInput(
-        selection=sel,
-        number=number,
-    )
-    modification = modifications.Modification(
-        operation=modifications.Type.INSERT,
-        input=inp,
-    )
-    return [modification]
-
-
-def validate_and_parse_insert_end_cols(sels, form):
-    number = form_helpers.extract(form, "insert-number", name="number")
-    form_helpers.validate_nonempty(number, name="number")
-    number = form_helpers.parse_int(number, name="number")
-
-    bounds = sheet.data.get_bounds()
-    sel = sel_types.ColIndex(bounds.col.value)
-
-    inp = modifications.InsertInput(
-        selection=sel,
-        number=number,
-    )
-    modification = modifications.Modification(
-        operation=modifications.Type.INSERT,
-        input=inp,
-    )
-    return [modification]
-
-
 def validate_and_parse_erase(sels, form):
     if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
@@ -553,16 +515,6 @@ def apply_insert(mods):
         modifications.apply_modification(modification)
 
 
-def apply_insert_end_rows(mods):
-    for modification in mods:
-        modifications.apply_modification(modification)
-
-
-def apply_insert_end_cols(mods):
-    for modification in mods:
-        modifications.apply_modification(modification)
-
-
 def apply_erase(mods):
     for modification in mods:
         modifications.apply_modification(modification)
@@ -620,20 +572,6 @@ def render_insert_inputs():
     return render_template(
             "partials/bulk_editor/insert.html",
             use_sel=use_sel,
-    )
-
-
-def render_insert_end_rows_inputs():
-    return render_template(
-            "partials/bulk_editor/insert_end.html",
-            use_sel="",
-    )
-
-
-def render_insert_end_cols_inputs():
-    return render_template(
-            "partials/bulk_editor/insert_end.html",
-            use_sel="",
     )
 
 

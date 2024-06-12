@@ -133,6 +133,10 @@ window.addEventListener('keydown', async function(event) {
     }
   } else {
     switch (event.key) {
+      case 'Escape':
+        const activeEle = document.activeElement;
+        activeEle?.blur();
+        break;
       // move around port
       case 'ArrowUp':
         if (!inputting()) {

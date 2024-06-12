@@ -1,3 +1,9 @@
+function inputting() {
+    const activeEle = document.activeElement;
+    const nodeType = activeEle.nodeName;
+    return ["INPUT", "TEXTAREA"].includes(nodeType);
+}
+
 window.addEventListener('keyup', async function(event) {
   const resp = await fetch("/block/infocus");
   const json = await resp.json();
@@ -25,7 +31,7 @@ window.addEventListener('keyup', async function(event) {
   } else {
     switch (event.key) {
       case 's':
-        if (id === undefined) {
+        if (!inputting()) {
           document.getElementById("save").click();
         }
         break;

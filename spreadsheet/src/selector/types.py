@@ -196,3 +196,23 @@ def get_bounds_from_selection(sel):
         )
 
     return row_start, row_end, col_start, col_end
+
+
+def check_selection(sel):
+    if isinstance(sel, RowIndex):
+        check_row_index(sel)
+    elif isinstance(sel, ColIndex):
+        check_col_index(sel)
+    elif isinstance(sel, CellPosition):
+        check_cell_position(sel)
+    elif isinstance(sel, RowRange):
+        check_and_set_row_range(sel)
+    elif isinstance(sel, ColRange):
+        check_and_set_col_range(sel)
+    elif isinstance(sel, Box):
+        check_and_set_box(sel)
+    else:
+        sel_type = type(sel)
+        raise err_types.UnknownOptionError(
+            f"Unknown selection type: {sel_type}."
+        )

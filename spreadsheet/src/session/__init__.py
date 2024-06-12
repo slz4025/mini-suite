@@ -439,7 +439,7 @@ class Session:
             bulk_editor.apply_operation(name)
             self.add_event(resp, "update-port")
             self.notify_info(resp, f"{name.value} complete.")
-        except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError) as e:
+        except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError, err_types.OutOfBoundsError) as e:
             self.notify_error(resp, e)
 
         bulk_editor_html = bulk_editor.render()
@@ -478,7 +478,7 @@ class Session:
             bulk_editor.apply(name, form)
             self.notify_info(resp, f"{name.value} complete.")
             self.add_event(resp, "update-port")
-        except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError) as e:
+        except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError, err_types.OutOfBoundsError) as e:
             self.notify_error(resp, e)
             self.notify_error(resp, e)
 

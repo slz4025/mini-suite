@@ -75,6 +75,7 @@ def validate_and_parse_cut(sels, form):
     if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
     sel = sels["default"]
+    sel_types.check_selection(sel)
 
     sel_mode = sel_modes.from_selection(sel)
     selection_mode_options = [
@@ -110,6 +111,7 @@ def validate_and_parse_copy(sels, form):
     if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
     sel = sels["default"]
+    sel_types.check_selection(sel)
 
     sel_mode = sel_modes.from_selection(sel)
     selection_mode_options = [
@@ -134,6 +136,7 @@ def validate_and_parse_paste(sels, form):
     if "target" not in sels:
         raise err_types.DoesNotExistError("Target does not exist.")
     sel = sels["target"]
+    sel_types.check_selection(sel)
 
     # In multi-element selections, it is possible
     # for the start value(s) to be greater than the end value(s).
@@ -210,6 +213,7 @@ def validate_and_parse_delete(sels, form):
     if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
     sel = sels["default"]
+    sel_types.check_selection(sel)
 
     sel_mode = sel_modes.from_selection(sel)
     selection_mode_options = [
@@ -233,9 +237,11 @@ def validate_and_parse_move(sels, form):
     if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
     sel = sels["default"]
+    sel_types.check_selection(sel)
     if "target" not in sels:
         raise err_types.DoesNotExistError("Target does not exist.")
     target = sels["target"]
+    sel_types.check_selection(target)
 
     sel_mode = sel_modes.from_selection(sel)
     target_mode = sel_modes.from_selection(target)
@@ -334,6 +340,7 @@ def validate_and_parse_insert(sels, form):
     if "target" not in sels:
         raise err_types.DoesNotExistError("Target does not exist.")
     sel = sels["target"]
+    sel_types.check_selection(sel)
 
     # In multi-element selections, it is possible
     # for the start value(s) to be greater than the end value(s).
@@ -427,6 +434,7 @@ def validate_and_parse_erase(sels, form):
     if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
     sel = sels["default"]
+    sel_types.check_selection(sel)
 
     sel_mode = sel_modes.from_selection(sel)
     selection_mode_options = [
@@ -452,6 +460,7 @@ def validate_and_parse_value(sels, form):
     if "default" not in sels:
         raise err_types.DoesNotExistError("Selection does not exist.")
     sel = sels["default"]
+    sel_types.check_selection(sel)
 
     sel_mode = sel_modes.from_selection(sel)
     selection_mode_options = [

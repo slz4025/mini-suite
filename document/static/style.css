@@ -91,7 +91,7 @@ div#command-palette {
   z-index: 1;
 
   position: fixed;
-  top: 6%;
+  top: 7.5%;
   left: 0;
 
   background-color: var(--shade-color);

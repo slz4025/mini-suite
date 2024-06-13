@@ -162,7 +162,7 @@ def update_search_results():
     methods=['POST'],
 )
 @errors.handler
-def update_cell_position(row, col):
+def update_selector_cell_position(row, col):
     assert htmx is not None
 
     pos = sel_types.CellPosition(
@@ -170,7 +170,7 @@ def update_cell_position(row, col):
         col_index=sel_types.ColIndex(int(col)),
     )
 
-    return _session.update_cell_position(pos) 
+    return _session.update_selector_cell_position(pos) 
 
 
 @app.route(
@@ -331,10 +331,10 @@ def render_cell_targeter():
 
 @app.route("/viewer/target", methods=['POST'])
 @errors.handler
-def apply_cell_target():
+def apply_target():
     assert htmx is not None
 
-    return _session.apply_cell_target()
+    return _session.apply_target()
 
 
 @app.route("/viewer/move/<method>", methods=['POST'])

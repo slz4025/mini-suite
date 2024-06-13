@@ -303,7 +303,7 @@ class Session:
         resp.set_data(search_results_html)
         return resp
 
-    def update_cell_position(self, pos):
+    def update_selector_cell_position(self, pos):
         resp = Response()
 
         try:
@@ -506,7 +506,7 @@ class Session:
         resp.set_data(cell_targeter_html)
         return resp
 
-    def apply_cell_target(self):
+    def apply_target(self):
         resp = Response()
 
         try:

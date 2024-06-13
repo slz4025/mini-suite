@@ -309,6 +309,7 @@ class Session:
         try:
             self.update_selection_helper(resp, selector.types.Mode.CELL_POSITION, pos)
         except (err_types.NotSupportedError) as e:
+            e = Exception(f"Could not update selection: {e}")
             self.notify_error(resp, e)
 
         selector_html = selector.render()
@@ -323,6 +324,7 @@ class Session:
 
             self.update_selection_helper(resp, mode, sel)
         except (err_types.NotSupportedError) as e:
+            e = Exception(f"Could not update selection: {e}")
             self.notify_error(resp, e)
 
         selector_html = selector.render()
@@ -337,6 +339,7 @@ class Session:
 
             self.update_selection_helper(resp, mode, sel, update_port=True)
         except (err_types.NotSupportedError) as e:
+            e = Exception(f"Could not update selection: {e}")
             self.notify_error(resp, e)
 
         selector_html = selector.render()
@@ -357,6 +360,7 @@ class Session:
                 update_port=True,
             )
         except (err_types.UserError, err_types.OutOfBoundsError) as e:
+            e = Exception(f"Could not update selection: {e}")
             self.notify_error(resp, e)
 
         selector_html = selector.render()
@@ -434,12 +438,14 @@ class Session:
     def apply_bulk_editor_operation(self, name_str):
         resp = Response()
 
+        name = bulk_editor.operations.from_input(name_str)
+
         try:
-            name = bulk_editor.operations.from_input(name_str)
             bulk_editor.apply_operation(name)
             self.add_event(resp, "update-port")
-            self.notify_info(resp, f"{name.value} complete.")
+            self.notify_info(resp, f"{name.value} operation complete.")
         except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError, err_types.OutOfBoundsError) as e:
+            e = Exception(f"Could not apply {name.value} operation: {e}")
             self.notify_error(resp, e)
 
         bulk_editor_html = bulk_editor.render()
@@ -473,12 +479,14 @@ class Session:
     def apply_bulk_edit(self, form):
         resp = Response()
 
+        name = bulk_editor.operations.state.get_current_operation()
+
         try:
-            name = bulk_editor.operations.state.get_current_operation()
             bulk_editor.apply(name, form)
-            self.notify_info(resp, f"{name.value} complete.")
+            self.notify_info(resp, f"{name.value} operation complete.")
             self.add_event(resp, "update-port")
         except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError, err_types.OutOfBoundsError) as e:
+            e = Exception(f"Could not apply {name.value} operation: {e}")
             self.notify_error(resp, e)
             self.notify_error(resp, e)
 
@@ -514,6 +522,7 @@ class Session:
 
             self.add_event(resp, "update-port")
         except err_types.NotSupportedError as e:
+            e = Exception(f"Could not apply target: {e}")
             self.notify_error(resp, e)
 
         viewer_html = viewer.render()

@@ -46,7 +46,7 @@ def move_upperleft(method):
                 delta_col = mcols
             case _:
                 raise err_types.UnknownOptionError(
-                    f"Unexpected method: {method}."
+                    f"Unexpected move port method: {method}."
                 )
 
         bounds = sheet.data.get_bounds()

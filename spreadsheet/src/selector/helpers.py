@@ -109,7 +109,7 @@ def compute_updated_selection(sel, direction):
                 end_col = min(max_col, end_col + 1)
             case _:
                 raise err_types.UnknownOptionError(
-                    f"Unexpected direction: {direction}."
+                    f"Unexpected direction to modify selection: {direction}."
                 )
         return types.Box(
             row_range=types.RowRange(

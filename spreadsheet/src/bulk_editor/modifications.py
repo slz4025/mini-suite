@@ -49,7 +49,7 @@ def apply_delete(sel):
         axis = Axis.COLUMN
     else:
         raise err_types.NotSupportedError(
-            f"Option {type(sel)} is not valid for delete."
+            f"Selection type {type(sel)} is not valid for delete."
         )
 
     assert start is not None
@@ -74,7 +74,7 @@ def apply_insert(inp):
         axis = Axis.COLUMN
     else:
         raise err_types.NotSupportedError(
-            f"Option, {type(sel)}, is not valid for insert."
+            f"Selection type, {type(sel)}, is not valid for insert."
         )
 
     assert index is not None
@@ -158,7 +158,7 @@ def apply_paste(sel):
         col_end = col_start + copied_buffer.shape[1]
     else:
         raise err_types.NotSupportedError(
-            f"Option, {type(sel)}, is not valid for paste."
+            f"Selection type, {type(sel)}, is not valid for paste."
         )
 
     maybe_insert_at_end(Axis.ROW, row_end)

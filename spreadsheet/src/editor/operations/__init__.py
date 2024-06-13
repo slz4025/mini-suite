@@ -92,13 +92,13 @@ def from_input(name_str):
             return types.Name.SELECTION
         case _:
             raise err_types.UnknownOptionError(
-                f"Unknown operation: {name_str}."
+                f"Unknown editor operation: {name_str}."
             )
 
 
 def get_operation(op_name):
     if op_name not in all_operations:
-        raise err_types.UnknownOptionError(f"Unknown operation: {op_name.value}.")
+        raise err_types.UnknownOptionError(f"Unknown editor operation: {op_name.value}.")
     return all_operations[op_name]
 
 

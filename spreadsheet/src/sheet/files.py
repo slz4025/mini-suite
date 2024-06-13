@@ -16,7 +16,7 @@ def setup(filepath, debug):
     global FILE_PATH
 
     if not filepath.endswith(".csv"):
-        raise err_types.UserError("File is not a csv file.")
+        raise err_types.UserError("Input file is not a csv file.")
     FILE_PATH = filepath
 
     if os.path.exists(FILE_PATH):

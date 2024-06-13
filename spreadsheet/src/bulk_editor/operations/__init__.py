@@ -67,14 +67,16 @@ def from_input(name_str):
             return types.Name.INSERT_END_COLS
         case _:
             raise err_types.UnknownOptionError(
-                f"Unknown operation: {name_str}."
+                f"Unknown bulk-editor operation: {name_str}."
             )
 
 
 def validate_and_parse_cut(sels, form):
     if "default" not in sels:
-        raise err_types.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Cut operation has no input selection.")
     sel = sels["default"]
+    if sel is None:
+        raise err_types.DoesNotExistError("Cut operation has no input selection.")
     sel_types.check_selection(sel)
 
     sel_mode = sel_modes.from_selection(sel)
@@ -83,10 +85,9 @@ def validate_and_parse_cut(sels, form):
         sel_types.Mode.COLUMNS,
         sel_types.Mode.BOX,
     ]
-    if not sel_mode in selection_mode_options:
+    if sel_mode not in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode.value} "
-            "is not supported with cut operation."
+            f"Cut operation does not support selection mode {sel_mode.value}."
         )
 
     mods = []
@@ -109,8 +110,10 @@ def validate_and_parse_cut(sels, form):
 
 def validate_and_parse_copy(sels, form):
     if "default" not in sels:
-        raise err_types.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Copy operation has no input selection.")
     sel = sels["default"]
+    if sel is None:
+        raise err_types.DoesNotExistError("Copy operation has no input selection.")
     sel_types.check_selection(sel)
 
     sel_mode = sel_modes.from_selection(sel)
@@ -119,10 +122,9 @@ def validate_and_parse_copy(sels, form):
         sel_types.Mode.COLUMNS,
         sel_types.Mode.BOX,
     ]
-    if not sel_mode in selection_mode_options:
+    if sel_mode not in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode.value} "
-            "is not supported with copy operation."
+            f"Copy operation does not support selection mode {sel_mode.value}."
         )
 
     modification = modifications.Modification(
@@ -133,51 +135,6 @@ def validate_and_parse_copy(sels, form):
 
 
 def validate_and_parse_paste(sels, form):
-    if "target" not in sels:
-        raise err_types.DoesNotExistError("Target does not exist.")
-    sel = sels["target"]
-    sel_types.check_selection(sel)
-
-    # In multi-element selections, it is possible
-    # for the start value(s) to be greater than the end value(s).
-    # In single-element selections, the end value(s) is always
-    # greater than the start value(s).
-    sel_mode = sel_modes.from_selection(sel)
-    if isinstance(sel, sel_types.RowRange):
-        if sel.end.value - sel.start.value == 1:
-            pass
-            sel = sel_types.RowIndex(sel.start.value)
-        else:
-            raise err_types.NotSupportedError(
-                f"Selection mode {sel_mode.value} "
-                "is not supported with paste operation. "
-                "Select a single row instead."
-            )
-    elif isinstance(sel, sel_types.ColRange):
-        if sel.end.value - sel.start.value == 1:
-            sel = sel_types.ColIndex(sel.start.value)
-        else:
-            raise err_types.NotSupportedError(
-                f"Selection mode {sel_mode.value} "
-                "is not supported with paste operation. "
-                "Select a single column instead."
-            )
-    elif isinstance(sel, sel_types.Box):
-        if sel.row_range.end.value - sel.row_range.start.value == 1 \
-                and sel.col_range.end.value - sel.col_range.start.value == 1:
-            sel = sel_types.CellPosition(
-                row_index=sel_types.RowIndex(sel.row_range.start.value),
-                col_index=sel_types.ColIndex(sel.col_range.start.value),
-            )
-        else:
-            raise err_types.NotSupportedError(
-                f"Selection mode {sel_mode.value} "
-                "is not supported with paste operation. "
-                "Select a single cell instead."
-            )
-
-    sel_mode = sel_modes.from_selection(sel)
-
     copy_to_paste = {
         sel_types.Mode.ROWS: sel_types.Mode.ROW_INDEX,
         sel_types.Mode.COLUMNS: sel_types.Mode.COLUMN_INDEX,
@@ -187,32 +144,79 @@ def validate_and_parse_paste(sels, form):
 
     selection_mode_options = []
     if copy_selection_mode is None:
-        raise err_types.UserError("Cannot paste because nothing is copied to buffer yet.")
+        raise err_types.UserError("Paste operation has nothing to copy.")
     elif copy_selection_mode not in copy_to_paste:
         raise err_types.NotSupportedError(
-            f"Unexpected copy type {copy_selection_mode} "
-            "is not supported by paste."
+            f"Paste operation does not support buffer selection type {copy_selection_mode.value}."
         )
     else:
         selection_mode_options = [copy_to_paste[copy_selection_mode]]
 
-    if not sel_mode in selection_mode_options:
+    if "target" not in sels:
+        raise err_types.DoesNotExistError("Paste operation has no target selection.")
+    target = sels["target"]
+    if target is None:
+        raise err_types.DoesNotExistError("Paste operation has no target selection.")
+    sel_types.check_selection(target)
+
+    # In multi-element selections, it is possible
+    # for the start value(s) to be greater than the end value(s).
+    # In single-element selections, the end value(s) is always
+    # greater than the start value(s).
+    target_mode = sel_modes.from_selection(target)
+    if isinstance(target, sel_types.RowRange):
+        if target.end.value - target.start.value == 1:
+            target = sel_types.RowIndex(target.start.value)
+        else:
+            raise err_types.NotSupportedError(
+                f"Paste operation does not support target selection mode {target_mode.value}."
+                "Select a single row instead."
+            )
+    elif isinstance(target, sel_types.ColRange):
+        if target.end.value - target.start.value == 1:
+            target = sel_types.ColIndex(target.start.value)
+        else:
+            raise err_types.NotSupportedError(
+                f"Paste operation does not support target selection mode {target_mode.value}."
+                "Select a single column instead."
+            )
+    elif isinstance(target, sel_types.Box):
+        if target.row_range.end.value - target.row_range.start.value == 1 \
+                and target.col_range.end.value - target.col_range.start.value == 1:
+            target = sel_types.CellPosition(
+                row_index=sel_types.RowIndex(target.row_range.start.value),
+                col_index=sel_types.ColIndex(target.col_range.start.value),
+            )
+        else:
+            raise err_types.NotSupportedError(
+                f"Paste operation does not support target selection mode {target_mode.value}."
+                "Select a single cell instead."
+            )
+    else:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode.value} "
-            "is not supported with paste operation for copied buffer."
+            f"Paste operation does not support target selection mode {target_mode.value}."
+        )
+
+    target_mode = sel_modes.from_selection(target)
+    if target_mode not in selection_mode_options:
+        raise err_types.NotSupportedError(
+            f"Paste operation does not support target selection mode {target_mode.value} "
+            f"for copied buffer type {copy_selection_mode.value}."
         )
 
     modification = modifications.Modification(
         operation=modifications.Type.PASTE,
-        input=sel,
+        input=target,
     )
     return [modification]
 
 
 def validate_and_parse_delete(sels, form):
     if "default" not in sels:
-        raise err_types.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Delete operation has no input selection.")
     sel = sels["default"]
+    if sel is None:
+        raise err_types.DoesNotExistError("Delete operation has no input selection.")
     sel_types.check_selection(sel)
 
     sel_mode = sel_modes.from_selection(sel)
@@ -220,10 +224,9 @@ def validate_and_parse_delete(sels, form):
         sel_types.Mode.ROWS,
         sel_types.Mode.COLUMNS,
     ]
-    if not sel_mode in selection_mode_options:
+    if sel_mode not in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode.value} "
-            "is not supported with delete operation."
+            f"Delete operation does not support selection mode {sel_mode.value}."
         )
 
     modification = modifications.Modification(
@@ -235,80 +238,85 @@ def validate_and_parse_delete(sels, form):
 
 def validate_and_parse_move(sels, form):
     if "default" not in sels:
-        raise err_types.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Move operation has no input selection.")
     sel = sels["default"]
+    if sel is None:
+        raise err_types.DoesNotExistError("Move operation has no input selection.")
     sel_types.check_selection(sel)
-    if "target" not in sels:
-        raise err_types.DoesNotExistError("Target does not exist.")
-    target = sels["target"]
-    sel_types.check_selection(target)
 
     sel_mode = sel_modes.from_selection(sel)
+    if isinstance(sel, sel_types.RowRange):
+        pass
+    elif isinstance(sel, sel_types.ColRange):
+        pass
+    else:
+        raise err_types.NotSupportedError(
+            f"Move operation does not support input selection mode {sel_mode.value}."
+        )
+
+    if "target" not in sels:
+        raise err_types.DoesNotExistError("Move operation has no target selection.")
+    target = sels["target"]
+    if target is None:
+        raise err_types.DoesNotExistError("Move operation has no target selection.")
+    sel_types.check_selection(target)
+
     target_mode = sel_modes.from_selection(target)
     num = None
     adjusted_target = None
     if isinstance(sel, sel_types.RowRange):
-      if isinstance(target, sel_types.RowIndex):
-        pass
-      elif isinstance(target, sel_types.RowRange):
-          if target.end.value - target.start.value == 1:
-              target = sel_types.RowIndex(target.start.value)
-          else:
-              raise err_types.NotSupportedError(
-                  f"Selection mode {target_mode} "
-                  "is not supported as target for move operation. "
-                  "Select a single row instead."
-              )
-      else:
-        raise err_types.NotSupportedError(
-            f"Selection mode {target_mode} "
-            "is not supported as target for move operation."
-        )
-    
-      num = sel.end.value - sel.start.value
-      
-      curr_pos = target.value
-      if curr_pos < sel.start.value:
-        adjusted_target = target
-      elif curr_pos > sel.end.value:
-        adjusted_target = sel_types.RowIndex(curr_pos - num)
-      else:
-        raise err_types.UserError(
-          f"Cannot move selection to a target within original bounds."
-        )
-    elif isinstance(sel, sel_types.ColRange):
-      if isinstance(target, sel_types.ColIndex):
-        pass
-      elif isinstance(target, sel_types.ColRange):
-          if target.end.value - target.start.value == 1:
-              target = sel_types.ColIndex(target.start.value)
-          else:
-              raise err_types.NotSupportedError(
-                  f"Selection mode {target_mode} "
-                  "is not supported as target for move operation. "
-                  "Select a single column instead."
-              )
-      else:
-        raise err_types.NotSupportedError(
-            f"Selection mode {target_mode} "
-            "is not supported as target for move operation."
-        )
+        if isinstance(target, sel_types.RowIndex):
+            pass
+        elif isinstance(target, sel_types.RowRange):
+            if target.end.value - target.start.value == 1:
+                target = sel_types.RowIndex(target.start.value)
+            else:
+                raise err_types.NotSupportedError(
+                    f"Move operation does not support target selection mode {target_mode.value}."
+                    "Select a single row instead."
+                )
+        else:
+            raise err_types.NotSupportedError(
+                f"Move operation does not support target selection mode {target_mode.value} for input selection mode {sel_mode.value}."
+            )
 
-      num = sel.end.value - sel.start.value
-      curr_pos = target.value
-      if curr_pos < sel.start.value:
-        adjusted_target = target
-      elif curr_pos > sel.end.value:
-        adjusted_target = sel_types.ColIndex(curr_pos - num)
-      else:
-        raise err_types.UserError(
-          f"Cannot move selection to a target within original bounds."
-        )
-    else:
-        raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode.value} "
-            "is not supported with move operation."
-        )
+        num = sel.end.value - sel.start.value
+
+        curr_pos = target.value
+        if curr_pos < sel.start.value:
+            adjusted_target = target
+        elif curr_pos > sel.end.value:
+            adjusted_target = sel_types.RowIndex(curr_pos - num)
+        else:
+            raise err_types.UserError(
+                "Cannot move input selection to a target selection within original bounds."
+            )
+    elif isinstance(sel, sel_types.ColRange):
+        if isinstance(target, sel_types.ColIndex):
+            pass
+        elif isinstance(target, sel_types.ColRange):
+            if target.end.value - target.start.value == 1:
+                target = sel_types.ColIndex(target.start.value)
+            else:
+                raise err_types.NotSupportedError(
+                    f"Move operation does not support target selection mode {target_mode.value}."
+                    "Select a single column instead."
+                )
+        else:
+            raise err_types.NotSupportedError(
+                f"Move operation does not support target selection mode {target_mode.value} for input selection mode {sel_mode.value}."
+            )
+
+        num = sel.end.value - sel.start.value
+        curr_pos = target.value
+        if curr_pos < sel.start.value:
+            adjusted_target = target
+        elif curr_pos > sel.end.value:
+            adjusted_target = sel_types.ColIndex(curr_pos - num)
+        else:
+            raise err_types.UserError(
+                "Cannot move input selection to a target selection within original bounds."
+            )
     assert num is not None
     assert adjusted_target is not None
 
@@ -338,43 +346,43 @@ def validate_and_parse_move(sels, form):
 
 def validate_and_parse_insert(sels, form):
     if "target" not in sels:
-        raise err_types.DoesNotExistError("Target does not exist.")
-    sel = sels["target"]
-    sel_types.check_selection(sel)
+        raise err_types.DoesNotExistError("Insert operation has no target selection.")
+    target = sels["target"]
+    if target is None:
+        raise err_types.DoesNotExistError("Insert operation has no target selection.")
+    sel_types.check_selection(target)
 
     # In multi-element selections, it is possible
     # for the start value(s) to be greater than the end value(s).
     # In single-element selections, the end value(s) is always
     # greater than the start value(s).
-    sel_mode = sel_modes.from_selection(sel)
-    if isinstance(sel, sel_types.RowRange):
-        if sel.end.value - sel.start.value == 1:
-            sel = sel_types.RowIndex(sel.start.value)
+    target_mode = sel_modes.from_selection(target)
+    if isinstance(target, sel_types.RowRange):
+        if target.end.value - target.start.value == 1:
+            target = sel_types.RowIndex(target.start.value)
         else:
             raise err_types.NotSupportedError(
-                f"Selection mode {sel_mode.value} "
-                "is not supported with insert operation. "
+                f"Insert operation does not support target selection mode {target_mode.value}."
                 "Select a single row instead."
             )
-    elif isinstance(sel, sel_types.ColRange):
-        if sel.end.value - sel.start.value == 1:
-            sel = sel_types.ColIndex(sel.start.value)
+    elif isinstance(target, sel_types.ColRange):
+        if target.end.value - target.start.value == 1:
+            target = sel_types.ColIndex(target.start.value)
         else:
             raise err_types.NotSupportedError(
-                f"Selection mode {sel_mode.value} "
-                "is not supported with insert operation. "
+                f"Insert operation does not support target selection mode {target_mode.value}."
                 "Select a single column instead."
             )
 
-    sel_mode = sel_modes.from_selection(sel)
     selection_mode_options = [
         sel_types.Mode.ROW_INDEX,
         sel_types.Mode.COLUMN_INDEX,
     ]
-    if not sel_mode in selection_mode_options:
+
+    target_mode = sel_modes.from_selection(target)
+    if target_mode not in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode.value} "
-            "is not supported with insert operation."
+            f"Insert operation does not support target selection mode {target_mode.value}."
         )
 
     number = form_helpers.extract(form, "insert-number", name="number")
@@ -382,7 +390,7 @@ def validate_and_parse_insert(sels, form):
     number = form_helpers.parse_int(number, name="number")
 
     inp = modifications.InsertInput(
-        selection=sel,
+        selection=target,
         number=number,
     )
     modification = modifications.Modification(
@@ -394,8 +402,10 @@ def validate_and_parse_insert(sels, form):
 
 def validate_and_parse_erase(sels, form):
     if "default" not in sels:
-        raise err_types.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Erase operation has no input selection.")
     sel = sels["default"]
+    if sel is None:
+        raise err_types.DoesNotExistError("Erase operation has no input selection.")
     sel_types.check_selection(sel)
 
     sel_mode = sel_modes.from_selection(sel)
@@ -404,10 +414,9 @@ def validate_and_parse_erase(sels, form):
         sel_types.Mode.COLUMNS,
         sel_types.Mode.BOX,
     ]
-    if not sel_mode in selection_mode_options:
+    if sel_mode not in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode.value} "
-            "is not supported with erase operation."
+            f"Erase operation does not support selection mode {sel_mode.value}."
         )
 
     inp = modifications.ValueInput(selection=sel, value=None)
@@ -420,8 +429,10 @@ def validate_and_parse_erase(sels, form):
 
 def validate_and_parse_value(sels, form):
     if "default" not in sels:
-        raise err_types.DoesNotExistError("Selection does not exist.")
+        raise err_types.DoesNotExistError("Value operation has no input selection.")
     sel = sels["default"]
+    if sel is None:
+        raise err_types.DoesNotExistError("Value operation has no input selection.")
     sel_types.check_selection(sel)
 
     sel_mode = sel_modes.from_selection(sel)
@@ -430,10 +441,9 @@ def validate_and_parse_value(sels, form):
         sel_types.Mode.COLUMNS,
         sel_types.Mode.BOX,
     ]
-    if not sel_mode in selection_mode_options:
+    if sel_mode not in selection_mode_options:
         raise err_types.NotSupportedError(
-            f"Selection mode {sel_mode.value} "
-            "is not supported with value operation."
+            f"Value operation does not support selection mode {sel_mode.value}."
         )
 
     value = form_helpers.extract(form, "value", name="value")
@@ -659,7 +669,7 @@ options = list(all_operations.keys())
 
 def get(name):
     if name not in all_operations:
-        raise err_types.UnknownOptionError(f"Unknown operation: {name.value}.")
+        raise err_types.UnknownOptionError(f"Unknown bulk-editor operation: {name.value}.")
     operation = all_operations[name]
     return operation
 
@@ -704,21 +714,18 @@ def get_modifications(name):
             op = types.Name.MOVE
             operation = get(op)
 
-            new_pos = sel.end.value + 1
-            if isinstance(sel, sel_types.RowRange):
-              if new_pos > bounds.row.value:
-                raise err_types.UserError("Cannot move forward anymore.")
-              target = sel_types.RowIndex(new_pos)
-            elif isinstance(sel, sel_types.ColRange):
-              if new_pos > bounds.col.value:
-                raise err_types.UserError("Cannot move forward anymore.")
-              target = sel_types.ColIndex(new_pos)
-            else:
-              sel_mode = sel_modes.from_selection(sel)
-              raise err_types.NotSupportedError(
-                  f"Selection mode {sel_mode.value} "
-                  "is not supported with move operation."
-              )
+            target = None
+            if sel is not None:
+                if isinstance(sel, sel_types.RowRange):
+                    new_pos = sel.end.value + 1
+                    if new_pos > bounds.row.value:
+                        raise err_types.UserError("Cannot move rows forward anymore.")
+                    target = sel_types.RowIndex(new_pos)
+                elif isinstance(sel, sel_types.ColRange):
+                    new_pos = sel.end.value + 1
+                    if new_pos > bounds.col.value:
+                        raise err_types.UserError("Cannot move columns forward anymore.")
+                    target = sel_types.ColIndex(new_pos)
             sels = {"default": sel, "target": target}
 
             mods = operation.validate_and_parse(sels, None)
@@ -726,21 +733,18 @@ def get_modifications(name):
             op = types.Name.MOVE
             operation = get(op)
 
-            new_pos = sel.start.value - 1
-            if isinstance(sel, sel_types.RowRange):
-              if new_pos < 0:
-                raise err_types.UserError("Cannot move backward anymore.")
-              target = sel_types.RowIndex(new_pos)
-            elif isinstance(sel, sel_types.ColRange):
-              if new_pos < 0:
-                raise err_types.UserError("Cannot move backward anymore.")
-              target = sel_types.ColIndex(new_pos)
-            else:
-              sel_mode = sel_modes.from_selection(sel)
-              raise err_types.NotSupportedError(
-                  f"Selection mode {sel_mode.value} "
-                  "is not supported with move operation."
-              )
+            target = None
+            if sel is not None:
+                if isinstance(sel, sel_types.RowRange):
+                    new_pos = sel.start.value - 1
+                    if new_pos < 0:
+                        raise err_types.UserError("Cannot move rows backward anymore.")
+                    target = sel_types.RowIndex(new_pos)
+                elif isinstance(sel, sel_types.ColRange):
+                    new_pos = sel.start.value - 1
+                    if new_pos < 0:
+                        raise err_types.UserError("Cannot move columns backward anymore.")
+                    target = sel_types.ColIndex(new_pos)
             sels = {"default": sel, "target": target}
 
             mods = operation.validate_and_parse(sels, None)

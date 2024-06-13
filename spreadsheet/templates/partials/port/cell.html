@@ -40,10 +40,10 @@
     document.querySelector(
       `#cell-${ {{ row }} }-${ {{ col }} }`
     ).addEventListener("mousedown", (event) => {
-      const row = "{{ row }}";
-      const col = "{{ col }}";
-
       if (event.shiftKey) {
+        const row = "{{ row }}";
+        const col = "{{ col }}";
+
         // don't allow focus-in
         event.preventDefault();
 

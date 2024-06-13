@@ -12,26 +12,32 @@
     document.querySelector(
       `#header-row-${ {{ index }} }`
     ).addEventListener("mousedown", (event) => {
-      const row = "{{ index }}";
-      const col = "-1";
+      if (event.shiftKey) {
+        const row = "{{ index }}";
+        const col = "-1";
 
-      begin_selection(row, col);
+        begin_selection(row, col);
+      }
     });
     document.querySelector(
       `#header-row-${ {{ index }} }`
     ).addEventListener("mousemove", (event) => {
-      const row = "{{ index }}";
-      const col = "-1";
+      if (event.shiftKey) {
+        const row = "{{ index }}";
+        const col = "-1";
 
-      request_change_selection(row, col);
+        request_change_selection(row, col);
+      }
     })
     document.querySelector(
       `#header-row-${ {{ index }} }`
     ).addEventListener("mouseup", (event) => {
-      const row = "{{ index }}";
-      const col = "-1";
+      if (event.shiftKey) {
+        const row = "{{ index }}";
+        const col = "-1";
 
-      finalize_selection(row, col);
+        finalize_selection(row, col);
+      }
     });
   </script>
 </div>

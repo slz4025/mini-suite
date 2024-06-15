@@ -473,7 +473,7 @@ class Session:
         try:
             bulk_editor.operations.add_selection(use)
             self.notify_info(resp, f"Inputted selection for {op_name}.")
-        except (err_types.OutOfBoundsError, err_types.NotSupportedError, err_types.UserError, err_types.DoesNotExistError) as e:
+        except (err_types.NotSupportedError, err_types.UserError, err_types.DoesNotExistError) as e:
             e = Exception(f"Could not input selection for {op_name}: {e}")
             self.notify_error(resp, e)
 
@@ -499,7 +499,7 @@ class Session:
             self.add_event(resp, "update-port")
             # update selector in case update selection
             self.add_event(resp, "selector")
-        except (err_types.UserError, err_types.DoesNotExistError, err_types.InputError) as e:
+        except (err_types.OutOfBoundsError, err_types.UserError, err_types.DoesNotExistError, err_types.InputError) as e:
             e = Exception(f"Could not apply {name.value} operation: {e}")
             self.notify_error(resp, e)
 

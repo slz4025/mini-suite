@@ -85,8 +85,6 @@ def from_input(name_str):
 
 
 def validate_cut_selection(use, sel):
-    sel_types.check_selection(sel)
-
     if use == "input":
         sel_mode = sel_modes.from_selection(sel)
         selection_mode_options = [
@@ -105,8 +103,6 @@ def validate_cut_selection(use, sel):
 
 
 def validate_copy_selection(use, sel):
-    sel_types.check_selection(sel)
-
     if use == "input":
         sel_mode = sel_modes.from_selection(sel)
         selection_mode_options = [
@@ -125,8 +121,6 @@ def validate_copy_selection(use, sel):
 
 
 def validate_paste_selection(use, sel):
-    sel_types.check_selection(sel)
-
     if use == "target":
         copy_to_paste = {
             sel_types.Mode.ROWS: sel_types.Mode.ROW_INDEX,
@@ -196,8 +190,6 @@ def validate_paste_selection(use, sel):
 
 
 def validate_delete_selection(use, sel):
-    sel_types.check_selection(sel)
-
     if use == "input":
         sel_mode = sel_modes.from_selection(sel)
         selection_mode_options = [
@@ -214,8 +206,6 @@ def validate_delete_selection(use, sel):
     return sel
 
 def validate_move_selection(use, sel):
-    sel_types.check_selection(sel)
-
     if use == "input":
         sel_mode = sel_modes.from_selection(sel)
         if isinstance(sel, sel_types.RowRange):
@@ -269,8 +259,6 @@ def validate_move_selection(use, sel):
 
 
 def validate_insert_selection(use, sel):
-    sel_types.check_selection(sel)
-
     if use == "target":
         # In multi-element selections, it is possible
         # for the start value(s) to be greater than the end value(s).
@@ -311,8 +299,6 @@ def validate_insert_selection(use, sel):
 
 
 def validate_erase_selection(use, sel):
-    sel_types.check_selection(sel)
-
     if use == "input":
         sel_mode = sel_modes.from_selection(sel)
         selection_mode_options = [
@@ -331,8 +317,6 @@ def validate_erase_selection(use, sel):
 
 
 def validate_value_selection(use, sel):
-    sel_types.check_selection(sel)
-
     if use == "input":
         sel_mode = sel_modes.from_selection(sel)
         selection_mode_options = [
@@ -352,6 +336,7 @@ def validate_value_selection(use, sel):
 
 def validate_and_parse_cut(form):
     sel = get_selection("cut", "input")
+    sel_types.check_selection(sel)
 
     mods = []
 
@@ -373,6 +358,7 @@ def validate_and_parse_cut(form):
 
 def validate_and_parse_copy(form):
     sel = get_selection("copy", "input")
+    sel_types.check_selection(sel)
 
     modification = modifications.Modification(
         operation=modifications.Type.COPY,
@@ -383,6 +369,7 @@ def validate_and_parse_copy(form):
 
 def validate_and_parse_paste(form):
     target = get_selection("paste", "target")
+    sel_types.check_selection(target)
 
     modification = modifications.Modification(
         operation=modifications.Type.PASTE,
@@ -393,6 +380,7 @@ def validate_and_parse_paste(form):
 
 def validate_and_parse_delete(form):
     sel = get_selection("delete", "input")
+    sel_types.check_selection(sel)
 
     modification = modifications.Modification(
         operation=modifications.Type.DELETE,
@@ -403,7 +391,9 @@ def validate_and_parse_delete(form):
 
 def validate_and_parse_move(form):
     sel = get_selection("move", "input")
+    sel_types.check_selection(sel)
     target = get_selection("move", "target")
+    sel_types.check_selection(target)
 
     num = None
     adjusted_target = None
@@ -462,6 +452,7 @@ def validate_and_parse_move(form):
 
 def validate_and_parse_insert(form):
     target = get_selection("insert", "target")
+    sel_types.check_selection(target)
 
     number = form_helpers.extract(form, "insert-number", name="number")
     form_helpers.validate_nonempty(number, name="number")
@@ -480,6 +471,7 @@ def validate_and_parse_insert(form):
 
 def validate_and_parse_erase(form):
     sel = get_selection("erase", "input")
+    sel_types.check_selection(sel)
 
     inp = modifications.ValueInput(selection=sel, value=None)
     modification = modifications.Modification(
@@ -491,6 +483,7 @@ def validate_and_parse_erase(form):
 
 def validate_and_parse_value(form):
     sel = get_selection("value", "input")
+    sel_types.check_selection(sel)
 
     value = form_helpers.extract(form, "value", name="value")
     if value == "":

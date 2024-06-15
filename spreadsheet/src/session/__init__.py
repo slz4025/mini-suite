@@ -345,6 +345,13 @@ class Session:
         resp.set_data(selector_html)
         return resp
 
+    def render_selector(self):
+        resp = Response()
+
+        selector_html = selector.render()
+        resp.set_data(selector_html)
+        return resp
+
     def update_selection(self, form):
         resp = Response()
 
@@ -442,6 +449,8 @@ class Session:
         try:
             bulk_editor.apply_operation(name)
             self.add_event(resp, "update-port")
+            # update selector in case update selection
+            self.add_event(resp, "selector")
             self.notify_info(resp, f"{name.value} operation complete.")
         except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError, err_types.OutOfBoundsError) as e:
             e = Exception(f"Could not apply {name.value} operation: {e}")
@@ -488,6 +497,8 @@ class Session:
             bulk_editor.apply(name, form)
             self.notify_info(resp, f"{name.value} operation complete.")
             self.add_event(resp, "update-port")
+            # update selector in case update selection
+            self.add_event(resp, "selector")
         except (err_types.UserError, err_types.DoesNotExistError, err_types.InputError) as e:
             e = Exception(f"Could not apply {name.value} operation: {e}")
             self.notify_error(resp, e)

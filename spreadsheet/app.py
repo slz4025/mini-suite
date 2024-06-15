@@ -201,6 +201,14 @@ def move_selection(direction):
     return _session.move_selection(direction)
 
 
+@app.route("/selector", methods=['PUT'])
+@errors.handler
+def render_selector():
+    assert htmx is not None
+
+    return _session.render_selector()
+
+
 @app.route("/selector", methods=['POST'])
 @errors.handler
 def update_selection():

@@ -2,7 +2,6 @@ from flask import (
     render_template,
     Response,
 )
-import json
 import os
 
 from settings import Settings
@@ -459,15 +458,19 @@ class Session:
         resp.set_data(use_selection_html)
         return resp
 
-    def add_bulk_editor_selection(self, op, use):
+    def add_bulk_editor_selection(self, op_name, use):
         resp = Response()
 
-        bulk_editor.operations.add_selection(use)
+        try:
+            bulk_editor.operations.add_selection(use)
+            self.notify_info(resp, f"Inputted selection for {op_name}.")
+        except (err_types.OutOfBoundsError, err_types.NotSupportedError, err_types.UserError, err_types.DoesNotExistError) as e:
+            e = Exception(f"Could not input selection for {op_name}: {e}")
+            self.notify_error(resp, e)
 
-        use_selection_html = bulk_editor.operations.render_use_selection(op, use)
+        use_selection_html = bulk_editor.operations.render_use_selection(op_name, use)
         resp.set_data(use_selection_html)
         return resp
-
 
     def render_bulk_editor(self):
         resp = Response()
@@ -485,9 +488,8 @@ class Session:
             bulk_editor.apply(name, form)
             self.notify_info(resp, f"{name.value} operation complete.")
             self.add_event(resp, "update-port")
-        except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError, err_types.OutOfBoundsError) as e:
+        except (err_types.UserError, err_types.DoesNotExistError, err_types.InputError) as e:
             e = Exception(f"Could not apply {name.value} operation: {e}")
-            self.notify_error(resp, e)
             self.notify_error(resp, e)
 
         # Let user perform new operation with new selections.

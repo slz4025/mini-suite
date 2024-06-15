@@ -27,6 +27,7 @@ class Name(Enum):
 class Operation:
     name: Name
     icon: str
-    validate_and_parse: Callable[[List[sel_types.Selection], object], List[modifications.Modification]]
+    validate_selection: Callable[[str, sel_types.Selection], sel_types.Selection]
+    validate_and_parse: Callable[[object], List[modifications.Modification]]
     apply: Callable[[List[modifications.Modification]], None]
     render: Callable[[], str]

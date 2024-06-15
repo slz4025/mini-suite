@@ -30,7 +30,7 @@ def set_buffer_mode(sel):
     buffer_selection_mode = mode
 
 
-def add_selection(use, sel):
+def set_selection(use, sel):
   global selections
   selections[use] = sel
 

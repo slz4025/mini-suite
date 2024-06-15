@@ -287,12 +287,12 @@ def render_bulk_editor_use_selection(op, use):
     return _session.render_bulk_editor_use_selection(op, use)
 
 
-@app.route("/bulk-editor/use-selection/<op>/<use>", methods=['POST'])
+@app.route("/bulk-editor/use-selection/<op_name>/<use>", methods=['POST'])
 @errors.handler
-def add_bulk_editor_selection(op, use):
+def add_bulk_editor_selection(op_name, use):
     assert htmx is not None
 
-    return _session.add_bulk_editor_selection(op, use)
+    return _session.add_bulk_editor_selection(op_name, use)
 
 
 @app.route("/bulk-editor", methods=['PUT'])

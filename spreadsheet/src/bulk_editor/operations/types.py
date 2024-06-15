@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable, List, Optional
+from typing import Callable, List
 
 import src.selector.types as sel_types
 
@@ -16,6 +16,8 @@ class Name(Enum):
     # If target is chosen as a row or column,
     # input will be moved right before contents of that row/column.
     MOVE = 'Move'
+    SORT = 'Sort'
+    REVERSE = 'Reverse'
     INSERT = 'Insert'
     ERASE = 'Erase'
     VALUE = 'Value'

@@ -64,6 +64,10 @@ def from_input(name_str):
             return types.Name.DELETE
         case "Move":
             return types.Name.MOVE
+        case "Sort":
+            return types.Name.SORT
+        case "Reverse":
+            return types.Name.REVERSE
         case "Insert":
             return types.Name.INSERT
         case "Erase":
@@ -258,6 +262,41 @@ def validate_move_selection(use, sel):
     return sel
 
 
+def validate_sort_selection(use, sel):
+    if use == "target":
+        # In multi-element selections, it is possible
+        # for the start value(s) to be greater than the end value(s).
+        # In single-element selections, the end value(s) is always
+        # greater than the start value(s).
+        target_mode = sel_modes.from_selection(sel)
+        if isinstance(sel, sel_types.ColRange):
+            if sel.end.value - sel.start.value == 1:
+                sel = sel_types.ColIndex(sel.start.value)
+            else:
+                raise err_types.NotSupportedError(
+                    f"Sort operation does not support target selection mode {target_mode.value}. "
+                    "Select a single column instead."
+                )
+
+        selection_mode_options = [
+            sel_types.Mode.COLUMN_INDEX,
+        ]
+
+        target_mode = sel_modes.from_selection(sel)
+        if target_mode not in selection_mode_options:
+            raise err_types.NotSupportedError(
+                f"Sort operation does not support target selection mode {target_mode.value}."
+            )
+    else:
+        raise err_types.NotSupportedError(f"Sort does not accept a selection of purpose {use}.")
+
+    return sel
+
+
+def validate_reverse_selection(use, sel):
+    raise err_types.NotSupported("Reverse does not accept selections.")
+
+
 def validate_insert_selection(use, sel):
     if use == "target":
         # In multi-element selections, it is possible
@@ -450,6 +489,25 @@ def validate_and_parse_move(form):
     return mods
 
 
+def validate_and_parse_sort(form):
+    target = get_selection("insert", "target")
+    sel_types.check_selection(target)
+
+    modification = modifications.Modification(
+        operation=modifications.Type.SORT,
+        input=target,
+    )
+    return [modification]
+
+
+def validate_and_parse_reverse(form):
+    modification = modifications.Modification(
+        operation=modifications.Type.REVERSE,
+        input=None,
+    )
+    return [modification]
+
+
 def validate_and_parse_insert(form):
     target = get_selection("insert", "target")
     sel_types.check_selection(target)
@@ -559,6 +617,16 @@ def apply_move(mods):
         sel_state.set_selection(new_sel)
 
 
+def apply_sort(mods):
+    for modification in mods:
+        modifications.apply_modification(modification)
+
+
+def apply_reverse(mods):
+    for modification in mods:
+        modifications.apply_modification(modification)
+
+
 def apply_insert(mods):
     for modification in mods:
         modifications.apply_modification(modification)
@@ -613,6 +681,20 @@ def render_move_inputs():
             "partials/bulk_editor/move.html",
             use_sel_input=use_sel_input,
             use_sel_target=use_sel_target,
+    )
+
+
+def render_sort_inputs():
+    use_sel = render_use_selection("sort", "target")
+    return render_template(
+            "partials/bulk_editor/sort.html",
+            use_sel=use_sel,
+    )
+
+
+def render_reverse_inputs():
+    return render_template(
+            "partials/bulk_editor/reverse.html",
     )
 
 
@@ -684,6 +766,22 @@ all_operations = {
         apply=apply_move,
         render=render_move_inputs,
     ),
+    types.Name.SORT: types.Operation(
+        name=types.Name.SORT,
+        icon="",
+        validate_selection=validate_sort_selection,
+        validate_and_parse=validate_and_parse_sort,
+        apply=apply_sort,
+        render=render_sort_inputs,
+    ),
+    types.Name.REVERSE: types.Operation(
+        name=types.Name.REVERSE,
+        icon="",
+        validate_selection=validate_reverse_selection,
+        validate_and_parse=validate_and_parse_reverse,
+        apply=apply_reverse,
+        render=render_reverse_inputs,
+    ),
     types.Name.INSERT: types.Operation(
         name=types.Name.INSERT,
         icon="➕",
@@ -745,6 +843,15 @@ def get_modifications(name):
         case types.Name.PASTE:
             state.set_selection("target", sel)
             op = types.Name.PASTE
+            operation = get(op)
+            mods = operation.validate_and_parse(None)
+        case types.Name.SORT:
+            state.set_selection("target", sel)
+            op = types.Name.SORT
+            operation = get(op)
+            mods = operation.validate_and_parse(None)
+        case types.Name.REVERSE:
+            op = types.Name.REVERSE
             operation = get(op)
             mods = operation.validate_and_parse(None)
         case types.Name.INSERT:

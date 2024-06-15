@@ -34,6 +34,22 @@ class ValueInput:
 Input = Union[InsertInput, ValueInput, sel_types.Selection]
 
 
+# return array representing order of elements in L
+# where Nones are first, then numericals, then strings
+def order(L):
+    L_with_index = [(e, i) for i, e in enumerate(L)]
+    nones = [(e, i) for e, i in L_with_index if e is None]
+    numerical = sorted([
+        (e, i) for e, i in L_with_index
+        if isinstance(e, bool) or isinstance(e, int) or isinstance(e, float)
+    ])
+    strings = sorted([(e, i) for e, i in L_with_index if isinstance(e, str)])
+    final = nones + numerical + strings
+    order_by_index = [i for e, i in final]
+    assert len(order_by_index) == len(L)
+    return order_by_index
+
+
 def apply_delete(sel):
     start = None
     end = None
@@ -168,12 +184,36 @@ def apply_paste(sel):
     ptr[row_start:row_end, col_start:col_end] = copied_buffer
 
 
+def apply_sort(sel):
+    index = None
+    if isinstance(sel, sel_types.ColIndex):
+        index = sel.value
+    else:
+        raise err_types.NotSupportedError(
+            f"Selection type {type(sel)} is not valid for sort."
+        )
+    assert index is not None
+
+    ptr = sheet.data.get()
+    order_col = order(ptr[:, index])
+    # sort rows
+    sheet.data.set(ptr[order_col])
+
+
+def apply_reverse(sel):
+    ptr = sheet.data.get()
+    # reverse rows
+    sheet.data.set(np.flipud(ptr))
+
+
 class Type(Enum):
     DELETE = 'DELETE'
     INSERT = 'INSERT'
     VALUE = 'VALUE'
     COPY = 'COPY'
     PASTE = 'PASTE'
+    SORT = 'SORT'
+    REVERSE = 'REVERSE'
 
 
 @dataclass
@@ -188,6 +228,8 @@ operations = {
     Type.VALUE: Operation(name=Type.VALUE, apply=apply_value),
     Type.COPY: Operation(name=Type.COPY, apply=apply_copy),
     Type.PASTE: Operation(name=Type.PASTE, apply=apply_paste),
+    Type.SORT: Operation(name=Type.SORT, apply=apply_sort),
+    Type.REVERSE: Operation(name=Type.REVERSE, apply=apply_reverse),
 }
 
 

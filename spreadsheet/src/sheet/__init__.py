@@ -1,10 +1,10 @@
 import numpy as np
-from typing import Any, Dict
 
 import src.errors.types as err_types
 import src.viewer as viewer
 import src.selector.types as sel_types
 
+import src.sheet.compiler as compiler
 import src.sheet.data as sheet_data
 import src.sheet.files as files
 import src.sheet.graph as graph
@@ -18,7 +18,7 @@ import src.sheet.types as sheet_types
 # a numpy array of underlying values, does not easily allow for computation
 # of dependents, we just end up recomputing all viewable cells that are
 # likely to depend on the updated cell, or all viewable formulas.
-# 
+#
 # This method is therefore not efficient for a sheet with lots of
 # computationally-expensive, deeply nested, multi-dependency formulas.
 # However, we are operating under the assumption that this tool will
@@ -109,7 +109,8 @@ def update_cell_value(cell_position, value):
         cell_position.row_index.value, cell_position.col_index.value
     ]
 
-    ptr[cell_position.row_index.value, cell_position.col_index.value] = compiler.user_string_to_value(value)
+    compiled_value = compiler.user_string_to_value(value)
+    ptr[cell_position.row_index.value, cell_position.col_index.value] = compiled_value
 
     # Determine if new value is valid.
     # If not, rollback to previous value.

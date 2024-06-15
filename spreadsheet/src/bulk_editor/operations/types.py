@@ -12,6 +12,9 @@ class Name(Enum):
     COPY = 'Copy'
     PASTE = 'Paste'
     DELETE = 'Delete'
+    # Puts input right after target.
+    # If target is chosen as a row or column,
+    # input will be moved right before contents of that row/column.
     MOVE = 'Move'
     INSERT = 'Insert'
     ERASE = 'Erase'

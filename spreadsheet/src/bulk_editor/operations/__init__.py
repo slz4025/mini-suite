@@ -176,10 +176,6 @@ def validate_paste_selection(use, sel):
                     f"Paste operation does not support target selection mode {target_mode.value}. "
                     "Select a single cell instead."
                 )
-        else:
-            raise err_types.NotSupportedError(
-                f"Paste operation does not support target selection mode {target_mode.value}."
-            )
 
         target_mode = sel_modes.from_selection(sel)
         if target_mode not in selection_mode_options:

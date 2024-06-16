@@ -242,12 +242,12 @@ def render_editor_operations():
     return _session.render_editor_operations()
 
 
-@app.route("/editor/operation/<op_name_str>", methods=['PUT'])
+@app.route("/editor/operation/<op_name>", methods=['PUT'])
 @errors.handler
-def preview_editor_operation(op_name_str):
+def preview_editor_operation(op_name):
     assert htmx is not None
 
-    return _session.preview_editor_operation(op_name_str)
+    return _session.preview_editor_operation(op_name)
 
 
 @app.route("/editor", methods=['PUT'])

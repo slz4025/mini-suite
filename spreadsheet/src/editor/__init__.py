@@ -18,7 +18,7 @@ def is_editing(cell_position):
     return focused_cell_position.equals(cell_position)
 
 
-def render(op_name_str=None):
+def render(op_name=None):
     show_help = command_palette.state.get_show_help()
     show_editor = command_palette.state.get_show_editor()
 
@@ -44,8 +44,7 @@ def render(op_name_str=None):
         row = focused_cell.row_index.value
         col = focused_cell.col_index.value
 
-        if op_name_str is not None:
-            op_name = operations.from_input(op_name_str)
+        if op_name is not None:
             data = operations.get_value(op_name)
         else:
             data = sheet.data.get_cell_value(focused_cell)

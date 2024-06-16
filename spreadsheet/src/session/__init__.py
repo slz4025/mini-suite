@@ -406,10 +406,10 @@ class Session:
         resp.set_data(editor_operations_html)
         return resp
 
-    def preview_editor_operation(self, op_name_str):
+    def preview_editor_operation(self, op_name):
         resp = Response()
 
-        editor_html = editor.render(op_name_str=op_name_str)
+        editor_html = editor.render(op_name=op_name)
         resp.set_data(editor_html)
         return resp
 

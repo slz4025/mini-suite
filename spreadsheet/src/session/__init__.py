@@ -430,10 +430,9 @@ class Session:
         resp.set_data(bulk_editor_html)
         return resp
 
-    def use_bulk_editor_operation(self, name_str):
+    def use_bulk_editor_operation(self, name):
         resp = Response()
 
-        name = bulk_editor.operations.from_input(name_str)
         bulk_editor.operations.state.set_current_operation(name)
         bulk_editor.operations.state.reset_selections()
 
@@ -441,43 +440,30 @@ class Session:
         resp.set_data(bulk_editor_operations_html)
         return resp
 
-    def apply_bulk_editor_operation(self, name_str):
+    def render_bulk_editor_use_selection(self, name, use):
         resp = Response()
 
-        name = bulk_editor.operations.from_input(name_str)
-
-        try:
-            bulk_editor.apply_operation(name)
-            self.add_event(resp, "update-port")
-            # update selector in case update selection
-            self.add_event(resp, "selector")
-            self.notify_info(resp, f"{name.value} operation complete.")
-        except (err_types.UserError, err_types.NotSupportedError, err_types.DoesNotExistError, err_types.OutOfBoundsError) as e:
-            e = Exception(f"Could not apply {name.value} operation: {e}")
-            self.notify_error(resp, e)
-
-        bulk_editor_html = bulk_editor.render()
-        resp.set_data(bulk_editor_html)
-        return resp
-
-    def render_bulk_editor_use_selection(self, op, use):
-        resp = Response()
-
-        use_selection_html = bulk_editor.operations.render_use_selection(op, use)
+        use_selection_html = bulk_editor.operations.selection.render(name, use)
         resp.set_data(use_selection_html)
         return resp
 
-    def add_bulk_editor_selection(self, op_name, use):
+    def add_bulk_editor_selection(self, name, use):
         resp = Response()
 
+        selection = selector.state.get_selection()
+
+        curr_name = bulk_editor.operations.state.get_current_operation()
+        assert curr_name == name
+        operation = bulk_editor.operations.get(curr_name)
+
         try:
-            bulk_editor.operations.add_selection(use)
-            self.notify_info(resp, f"Inputted selection for {op_name}.")
+            bulk_editor.operations.selection.add(use, operation, selection)
+            self.notify_info(resp, f"Inputted selection for {name}.")
         except (err_types.NotSupportedError, err_types.UserError, err_types.DoesNotExistError) as e:
-            e = Exception(f"Could not input selection for {op_name}: {e}")
+            e = Exception(f"Could not input selection for {name}: {e}")
             self.notify_error(resp, e)
 
-        use_selection_html = bulk_editor.operations.render_use_selection(op_name, use)
+        use_selection_html = bulk_editor.operations.selection.render(name, use)
         resp.set_data(use_selection_html)
         return resp
 
@@ -488,6 +474,18 @@ class Session:
         resp.set_data(bulk_editor_html)
         return resp
 
+    def apply_bulk_editor_shortcut(self, shortcut):
+        name, form, sels = bulk_editor.get_shortcut_inputs(shortcut)
+
+        bulk_editor.operations.state.set_current_operation(name)
+        operation = bulk_editor.operations.get(name)
+
+        bulk_editor.operations.state.reset_selections()
+        for k, v in sels.items():
+            bulk_editor.operations.selection.add(k, operation, v)
+
+        return self.apply_bulk_edit(form)
+
     def apply_bulk_edit(self, form):
         resp = Response()
 
@@ -495,12 +493,12 @@ class Session:
 
         try:
             bulk_editor.apply(name, form)
-            self.notify_info(resp, f"{name.value} operation complete.")
+            self.notify_info(resp, f"{name} operation complete.")
             self.add_event(resp, "update-port")
             # update selector in case update selection
             self.add_event(resp, "selector")
         except (err_types.OutOfBoundsError, err_types.UserError, err_types.DoesNotExistError, err_types.InputError) as e:
-            e = Exception(f"Could not apply {name.value} operation: {e}")
+            e = Exception(f"Could not apply {name} operation: {e}")
             self.notify_error(resp, e)
 
         # Let user perform new operation with new selections.

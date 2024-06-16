@@ -3,10 +3,8 @@ from typing import Dict
 import src.selector.modes as sel_modes
 import src.selector.types as sel_types
 
-import src.bulk_editor.operations.types as types
 
-
-current_operation = types.Name.DELETE
+current_operation = "Delete"
 buffer_selection_mode = None
 selections: Dict[str, sel_types.Selection] = {}
 

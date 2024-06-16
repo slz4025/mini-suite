@@ -71,56 +71,56 @@ window.addEventListener('keydown', async function(event) {
 
         // bulk editor
         case 'x':
-          htmx.ajax('POST', `/bulk-editor/apply/Cut`, {
+          htmx.ajax('POST', `/bulk-editor/Cut`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
           });
           break;
         case 'c':
-          htmx.ajax('POST', `/bulk-editor/apply/Copy`, {
+          htmx.ajax('POST', `/bulk-editor/Copy`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
           });
           break;
         case 'v':
-          htmx.ajax('POST', `/bulk-editor/apply/Paste`, {
+          htmx.ajax('POST', `/bulk-editor/Paste`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
           });
           break;
         case 'm':
-          htmx.ajax('POST', `/bulk-editor/apply/Move Forward`, {
+          htmx.ajax('POST', `/bulk-editor/Move Forward`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
           });
           break;
         case 'n':
-          htmx.ajax('POST', `/bulk-editor/apply/Move Backward`, {
+          htmx.ajax('POST', `/bulk-editor/Move Backward`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
           });
           break;
         case 'i':
-          htmx.ajax('POST', `/bulk-editor/apply/Insert`, {
+          htmx.ajax('POST', `/bulk-editor/Insert`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
           });
           break;
         case 'l':
-          htmx.ajax('POST', `/bulk-editor/apply/Insert End Rows`, {
+          htmx.ajax('POST', `/bulk-editor/Insert End Rows`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
           });
           break;
         case 'L':
-          htmx.ajax('POST', `/bulk-editor/apply/Insert End Columns`, {
+          htmx.ajax('POST', `/bulk-editor/Insert End Columns`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
           });
           break;
         // On a Mac, this is done via Fn+Backspace (which might say "delete").
         case 'Delete':
-          htmx.ajax('POST', `/bulk-editor/apply/Delete`, {
+          htmx.ajax('POST', `/bulk-editor/Delete`, {
             target: `#bulk-editor`,
             swap: "outerHTML",
           });

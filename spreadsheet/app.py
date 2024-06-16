@@ -273,18 +273,9 @@ def toggle_bulk_editor():
 def use_bulk_editor_operation():
     assert htmx is not None
 
-    name_str = request.args["operation"]
+    name = request.args["operation"]
 
-    return _session.use_bulk_editor_operation(name_str)
-
-
-# Bulk-editor operations that only require at most a default selection.
-@app.route("/bulk-editor/apply/<name_str>", methods=['POST'])
-@errors.handler
-def apply_bulk_editor_operation(name_str):
-    assert htmx is not None
-
-    return _session.apply_bulk_editor_operation(name_str)
+    return _session.use_bulk_editor_operation(name)
 
 
 @app.route("/bulk-editor/use-selection/<op>/<use>", methods=['PUT'])
@@ -295,12 +286,12 @@ def render_bulk_editor_use_selection(op, use):
     return _session.render_bulk_editor_use_selection(op, use)
 
 
-@app.route("/bulk-editor/use-selection/<op_name>/<use>", methods=['POST'])
+@app.route("/bulk-editor/use-selection/<name>/<use>", methods=['POST'])
 @errors.handler
-def add_bulk_editor_selection(op_name, use):
+def add_bulk_editor_selection(name, use):
     assert htmx is not None
 
-    return _session.add_bulk_editor_selection(op_name, use)
+    return _session.add_bulk_editor_selection(name, use)
 
 
 @app.route("/bulk-editor", methods=['PUT'])
@@ -309,6 +300,14 @@ def render_bulk_editor():
     assert htmx is not None
 
     return _session.render_bulk_editor()
+
+
+@app.route("/bulk-editor/<shortcut>", methods=['POST'])
+@errors.handler
+def apply_bulk_editor_shortcut(shortcut):
+    assert htmx is not None
+
+    return _session.apply_bulk_editor_shortcut(shortcut)
 
 
 @app.route("/bulk-editor", methods=['POST'])

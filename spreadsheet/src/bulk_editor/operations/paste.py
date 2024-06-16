@@ -52,20 +52,16 @@ class Paste(Operation):
         return sel
 
     @classmethod
-    def validate_and_parse(cls, form):
+    def apply(cls, form):
         target = selection.get(cls.name(), "target")
         sel_types.check_selection(target)
 
-        modification = modifications.Transaction(
-            modification_name="PASTE",
-            input=modifications.PasteInput(target=target),
+        modifications.apply_transaction(
+            modifications.Transaction(
+                modification_name="PASTE",
+                input=modifications.PasteInput(target=target),
+            )
         )
-        return [modification]
-
-    @classmethod
-    def apply(cls, mods):
-        for modification in mods:
-            modifications.apply_transaction(modification)
 
     @classmethod
     def render(cls):

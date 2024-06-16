@@ -28,8 +28,7 @@ def render():
 
 
 def apply(name, form):
-    modifications = operations.validate_and_parse(name, form)
-    operations.apply(name, modifications)
+    operations.apply(name, form)
 
 
 def get_shortcut_inputs(shortcut):

@@ -39,7 +39,7 @@ class Insert(Operation):
         return sel
 
     @classmethod
-    def validate_and_parse(cls, form):
+    def apply(cls, form):
         target = selection.get(cls.name(), "target")
         sel_types.check_selection(target)
 
@@ -47,16 +47,12 @@ class Insert(Operation):
         form_helpers.validate_nonempty(number, name="number")
         number = form_helpers.parse_int(number, name="number")
 
-        modification = modifications.Transaction(
-            modification_name="INSERT",
-            input=modifications.InsertInput(target=target, number=number),
+        modifications.apply_transaction(
+            modifications.Transaction(
+                modification_name="INSERT",
+                input=modifications.InsertInput(target=target, number=number),
+            )
         )
-        return [modification]
-
-    @classmethod
-    def apply(cls, mods):
-        for modification in mods:
-            modifications.apply_transaction(modification)
 
     @classmethod
     def render(cls):

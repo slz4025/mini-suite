@@ -38,26 +38,17 @@ class Copy(Operation):
         return sel
 
     @classmethod
-    def validate_and_parse(cls, form):
+    def apply(cls, form):
         sel = selection.get(cls.name(), "input")
         sel_types.check_selection(sel)
-
-        modification = modifications.Transaction(
-            modification_name="COPY",
-            input=modifications.CopyInput(selection=sel),
-        )
-        return [modification]
-
-    @classmethod
-    def apply(cls, mods):
-        assert len(mods) == 1
-        copy_mod = mods[0]
-        assert copy_mod.modification_name == "COPY"
-        sel = copy_mod.input.selection
-
         state.set_buffer_mode(sel)
-        for modification in mods:
-            modifications.apply_transaction(modification)
+
+        modifications.apply_transaction(
+            modifications.Transaction(
+                modification_name="COPY",
+                input=modifications.CopyInput(selection=sel),
+            )
+        )
 
     @classmethod
     def render(cls):

@@ -55,7 +55,7 @@ class Move(Operation):
         return sel
 
     @classmethod
-    def validate_and_parse(cls, form):
+    def apply(cls, form):
         sel = selection.get(cls.name(), "input")
         sel_types.check_selection(sel)
         target = selection.get(cls.name(), "target")
@@ -110,22 +110,11 @@ class Move(Operation):
                 input=modifications.PasteInput(target=adjusted_target),
             ),
         ]
-        return mods
 
-    @classmethod
-    def apply(cls, mods):
-        for modification in mods:
-            modifications.apply_transaction(modification)
+        for mod in mods:
+            modifications.apply_transaction(mod)
 
         # update selection to wherever cells ended up
-        copy_mod = mods[0]
-        assert copy_mod.modification_name == "COPY"
-        sel = copy_mod.input.selection
-
-        paste_mod = mods[-1]
-        assert paste_mod.modification_name == "PASTE"
-        target = paste_mod.input.target
-
         new_start = target.value
         if isinstance(sel, sel_types.RowRange):
             num = sel.end.value - sel.start.value

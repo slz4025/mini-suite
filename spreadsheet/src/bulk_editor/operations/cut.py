@@ -38,36 +38,23 @@ class Cut(Operation):
         return sel
 
     @classmethod
-    def validate_and_parse(cls, form):
+    def apply(cls, form):
         sel = selection.get(cls.name(), "input")
         sel_types.check_selection(sel)
-
-        mods = []
-
-        modification = modifications.Transaction(
-            modification_name="COPY",
-            input=modifications.CopyInput(selection=sel),
-        )
-        mods.append(modification)
-
-        modification = modifications.Transaction(
-            modification_name="VALUE",
-            input=modifications.ValueInput(selection=sel, value=None),
-        )
-        mods.append(modification)
-
-        return mods
-
-    @classmethod
-    def apply(cls, mods):
-        assert len(mods) == 2
-        copy_mod = mods[0]
-        assert copy_mod.modification_name == "COPY"
-        sel = copy_mod.input.selection
-
         state.set_buffer_mode(sel)
-        for modification in mods:
-            modifications.apply_transaction(modification)
+
+        mods = [
+            modifications.Transaction(
+                modification_name="COPY",
+                input=modifications.CopyInput(selection=sel),
+            ),
+            modifications.Transaction(
+                modification_name="VALUE",
+                input=modifications.ValueInput(selection=sel, value=None),
+            ),
+        ]
+        for mod in mods:
+            modifications.apply_transaction(mod)
 
     @classmethod
     def render(cls):

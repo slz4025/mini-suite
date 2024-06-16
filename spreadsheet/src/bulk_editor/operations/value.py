@@ -39,7 +39,7 @@ class Value(Operation):
         return sel
 
     @classmethod
-    def validate_and_parse(cls, form):
+    def apply(cls, form):
         sel = selection.get(cls.name(), "input")
         sel_types.check_selection(sel)
 
@@ -47,16 +47,12 @@ class Value(Operation):
         if value == "":
             raise err_types.InputError("Field 'value' was not given.")
 
-        modification = modifications.Transaction(
-            modification_name="VALUE",
-            input=modifications.ValueInput(selection=sel, value=value),
+        modifications.apply_transaction(
+            modifications.Transaction(
+                modification_name="VALUE",
+                input=modifications.ValueInput(selection=sel, value=value),
+            )
         )
-        return [modification]
-
-    @classmethod
-    def apply(cls, mods):
-        for modification in mods:
-            modifications.apply_transaction(modification)
 
     @classmethod
     def render(cls):

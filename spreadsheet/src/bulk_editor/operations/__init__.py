@@ -33,15 +33,9 @@ def get(name):
     return operations_map[name]
 
 
-def validate_and_parse(name, form):
+def apply(name, form):
     operation = get(name)
-    mods = operation.validate_and_parse(form)
-    return mods
-
-
-def apply(name, mods):
-    operation = get(name)
-    operation.apply(mods)
+    operation.apply(form)
 
 
 def render(name):

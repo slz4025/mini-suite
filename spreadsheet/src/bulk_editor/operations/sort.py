@@ -37,20 +37,16 @@ class Sort(Operation):
         return sel
 
     @classmethod
-    def validate_and_parse(cls, form):
+    def apply(cls, form):
         target = selection.get(cls.name(), "target")
         sel_types.check_selection(target)
 
-        modification = modifications.Transaction(
-            modification_name="SORT",
-            input=modifications.SortInput(target=target),
+        modifications.apply_transaction(
+            modifications.Transaction(
+                modification_name="SORT",
+                input=modifications.SortInput(target=target),
+            )
         )
-        return [modification]
-
-    @classmethod
-    def apply(cls, mods):
-        for modification in mods:
-            modifications.apply_transaction(modification)
 
     @classmethod
     def render(cls):

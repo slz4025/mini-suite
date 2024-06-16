@@ -13,11 +13,7 @@ class Operation:
         raise Exception("Not implemented")
 
     @classmethod
-    def validate_and_parse(cls, form):
-        raise Exception("Not implemented")
-
-    @classmethod
-    def apply(cls, mods):
+    def apply(cls, form):
         raise Exception("Not implemented")
 
     @classmethod

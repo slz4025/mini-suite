@@ -28,12 +28,12 @@ def root():
     return _session.root()
 
 
-@app.route("/notification/<show>", methods=['PUT'])
+@app.route("/notification/<id>", methods=['PUT'])
 @errors.handler
-def render_notification(show):
+def render_notification(id):
     assert htmx is not None
 
-    return _session.render_notification(show)
+    return _session.render_notification(id)
 
 
 @app.route("/command-palette/toggle", methods=['PUT'])

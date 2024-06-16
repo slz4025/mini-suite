@@ -33,16 +33,16 @@ class Session:
             resp.headers['HX-Trigger'] += "," + event
 
     def notify_info(self, resp, message):
-        self.add_event(resp, "notification")
         notifications.state.set_info(message)
+        self.add_event(resp, "notification")
 
     def notify_error(self, resp, error):
-        self.add_event(resp, "notification")
         notifications.state.set_error(error)
+        self.add_event(resp, "notification")
 
     def reset_notifications(self, resp):
-        self.add_event(resp, "notification")
         notifications.state.reset()
+        self.add_event(resp, "notification")
 
     def render_null_helper(self):
         return render_template("partials/null.html")
@@ -70,7 +70,7 @@ class Session:
             self.notify_error(resp, e)
 
         self.add_event(resp, "editor")
-      
+ 
         return cell_html
 
     def render_body_helper(self, resp):
@@ -82,7 +82,7 @@ class Session:
         command_palette_html = command_palette.render()
         port_html = self.render_port_helper(resp)
         # render last in case set any notifications from previous steps
-        notification_html = notifications.render(False)
+        notification_html = notifications.render()
 
         body_html = render_template(
                 "partials/body.html",
@@ -133,14 +133,15 @@ class Session:
 
     # TODO: Later, consider supporting an array of notifications
     # with timeouts we maintain server-side.
-    def render_notification(self, show):
+    def render_notification(self, id):
         resp = Response()
 
-        show_notifications = show == "on"
-        if not show_notifications:
+        # If we are on same notification, clear.
+        curr_id = notifications.state.get_id()
+        if id == curr_id:
             self.reset_notifications(resp)
 
-        notification_html = notifications.render(show_notifications)
+        notification_html = notifications.render()
         resp.set_data(notification_html)
         return resp
 

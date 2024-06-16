@@ -14,10 +14,16 @@ import src.bulk_editor.operations.state as state
 import src.bulk_editor.operations.types as types
 
 
-def add_selection(use):
-    sel = sel_state.get_selection()
-    curr_name = state.get_current_operation()
-    op = get(curr_name)
+def add_selection(use, selection=None, operation=None):
+    if selection is None:
+        sel = sel_state.get_selection()
+    else:
+        sel = selection
+    if operation is None:
+        curr_name = state.get_current_operation()
+        op = get(curr_name)
+    else:
+        op = operation
     sel = op.validate_selection(use, sel)
     state.set_selection(use, sel)
 
@@ -811,49 +817,50 @@ def get_all():
 
 def get_modifications(name):
     bounds = sheet.data.get_bounds()
-    sel = sel_state.get_selection()
 
     op = None
     mods = None
     match name:
         case types.Name.CUT:
-            state.set_selection("input", sel)
             op = types.Name.CUT
             operation = get(op)
+            add_selection("input", operation=operation)
             mods = operation.validate_and_parse(None)
         case types.Name.COPY:
-            state.set_selection("input", sel)
             op = types.Name.COPY
             operation = get(op)
+            add_selection("input", operation=operation)
             mods = operation.validate_and_parse(None)
         case types.Name.PASTE:
-            state.set_selection("target", sel)
             op = types.Name.PASTE
             operation = get(op)
+            add_selection("target", operation=operation)
             mods = operation.validate_and_parse(None)
         case types.Name.SORT:
-            state.set_selection("target", sel)
             op = types.Name.SORT
             operation = get(op)
+            add_selection("target", operation=operation)
             mods = operation.validate_and_parse(None)
         case types.Name.REVERSE:
             op = types.Name.REVERSE
             operation = get(op)
             mods = operation.validate_and_parse(None)
         case types.Name.INSERT:
-            state.set_selection("target", sel)
             op = types.Name.INSERT
             operation = get(op)
+            add_selection("target", operation=operation)
             mods = operation.validate_and_parse({"insert-number": "1"})
         case types.Name.DELETE:
-            state.set_selection("input", sel)
             op = types.Name.DELETE
             operation = get(op)
+            add_selection("input", operation=operation)
             mods = operation.validate_and_parse(None)
         case types.Name.MOVE_FORWARD:
             op = types.Name.MOVE
             operation = get(op)
+            add_selection("input", operation=operation)
 
+            sel = sel_state.get_selection()
             target = None
             if sel is not None:
                 if isinstance(sel, sel_types.RowRange):
@@ -866,14 +873,15 @@ def get_modifications(name):
                     if new_pos > bounds.col.value:
                         raise err_types.UserError("Cannot move columns forward anymore.")
                     target = sel_types.ColIndex(new_pos)
-            state.set_selection("input", sel)
-            state.set_selection("target", target)
+            add_selection("target", selection=target, operation=operation)
 
             mods = operation.validate_and_parse(None)
         case types.Name.MOVE_BACKWARD:
             op = types.Name.MOVE
             operation = get(op)
+            add_selection("input", operation=operation)
 
+            sel = sel_state.get_selection()
             target = None
             if sel is not None:
                 if isinstance(sel, sel_types.RowRange):
@@ -886,21 +894,20 @@ def get_modifications(name):
                     if new_pos < 0:
                         raise err_types.UserError("Cannot move columns backward anymore.")
                     target = sel_types.ColIndex(new_pos)
-            state.set_selection("input", sel)
-            state.set_selection("target", target)
+            add_selection("target", selection=target, operation=operation)
 
             mods = operation.validate_and_parse(None)
         case types.Name.INSERT_END_ROWS:
             op = types.Name.INSERT
             operation = get(op)
             target = sel_types.RowIndex(bounds.row.value)
-            state.set_selection("target", target)
+            add_selection("target", selection=target, operation=operation)
             mods = operation.validate_and_parse({"insert-number": "1"})
         case types.Name.INSERT_END_COLS:
             op = types.Name.INSERT
             operation = get(op)
             target = sel_types.ColIndex(bounds.col.value)
-            state.set_selection("target", target)
+            add_selection("target", selection=target, operation=operation)
             mods = operation.validate_and_parse({"insert-number": "1"})
         case _:
             raise err_types.NotSupportedError(

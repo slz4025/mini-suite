@@ -587,7 +587,7 @@ def apply_move(mods):
     sel = copy_mod.input.selection
 
     paste_mod = mods[-1]
-    assert copy_mod.modification_name == "PASTE"
+    assert paste_mod.modification_name == "PASTE"
     target = paste_mod.input.target
 
     new_start = target.value

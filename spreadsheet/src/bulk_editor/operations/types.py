@@ -33,6 +33,6 @@ class Operation:
     name: Name
     icon: str
     validate_selection: Callable[[str, sel_types.Selection], sel_types.Selection]
-    validate_and_parse: Callable[[object], List[modifications.Modification]]
-    apply: Callable[[List[modifications.Modification]], None]
+    validate_and_parse: Callable[[object], List[modifications.Transaction]]
+    apply: Callable[[List[modifications.Transaction]], None]
     render: Callable[[], str]

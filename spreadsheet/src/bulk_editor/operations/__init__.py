@@ -379,16 +379,15 @@ def validate_and_parse_cut(form):
 
     mods = []
 
-    modification = modifications.Modification(
-        operation=modifications.Type.COPY,
-        input=sel,
+    modification = modifications.Transaction(
+        modification_name="COPY",
+        input=modifications.CopyInput(selection=sel),
     )
     mods.append(modification)
 
-    inp = modifications.ValueInput(selection=sel, value=None)
-    modification = modifications.Modification(
-        operation=modifications.Type.VALUE,
-        input=inp,
+    modification = modifications.Transaction(
+        modification_name="VALUE",
+        input=modifications.ValueInput(selection=sel, value=None),
     )
     mods.append(modification)
 
@@ -399,9 +398,9 @@ def validate_and_parse_copy(form):
     sel = get_selection("copy", "input")
     sel_types.check_selection(sel)
 
-    modification = modifications.Modification(
-        operation=modifications.Type.COPY,
-        input=sel,
+    modification = modifications.Transaction(
+        modification_name="COPY",
+        input=modifications.CopyInput(selection=sel),
     )
     return [modification]
 
@@ -410,9 +409,9 @@ def validate_and_parse_paste(form):
     target = get_selection("paste", "target")
     sel_types.check_selection(target)
 
-    modification = modifications.Modification(
-        operation=modifications.Type.PASTE,
-        input=target,
+    modification = modifications.Transaction(
+        modification_name="PASTE",
+        input=modifications.PasteInput(target=target),
     )
     return [modification]
 
@@ -421,9 +420,9 @@ def validate_and_parse_delete(form):
     sel = get_selection("delete", "input")
     sel_types.check_selection(sel)
 
-    modification = modifications.Modification(
-        operation=modifications.Type.DELETE,
-        input=sel,
+    modification = modifications.Transaction(
+        modification_name="DELETE",
+        input=modifications.DeleteInput(selection=sel),
     )
     return [modification]
 
@@ -466,25 +465,22 @@ def validate_and_parse_move(form):
     assert adjusted_target is not None
 
     mods = [
-      modifications.Modification(
-          operation=modifications.Type.COPY,
-          input=sel,
-      ),
-      modifications.Modification(
-          operation=modifications.Type.DELETE,
-          input=sel,
-      ),
-      modifications.Modification(
-          operation=modifications.Type.INSERT,
-          input=modifications.InsertInput(
-              selection=adjusted_target,
-              number=num,
-          )
-      ),
-      modifications.Modification(
-          operation=modifications.Type.PASTE,
-          input=adjusted_target,
-      ),
+        modifications.Transaction(
+            modification_name="COPY",
+            input=modifications.CopyInput(selection=sel),
+        ),
+        modifications.Transaction(
+            modification_name="DELETE",
+            input=modifications.DeleteInput(selection=sel),
+        ),
+        modifications.Transaction(
+            modification_name="INSERT",
+            input=modifications.InsertInput(target=adjusted_target, number=num),
+        ),
+        modifications.Transaction(
+            modification_name="PASTE",
+            input=modifications.PasteInput(target=adjusted_target),
+        ),
     ]
     return mods
 
@@ -493,17 +489,17 @@ def validate_and_parse_sort(form):
     target = get_selection("insert", "target")
     sel_types.check_selection(target)
 
-    modification = modifications.Modification(
-        operation=modifications.Type.SORT,
-        input=target,
+    modification = modifications.Transaction(
+        modification_name="SORT",
+        input=modifications.SortInput(target=target),
     )
     return [modification]
 
 
 def validate_and_parse_reverse(form):
-    modification = modifications.Modification(
-        operation=modifications.Type.REVERSE,
-        input=None,
+    modification = modifications.Transaction(
+        modification_name="REVERSE",
+        input=modifications.ReverseInput(),
     )
     return [modification]
 
@@ -516,13 +512,9 @@ def validate_and_parse_insert(form):
     form_helpers.validate_nonempty(number, name="number")
     number = form_helpers.parse_int(number, name="number")
 
-    inp = modifications.InsertInput(
-        selection=target,
-        number=number,
-    )
-    modification = modifications.Modification(
-        operation=modifications.Type.INSERT,
-        input=inp,
+    modification = modifications.Transaction(
+        modification_name="INSERT",
+        input=modifications.InsertInput(target=target, number=number),
     )
     return [modification]
 
@@ -531,10 +523,9 @@ def validate_and_parse_erase(form):
     sel = get_selection("erase", "input")
     sel_types.check_selection(sel)
 
-    inp = modifications.ValueInput(selection=sel, value=None)
-    modification = modifications.Modification(
-        operation=modifications.Type.VALUE,
-        input=inp,
+    modification = modifications.Transaction(
+        modification_name="VALUE",
+        input=modifications.ValueInput(selection=sel, value=None),
     )
     return [modification]
 
@@ -547,10 +538,9 @@ def validate_and_parse_value(form):
     if value == "":
         raise err_types.InputError("Field 'value' was not given.")
 
-    inp = modifications.ValueInput(selection=sel, value=value)
-    modification = modifications.Modification(
-        operation=modifications.Type.VALUE,
-        input=inp,
+    modification = modifications.Transaction(
+        modification_name="VALUE",
+        input=modifications.ValueInput(selection=sel, value=value),
     )
     return [modification]
 
@@ -558,47 +548,47 @@ def validate_and_parse_value(form):
 def apply_cut(mods):
     assert len(mods) == 2
     copy_mod = mods[0]
-    assert copy_mod.operation == modifications.Type.COPY
-    sel = copy_mod.input
+    assert copy_mod.modification_name == "COPY"
+    sel = copy_mod.input.selection
 
     state.set_buffer_mode(sel)
     for modification in mods:
-        modifications.apply_modification(modification)
+        modifications.apply_transaction(modification)
 
 
 def apply_copy(mods):
     assert len(mods) == 1
     copy_mod = mods[0]
-    assert copy_mod.operation == modifications.Type.COPY
-    sel = copy_mod.input
+    assert copy_mod.modification_name == "COPY"
+    sel = copy_mod.input.selection
 
     state.set_buffer_mode(sel)
     for modification in mods:
-        modifications.apply_modification(modification)
+        modifications.apply_transaction(modification)
 
 
 def apply_paste(mods):
     for modification in mods:
-        modifications.apply_modification(modification)
+        modifications.apply_transaction(modification)
 
 
 def apply_delete(mods):
     for modification in mods:
-        modifications.apply_modification(modification)
+        modifications.apply_transaction(modification)
 
 
 def apply_move(mods):
     for modification in mods:
-        modifications.apply_modification(modification)
+        modifications.apply_transaction(modification)
 
     # update selection to wherever cells ended up
     copy_mod = mods[0]
-    assert copy_mod.operation == modifications.Type.COPY
-    sel = copy_mod.input
+    assert copy_mod.modification_name == "COPY"
+    sel = copy_mod.input.selection
 
     paste_mod = mods[-1]
-    assert paste_mod.operation == modifications.Type.PASTE
-    target = paste_mod.input
+    assert copy_mod.modification_name == "PASTE"
+    target = paste_mod.input.target
 
     new_start = target.value
     if isinstance(sel, sel_types.RowRange):
@@ -619,27 +609,27 @@ def apply_move(mods):
 
 def apply_sort(mods):
     for modification in mods:
-        modifications.apply_modification(modification)
+        modifications.apply_transaction(modification)
 
 
 def apply_reverse(mods):
     for modification in mods:
-        modifications.apply_modification(modification)
+        modifications.apply_transaction(modification)
 
 
 def apply_insert(mods):
     for modification in mods:
-        modifications.apply_modification(modification)
+        modifications.apply_transaction(modification)
 
 
 def apply_erase(mods):
     for modification in mods:
-        modifications.apply_modification(modification)
+        modifications.apply_transaction(modification)
 
 
 def apply_value(mods):
     for modification in mods:
-        modifications.apply_modification(modification)
+        modifications.apply_transaction(modification)
 
 
 def render_cut_inputs():

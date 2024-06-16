@@ -39,40 +39,7 @@ class Paste(Operation):
             else:
                 selection_mode_options = [copy_to_paste[copy_selection_mode]]
 
-            # In multi-element selections, it is possible
-            # for the start value(s) to be greater than the end value(s).
-            # In single-element selections, the end value(s) is always
-            # greater than the start value(s).
-            target_mode = sel_modes.from_selection(sel)
-            if isinstance(sel, sel_types.RowRange):
-                if sel.end.value - sel.start.value == 1:
-                    sel = sel_types.RowIndex(sel.start.value)
-                else:
-                    raise err_types.NotSupportedError(
-                        f"Paste operation does not support target selection mode {target_mode.value}. "
-                        "Select a single row instead."
-                    )
-            elif isinstance(sel, sel_types.ColRange):
-                if sel.end.value - sel.start.value == 1:
-                    sel = sel_types.ColIndex(sel.start.value)
-                else:
-                    raise err_types.NotSupportedError(
-                        f"Paste operation does not support target selection mode {target_mode.value}. "
-                        "Select a single column instead."
-                    )
-            elif isinstance(sel, sel_types.Box):
-                if sel.row_range.end.value - sel.row_range.start.value == 1 \
-                        and sel.col_range.end.value - sel.col_range.start.value == 1:
-                    sel = sel_types.CellPosition(
-                        row_index=sel_types.RowIndex(sel.row_range.start.value),
-                        col_index=sel_types.ColIndex(sel.col_range.start.value),
-                    )
-                else:
-                    raise err_types.NotSupportedError(
-                        f"Paste operation does not support target selection mode {target_mode.value}. "
-                        "Select a single cell instead."
-                    )
-
+            sel = selection.convert_to_target(sel)
             target_mode = sel_modes.from_selection(sel)
             if target_mode not in selection_mode_options:
                 raise err_types.NotSupportedError(

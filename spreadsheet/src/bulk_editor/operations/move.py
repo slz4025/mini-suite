@@ -37,34 +37,15 @@ class Move(Operation):
             input_sel = selection.get(cls.name(), "input")
             sel_mode = sel_modes.from_selection(input_sel)
 
+            sel = selection.convert_to_target(sel)
             target_mode = sel_modes.from_selection(sel)
             if isinstance(input_sel, sel_types.RowRange):
-                if isinstance(sel, sel_types.RowIndex):
-                    pass
-                elif isinstance(sel, sel_types.RowRange):
-                    if sel.end.value - sel.start.value == 1:
-                        sel = sel_types.RowIndex(sel.start.value)
-                    else:
-                        raise err_types.NotSupportedError(
-                            f"Move operation does not support target selection mode {target_mode.value}. "
-                            "Select a single row instead."
-                        )
-                else:
+                if not isinstance(sel, sel_types.RowIndex):
                     raise err_types.NotSupportedError(
                         f"Move operation does not support target selection mode {target_mode.value} for input selection mode {sel_mode.value}."
                     )
             elif isinstance(input_sel, sel_types.ColRange):
-                if isinstance(sel, sel_types.ColIndex):
-                    pass
-                elif isinstance(sel, sel_types.ColRange):
-                    if sel.end.value - sel.start.value == 1:
-                        sel = sel_types.ColIndex(sel.start.value)
-                    else:
-                        raise err_types.NotSupportedError(
-                            f"Move operation does not support target selection mode {target_mode.value}. "
-                            "Select a single column instead."
-                        )
-                else:
+                if not isinstance(sel, sel_types.ColIndex):
                     raise err_types.NotSupportedError(
                         f"Move operation does not support target selection mode {target_mode.value} for input selection mode {sel_mode.value}."
                     )

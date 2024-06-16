@@ -1,9 +1,54 @@
 from flask import render_template
 
 import src.errors.types as err_types
+import src.selector.modes as sel_modes
 import src.selector.state as sel_state
+import src.selector.types as sel_types
 
 import src.bulk_editor.operations.state as state
+
+
+def convert_to_target(sel):
+    target_mode = sel_modes.from_selection(sel)
+    if isinstance(sel, sel_types.RowIndex):
+        target = sel
+    elif isinstance(sel, sel_types.ColIndex):
+        target = sel
+    elif isinstance(sel, sel_types.CellPosition):
+        target = sel
+    elif isinstance(sel, sel_types.RowRange):
+        if sel.end.value - sel.start.value == 1:
+            target = sel_types.RowIndex(sel.start.value)
+        else:
+            raise err_types.NotSupportedError(
+                f"Could not convert selection of mode {target_mode.value} to target. "
+                "Select a single row instead."
+            )
+    elif isinstance(sel, sel_types.ColRange):
+        if sel.end.value - sel.start.value == 1:
+            target = sel_types.ColIndex(sel.start.value)
+        else:
+            raise err_types.NotSupportedError(
+                f"Could not convert selection of mode {target_mode.value} to target. "
+                "Select a single column instead."
+            )
+    elif isinstance(sel, sel_types.Box):
+        if sel.row_range.end.value - sel.row_range.start.value == 1 \
+                and sel.col_range.end.value - sel.col_range.start.value == 1:
+            target = sel_types.CellPosition(
+                row_index=sel_types.RowIndex(sel.row_range.start.value),
+                col_index=sel_types.ColIndex(sel.col_range.start.value),
+            )
+        else:
+            raise err_types.NotSupportedError(
+                f"Could not convert selection of mode {target_mode.value} to target. "
+                "Select a single cell instead."
+            )
+    else:
+        raise err_types.NotSupportedError(
+            f"Could not convert selection of mode {target_mode.value} to target."
+        )
+    return target
 
 
 def add(use, operation, selection):

@@ -21,24 +21,11 @@ class Sort(Operation):
     @classmethod
     def validate_selection(cls, use, sel):
         if use == "target":
-            # In multi-element selections, it is possible
-            # for the start value(s) to be greater than the end value(s).
-            # In single-element selections, the end value(s) is always
-            # greater than the start value(s).
-            target_mode = sel_modes.from_selection(sel)
-            if isinstance(sel, sel_types.ColRange):
-                if sel.end.value - sel.start.value == 1:
-                    sel = sel_types.ColIndex(sel.start.value)
-                else:
-                    raise err_types.NotSupportedError(
-                        f"Sort operation does not support target selection mode {target_mode.value}. "
-                        "Select a single column instead."
-                    )
-
             selection_mode_options = [
                 sel_types.Mode.COLUMN_INDEX,
             ]
 
+            sel = selection.convert_to_target(sel)
             target_mode = sel_modes.from_selection(sel)
             if target_mode not in selection_mode_options:
                 raise err_types.NotSupportedError(

@@ -31,19 +31,19 @@
       </p>
       {% endif %}
 
-      <label for="selector-mode" hidden>Mode</label>
+      <label for="selector-name" hidden>Type</label>
       <select
-        id="selector-mode"
-        name="mode"
+        id="selector-name"
+        name="name"
         hx-get="/selector/input"
         hx-target="#selector"
         hx-swap="outerHTML"
       >
-        {% for mode_option in mode_options %}
-        {% if mode_option == mode or (not mode and loop.index == 0) %}
-        <option value="{{ mode_option }}" selected>{{ mode_option }}</option>
+        {% for o in options %}
+        {% if option == o %}
+        <option value="{{ o }}" selected>{{ o }}</option>
         {% else %}
-        <option value="{{ mode_option }}">{{ mode_option }}</option>
+        <option value="{{ o }}">{{ o }}</option>
         {% endif %}
         {% endfor %}
       </select>

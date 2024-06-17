@@ -1,7 +1,6 @@
 from flask import render_template
 
 import src.errors.types as err_types
-import src.selector.modes as sel_modes
 import src.selector.types as sel_types
 import src.utils.form as form_helpers
 
@@ -22,16 +21,16 @@ class Insert(Operation):
     @classmethod
     def validate_selection(cls, use, sel):
         if use == "target":
-            selection_mode_options = [
-                sel_types.Mode.ROW_INDEX,
-                sel_types.Mode.COLUMN_INDEX,
+            selection_type_options = [
+                sel_types.RowIndex,
+                sel_types.ColIndex,
             ]
 
             sel = selection.convert_to_target(sel)
-            target_mode = sel_modes.from_selection(sel)
-            if target_mode not in selection_mode_options:
+            target_type = type(sel)
+            if target_type not in selection_type_options:
                 raise err_types.NotSupportedError(
-                    f"Insert operation does not support target selection mode {target_mode.value}."
+                    f"Insert operation does not support target selection type {target_type}."
                 )
         else:
             raise err_types.NotSupportedError(f"Insert does not accept a selection of purpose {use}.")

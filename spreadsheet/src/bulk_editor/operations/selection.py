@@ -1,7 +1,6 @@
 from flask import render_template
 
 import src.errors.types as err_types
-import src.selector.modes as sel_modes
 import src.selector.state as sel_state
 import src.selector.types as sel_types
 
@@ -9,7 +8,6 @@ import src.bulk_editor.operations.state as state
 
 
 def convert_to_target(sel):
-    target_mode = sel_modes.from_selection(sel)
     if isinstance(sel, sel_types.RowIndex):
         target = sel
     elif isinstance(sel, sel_types.ColIndex):
@@ -20,16 +18,18 @@ def convert_to_target(sel):
         if sel.end.value - sel.start.value == 1:
             target = sel_types.RowIndex(sel.start.value)
         else:
+            sel_type = type(sel)
             raise err_types.NotSupportedError(
-                f"Could not convert selection of mode {target_mode.value} to target. "
+                f"Could not convert selection of type {sel_type} to target. "
                 "Select a single row instead."
             )
     elif isinstance(sel, sel_types.ColRange):
         if sel.end.value - sel.start.value == 1:
             target = sel_types.ColIndex(sel.start.value)
         else:
+            sel_type = type(sel)
             raise err_types.NotSupportedError(
-                f"Could not convert selection of mode {target_mode.value} to target. "
+                f"Could not convert selection of type {sel_type} to target. "
                 "Select a single column instead."
             )
     elif isinstance(sel, sel_types.Box):
@@ -40,13 +40,15 @@ def convert_to_target(sel):
                 col_index=sel_types.ColIndex(sel.col_range.start.value),
             )
         else:
+            sel_type = type(sel)
             raise err_types.NotSupportedError(
-                f"Could not convert selection of mode {target_mode.value} to target. "
+                f"Could not convert selection of type {sel_type} to target. "
                 "Select a single cell instead."
             )
     else:
+        sel_type = type(sel)
         raise err_types.NotSupportedError(
-            f"Could not convert selection of mode {target_mode.value} to target."
+            f"Could not convert selection of type {sel_type} to target."
         )
     return target
 

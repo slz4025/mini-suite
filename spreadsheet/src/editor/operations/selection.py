@@ -1,7 +1,6 @@
 from flask import render_template
 
 import src.errors.types as err_types
-import src.selector.modes as sel_modes
 import src.selector.state as sel_state
 import src.selector.types as sel_types
 
@@ -38,9 +37,9 @@ class Selection(Operation):
                 sel.col_range.start.value, sel.col_range.end.value-1,
             )
         else:
-            sel_mode = sel_modes.from_selection(sel)
+            sel_type = type(sel)
             raise err_types.NotSupportedError(
-                f"Selection mode {sel_mode.value} is not supported in formulas."
+                f"Selection {sel_type} is not supported in formulas."
             )
         return macro
 
@@ -55,4 +54,3 @@ class Selection(Operation):
             return True
         else:
             return False
-

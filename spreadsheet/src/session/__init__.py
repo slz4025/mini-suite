@@ -70,7 +70,7 @@ class Session:
             self.notify_error(resp, e)
 
         self.add_event(resp, "editor")
- 
+
         return cell_html
 
     def render_body_helper(self, resp):
@@ -254,28 +254,25 @@ class Session:
         resp.set_data(selector_html)
         return resp
 
-    def use_selector_input(self, mode_str):
+    def use_selector_input(self, name):
         resp = Response()
 
-        mode = selector.modes.from_input(mode_str)
-
-        selector_html = selector.render(mode)
+        selector_html = selector.render(name)
         resp.set_data(selector_html)
         return resp
 
     def update_selection_helper(
         self,
         resp,
-        mode,
         sel,
         notify=False,
         reset=False,
         update_port=False,
     ):
         if reset:
-            selector.reset()
+            selector.state.reset_selection()
         else:
-            selector.save(mode, sel)
+            selector.state.set_selection(sel)
 
         # TODO: Only notify if user can't see selection.
         if notify:
@@ -307,7 +304,7 @@ class Session:
         resp = Response()
 
         try:
-            self.update_selection_helper(resp, selector.types.Mode.CELL_POSITION, pos)
+            self.update_selection_helper(resp, pos)
         except (err_types.NotSupportedError) as e:
             e = Exception(f"Could not update selection: {e}")
             self.notify_error(resp, e)
@@ -320,9 +317,8 @@ class Session:
         resp = Response()
 
         try:
-            mode, sel = selector.compute_from_endpoints(start, end)
-
-            self.update_selection_helper(resp, mode, sel)
+            sel = selector.compute_from_endpoints(start, end)
+            self.update_selection_helper(resp, sel)
         except (err_types.NotSupportedError) as e:
             e = Exception(f"Could not update selection: {e}")
             self.notify_error(resp, e)
@@ -335,9 +331,8 @@ class Session:
         resp = Response()
 
         try:
-            mode, sel = selector.compute_updated_selector(direction)
-
-            self.update_selection_helper(resp, mode, sel, update_port=True)
+            sel = selector.compute_updated_selection(direction)
+            self.update_selection_helper(resp, sel, update_port=True)
         except (err_types.NotSupportedError) as e:
             e = Exception(f"Could not update selection: {e}")
             self.notify_error(resp, e)
@@ -357,11 +352,9 @@ class Session:
         resp = Response()
 
         try:
-            mode, sel = selector.validate_and_parse(form)
-
+            sel = selector.validate_and_parse(form)
             self.update_selection_helper(
                 resp,
-                mode,
                 sel,
                 notify=True,
                 update_port=True,
@@ -379,7 +372,6 @@ class Session:
 
         self.update_selection_helper(
             resp,
-            None,
             None,
             notify=True,
             reset=True,

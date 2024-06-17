@@ -1,7 +1,6 @@
 from flask import render_template
 
 import src.errors.types as err_types
-import src.selector.modes as sel_modes
 import src.selector.types as sel_types
 
 import src.bulk_editor.modifications as modifications
@@ -22,15 +21,15 @@ class Copy(Operation):
     @classmethod
     def validate_selection(cls, use, sel):
         if use == "input":
-            sel_mode = sel_modes.from_selection(sel)
-            selection_mode_options = [
-                sel_types.Mode.ROWS,
-                sel_types.Mode.COLUMNS,
-                sel_types.Mode.BOX,
+            sel_type = type(sel)
+            selection_type_options = [
+                sel_types.RowRange,
+                sel_types.ColRange,
+                sel_types.Box,
             ]
-            if sel_mode not in selection_mode_options:
+            if sel_type not in selection_type_options:
                 raise err_types.NotSupportedError(
-                    f"Copy operation does not support selection mode {sel_mode.value}."
+                    f"Copy operation does not support selection type {sel_type}."
                 )
         else:
             raise err_types.NotSupportedError(f"Copy does not accept a selection of purpose {use}.")
@@ -41,7 +40,7 @@ class Copy(Operation):
     def apply(cls, form):
         sel = selection.get(cls.name(), "input")
         sel_types.check_selection(sel)
-        state.set_buffer_mode(sel)
+        state.set_buffer_type(sel)
 
         modifications.apply_transaction(
             modifications.Transaction(

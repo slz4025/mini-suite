@@ -1,7 +1,6 @@
 from flask import render_template
 
 import src.errors.types as err_types
-import src.selector.modes as sel_modes
 import src.selector.state as sel_state
 import src.selector.types as sel_types
 import src.sheet.types as sheet_types
@@ -23,31 +22,31 @@ class Move(Operation):
     @classmethod
     def validate_selection(cls, use, sel):
         if use == "input":
-            sel_mode = sel_modes.from_selection(sel)
             if isinstance(sel, sel_types.RowRange):
                 pass
             elif isinstance(sel, sel_types.ColRange):
                 pass
             else:
+                sel_type = type(sel)
                 raise err_types.NotSupportedError(
-                    f"Move operation does not support input selection mode {sel_mode.value}."
+                    f"Move operation does not support input selection {sel_type}."
                 )
         elif use == "target":
             # requires input selection to be inputted first
             input_sel = selection.get(cls.name(), "input")
-            sel_mode = sel_modes.from_selection(input_sel)
+            sel_type = type(input_sel)
 
             sel = selection.convert_to_target(sel)
-            target_mode = sel_modes.from_selection(sel)
+            target_type = type(sel)
             if isinstance(input_sel, sel_types.RowRange):
                 if not isinstance(sel, sel_types.RowIndex):
                     raise err_types.NotSupportedError(
-                        f"Move operation does not support target selection mode {target_mode.value} for input selection mode {sel_mode.value}."
+                        f"Move operation does not support target selection type {target_type} for input selection type {sel_type}."
                     )
             elif isinstance(input_sel, sel_types.ColRange):
                 if not isinstance(sel, sel_types.ColIndex):
                     raise err_types.NotSupportedError(
-                        f"Move operation does not support target selection mode {target_mode.value} for input selection mode {sel_mode.value}."
+                        f"Move operation does not support target selection type {target_type} for input selection type {sel_type}."
                     )
         else:
             raise err_types.NotSupportedError(f"Move does not accept a selection of purpose {use}.")

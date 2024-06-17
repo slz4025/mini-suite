@@ -3,7 +3,6 @@ from flask import render_template
 import src.errors.types as err_types
 import src.command_palette as command_palette
 import src.viewer as viewer
-import src.selector.modes as sel_modes
 import src.selector.types as sel_types
 import src.sheet as sheet
 

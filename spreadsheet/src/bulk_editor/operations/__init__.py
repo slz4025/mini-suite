@@ -26,7 +26,7 @@ operations_map = {o.name(): o for o in operations}
 
 
 def get_options():
-    return operations_map.keys()
+    return [o for o in operations_map.keys()]
 
 
 def get(name):

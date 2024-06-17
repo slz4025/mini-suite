@@ -2,7 +2,6 @@ from flask import render_template
 
 import src.command_palette as command_palette
 import src.errors.types as err_types
-import src.selector.modes as sel_modes
 import src.selector.types as sel_types
 import src.utils.form as form_helpers
 
@@ -23,15 +22,15 @@ class Value(Operation):
     @classmethod
     def validate_selection(cls, use, sel):
         if use == "input":
-            sel_mode = sel_modes.from_selection(sel)
-            selection_mode_options = [
-                sel_types.Mode.ROWS,
-                sel_types.Mode.COLUMNS,
-                sel_types.Mode.BOX,
+            sel_type = type(sel)
+            selection_type_options = [
+                sel_types.RowRange,
+                sel_types.ColRange,
+                sel_types.Box,
             ]
-            if sel_mode not in selection_mode_options:
+            if sel_type not in selection_type_options:
                 raise err_types.NotSupportedError(
-                    f"Value operation does not support selection mode {sel_mode.value}."
+                    f"Value operation does not support selection type {sel_type}."
                 )
         else:
             raise err_types.NotSupportedError(f"Value does not accept a selection of purpose {use}.")

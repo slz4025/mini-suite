@@ -142,9 +142,9 @@ def toggle_selector():
 def use_selector_input():
     assert htmx is not None
 
-    mode_str = request.args["mode"]
+    name = request.args["name"]
 
-    return _session.use_selector_input(mode_str)
+    return _session.use_selector_input(name)
 
 
 @app.route("/selector/search/text", methods=['POST'])
@@ -154,7 +154,7 @@ def update_search_results():
 
     text = request.form["text-search"]
 
-    return _session.update_search_results(text) 
+    return _session.update_search_results(text)
 
 
 @app.route(
@@ -170,7 +170,7 @@ def update_selector_cell_position(row, col):
         col_index=sel_types.ColIndex(int(col)),
     )
 
-    return _session.update_selector_cell_position(pos) 
+    return _session.update_selector_cell_position(pos)
 
 
 @app.route(

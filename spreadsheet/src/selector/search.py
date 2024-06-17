@@ -2,8 +2,6 @@ from flask import render_template
 
 import src.sheet as sheet
 
-import src.selector.types as types
-
 
 text = ""
 
@@ -29,18 +27,18 @@ def render_result(row, col, value):
 
 def render_results():
     if text == "":
-      return ""
+        return ""
 
     results = sheet.get_cells_containing_text(text)
 
     entries = []
     for p in results:
-      row = p.row_index.value
-      col = p.col_index.value
-      value = sheet.get_cell_computed(p)
-      result_html = render_result(row, col, value)
-      entries.append(result_html)
-    
+        row = p.row_index.value
+        col = p.col_index.value
+        value = sheet.get_cell_computed(p)
+        result_html = render_result(row, col, value)
+        entries.append(result_html)
+
     return "\n".join(entries)
 
 

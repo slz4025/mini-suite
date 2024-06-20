@@ -4,6 +4,7 @@ import src.command_palette as command_palette
 
 from src.selector.selector import Selector
 from src.selector.rows import Rows
+import src.selector.checkers as checkers
 from src.selector.columns import Columns
 import src.selector.state as state
 import src.selector.types as types
@@ -20,7 +21,7 @@ class Box(Selector):
         col_range = Columns.validate_and_parse(form)
 
         selection = types.Box(row_range=row_range, col_range=col_range)
-        selection = types.check_and_set_box(selection)
+        selection = checkers.check_and_set_box(selection)
         return selection
 
     @classmethod

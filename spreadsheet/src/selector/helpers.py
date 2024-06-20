@@ -2,6 +2,7 @@ import src.errors.types as err_types
 import src.sheet as sheet
 import src.sheet.types as sheet_types
 
+import src.selector.checkers as checkers
 import src.selector.types as types
 
 
@@ -147,3 +148,35 @@ def compute_updated_selection(sel, direction):
         )
     else:
         return None
+
+
+def get_bounds_from_selection(sel):
+    row_range = checkers.check_and_set_row_range(
+        types.RowRange(start=None, end=None),
+    )
+    row_start = row_range.start.value
+    row_end = row_range.end.value
+
+    col_range = checkers.check_and_set_col_range(
+        types.ColRange(start=None, end=None),
+    )
+    col_start = col_range.start.value
+    col_end = col_range.end.value
+
+    if isinstance(sel, types.RowRange):
+        row_start = sel.start.value
+        row_end = sel.end.value
+    elif isinstance(sel, types.ColRange):
+        col_start = sel.start.value
+        col_end = sel.end.value
+    elif isinstance(sel, types.Box):
+        row_start = sel.row_range.start.value
+        row_end = sel.row_range.end.value
+        col_start = sel.col_range.start.value
+        col_end = sel.col_range.end.value
+    else:
+        raise err_types.NotSupportedError(
+            f"Selection type, {type(sel)}, does not have bounds."
+        )
+
+    return row_start, row_end, col_start, col_end

@@ -1,6 +1,7 @@
 from flask import render_template
 
 import src.errors.types as err_types
+import src.selector.checkers as sel_checkers
 import src.selector.types as sel_types
 
 import src.bulk_editor.modifications as modifications
@@ -53,7 +54,7 @@ class Paste(Operation):
     @classmethod
     def apply(cls, form):
         target = selection.get(cls.name(), "target")
-        sel_types.check_selection(target)
+        sel_checkers.check_selection(target)
 
         modifications.apply_transaction(
             modifications.Transaction(

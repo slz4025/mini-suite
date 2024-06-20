@@ -5,6 +5,7 @@ import src.sheet.types as sheet_types
 import src.utils.form as form_helpers
 
 from src.selector.selector import Selector
+import src.selector.checkers as checkers
 import src.selector.state as state
 import src.selector.types as types
 
@@ -30,7 +31,7 @@ class Rows(Selector):
         )
 
         sel = types.RowRange(start=start, end=end)
-        sel = types.check_and_set_row_range(sel)
+        sel = checkers.check_and_set_row_range(sel)
         return sel
 
     @classmethod

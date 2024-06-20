@@ -2,13 +2,14 @@ import numpy as np
 
 import src.errors.types as err_types
 import src.viewer as viewer
+import src.selector.checkers as sel_checkers
 import src.selector.types as sel_types
 
 import src.sheet.compiler as compiler
 import src.sheet.data as sheet_data
 import src.sheet.files as files
 import src.sheet.graph as graph
-import src.sheet.types as sheet_types
+import src.sheet.types as types
 
 
 # This dynamically computes cells when they are in view or are updated.
@@ -102,7 +103,7 @@ def get_potential_dependents():
 
 
 def update_cell_value(cell_position, value):
-    sel_types.check_cell_position(cell_position)
+    sel_checkers.check_cell_position(cell_position)
     ptr = sheet_data.get()
 
     prev_value = ptr[

@@ -5,6 +5,7 @@ import src.command_palette as command_palette
 from src.selector.row import Row
 from src.selector.column import Column
 from src.selector.selector import Selector
+import src.selector.checkers as checkers
 import src.selector.state as state
 import src.selector.types as types
 
@@ -20,7 +21,7 @@ class CellPosition(Selector):
         col_index = Column.validate_and_parse(form)
 
         sel = types.CellPosition(row_index=row_index, col_index=col_index)
-        types.check_cell_position(sel)
+        checkers.check_cell_position(sel)
         return sel
 
     @classmethod

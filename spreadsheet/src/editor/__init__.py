@@ -3,7 +3,7 @@ from flask import render_template
 import src.errors.types as err_types
 import src.command_palette as command_palette
 import src.viewer as viewer
-import src.selector.types as sel_types
+import src.selector.checkers as sel_checkers
 import src.sheet as sheet
 
 import src.editor.state as state
@@ -24,7 +24,7 @@ def render(op_name=None):
     focused_cell = state.get_focused_cell_position()
     if focused_cell is not None:
         try:
-            sel_types.check_cell_position(focused_cell)
+            sel_checkers.check_cell_position(focused_cell)
         except err_types.OutOfBoundsError:
             state.reset_focused_cell_position()
             focused_cell = None

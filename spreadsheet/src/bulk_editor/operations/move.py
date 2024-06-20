@@ -1,6 +1,7 @@
 from flask import render_template
 
 import src.errors.types as err_types
+import src.selector.checkers as sel_checkers
 import src.selector.state as sel_state
 import src.selector.types as sel_types
 import src.sheet.types as sheet_types
@@ -56,7 +57,7 @@ class Move(Operation):
     @classmethod
     def apply(cls, form):
         sel = selection.get(cls.name(), "input")
-        sel_types.check_selection(sel)
+        sel_checkers.check_selection(sel)
         target = selection.get(cls.name(), "target")
         sel_types.check_selection(target)
 

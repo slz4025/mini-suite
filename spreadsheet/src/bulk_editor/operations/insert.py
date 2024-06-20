@@ -1,6 +1,7 @@
 from flask import render_template
 
 import src.errors.types as err_types
+import src.selector.checkers as sel_checkers
 import src.selector.types as sel_types
 import src.utils.form as form_helpers
 
@@ -40,7 +41,7 @@ class Insert(Operation):
     @classmethod
     def apply(cls, form):
         target = selection.get(cls.name(), "target")
-        sel_types.check_selection(target)
+        sel_checkers.check_selection(target)
 
         number = form_helpers.extract(form, "insert-number", name="number")
         form_helpers.validate_nonempty(number, name="number")

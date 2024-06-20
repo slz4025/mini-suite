@@ -1,6 +1,7 @@
 from flask import render_template
 
 import src.errors.types as err_types
+import src.selector.checkers as sel_checkers
 import src.selector.types as sel_types
 
 import src.bulk_editor.modifications as modifications
@@ -39,7 +40,7 @@ class Cut(Operation):
     @classmethod
     def apply(cls, form):
         sel = selection.get(cls.name(), "input")
-        sel_types.check_selection(sel)
+        sel_checkers.check_selection(sel)
         state.set_buffer_type(sel)
 
         mods = [

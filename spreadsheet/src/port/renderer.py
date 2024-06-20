@@ -3,9 +3,10 @@ from flask import render_template
 import src.sheet as sheet
 import src.editor as editor
 import src.errors.types as err_types
+import src.selector.checkers as sel_checkers
+import src.selector.helpers as sel_helpers
 import src.selector.state as sel_state
 import src.selector.types as sel_types
-import src.sheet as sheet
 
 
 def make_render_selected():
@@ -31,19 +32,19 @@ def make_render_selected():
             if cell_position.equals(cp) else ""
     elif isinstance(sel, sel_types.RowRange):
         start_row, end_row, start_col, end_col = \
-            sel_types.get_bounds_from_selection(sel)
+            sel_helpers.get_bounds_from_selection(sel)
 
         def render_selected(cp): return "selected-current" \
             if cp.in_bounds(start_row, end_row, start_col, end_col) else ""
     elif isinstance(sel, sel_types.ColRange):
         start_row, end_row, start_col, end_col = \
-            sel_types.get_bounds_from_selection(sel)
+            sel_helpers.get_bounds_from_selection(sel)
 
         def render_selected(cp): return "selected-current" \
             if cp.in_bounds(start_row, end_row, start_col, end_col) else ""
     elif isinstance(sel, sel_types.Box):
         start_row, end_row, start_col, end_col = \
-            sel_types.get_bounds_from_selection(sel)
+            sel_helpers.get_bounds_from_selection(sel)
 
         def render_selected(cp): return "selected-current" \
             if cp.in_bounds(start_row, end_row, start_col, end_col) else ""
@@ -58,14 +59,14 @@ def render_cell(
     render_selected=None,
     catch_failure=False,
 ):
-    sel_types.check_cell_position(cell_position)
+    sel_checkers.check_cell_position(cell_position)
 
     editing = editor.is_editing(cell_position)
     markdown = sheet.is_markdown(cell_position)
 
     renders = []
     input_render = None
-    
+
     # Apply in reverse order of precendence.
     if markdown:
         renders.append("markdown")

@@ -2,6 +2,7 @@ from flask import render_template
 
 import src.command_palette as command_palette
 import src.errors.types as err_types
+import src.selector.checkers as sel_checkers
 import src.selector.types as sel_types
 import src.utils.form as form_helpers
 
@@ -40,7 +41,7 @@ class Value(Operation):
     @classmethod
     def apply(cls, form):
         sel = selection.get(cls.name(), "input")
-        sel_types.check_selection(sel)
+        sel_checkers.check_selection(sel)
 
         value = form_helpers.extract(form, "value", name="value")
         if value == "":

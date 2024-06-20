@@ -4,6 +4,7 @@ import re
 from typing import List
 
 import src.errors.types as err_types
+import src.selector.checkers as sel_checkers
 import src.selector.types as sel_types
 import src.sheet.data as sheet_data
 import src.sheet.types as sheet_types
@@ -85,7 +86,7 @@ def position_references(cell_position, node):
 
 
 def get_row_range_positions(sel):
-    sel = sel_types.check_and_set_row_range(sel)
+    sel = sel_checkers.check_and_set_row_range(sel)
     bounds = sheet_data.get_bounds()
 
     pos = []
@@ -99,7 +100,7 @@ def get_row_range_positions(sel):
 
 
 def get_col_range_positions(sel):
-    sel = sel_types.check_and_set_col_range(sel)
+    sel = sel_checkers.check_and_set_col_range(sel)
     bounds = sheet_data.get_bounds()
 
     pos = []
@@ -113,7 +114,7 @@ def get_col_range_positions(sel):
 
 
 def get_box_positions(sel):
-    sel = sel_types.check_and_set_box(sel)
+    sel = sel_checkers.check_and_set_box(sel)
 
     pos = []
     for i in range(sel.row_range.start.value, sel.row_range.end.value):

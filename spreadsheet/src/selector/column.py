@@ -4,6 +4,7 @@ import src.command_palette as command_palette
 import src.utils.form as form_helpers
 
 from src.selector.selector import Selector
+import src.selector.checkers as checkers
 import src.selector.state as state
 import src.selector.types as types
 
@@ -21,7 +22,7 @@ class Column(Selector):
         index = form_helpers.parse_int(index, name=name)
 
         sel = types.ColIndex(index)
-        types.check_col_index(sel)
+        checkers.check_col_index(sel)
         return sel
 
     @classmethod

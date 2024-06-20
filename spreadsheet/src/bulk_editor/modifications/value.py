@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+import src.selector.helpers as sel_helpers
 import src.selector.types as sel_types
 import src.sheet as sheet
 
@@ -25,7 +26,7 @@ class Value(Modification):
         value = input.value
 
         row_start, row_end, col_start, col_end = \
-            sel_types.get_bounds_from_selection(sel)
+            sel_helpers.get_bounds_from_selection(sel)
 
         ptr = sheet.data.get()
         ptr[row_start:row_end, col_start:col_end] = value

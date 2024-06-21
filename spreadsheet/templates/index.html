@@ -3,6 +3,8 @@
   <head>
     <title>{{ tab_name }}</title>
     <meta name="description" content="mini-suite">
+    <!-- Prevent request to non-existent favicon.ico. -->
+    <link rel="icon" href="data:,">
     <link rel="stylesheet" type="text/css" href="/static/style.css">
     <script src="/static/htmx.min.js"></script>
     <script src="/static/cell.js"></script>

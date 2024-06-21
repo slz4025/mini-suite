@@ -6,14 +6,12 @@ function inputting() {
 
 window.addEventListener('keyup', function(event) {
   switch (event.key) {
-    /* TODO: Have these also move towards block of interest.
     case 'PageUp':
       document.getElementById("prev-block-button")?.click();
       break;
     case 'PageDown':
       document.getElementById("next-block-button")?.click();
       break;
-    */
     case 's':
       if (!inputting()) {
         document.getElementById("save").click();

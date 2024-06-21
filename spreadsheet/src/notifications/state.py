@@ -22,7 +22,7 @@ def set_error(error):
     global id
     message = str(error)
     mode = types.Mode.ERROR
-    id = str(uuid.uuid4())
+    id = uuid.uuid4().hex
 
 
 def set_info(msg):
@@ -31,7 +31,7 @@ def set_info(msg):
     global id
     message = msg
     mode = types.Mode.INFO
-    id = str(uuid.uuid4())
+    id = uuid.uuid4().hex
 
 
 def reset():

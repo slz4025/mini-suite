@@ -5,7 +5,6 @@ import os
 from settings import Settings
 import src.block as block
 import src.command_palette as command_palette
-import src.notifications as notifications
 
 
 FILE_PATH = None
@@ -16,7 +15,6 @@ def setup(path):
     FILE_PATH = path
 
     command_palette.init(show=False)
-    notifications.init()
 
 
 def get_dir():
@@ -35,14 +33,22 @@ def render_null(session):
             )
 
 
+def render_title(session, show_saved=False):
+    return render_template(
+            "partials/title.html",
+            name=get_name(),
+            show_saved=show_saved,
+            )
+
+
 def render_body(session):
     dark_mode = Settings.DARK_MODE
     null = render_null(session)
-    notification_banner_html = notifications.render(session)
     show_command_palette = command_palette.get_show()
     command_palette_html = command_palette.render(
             session,
             )
+    title_html = render_title(session)
 
     blocks_html = block.render_all(
             session,
@@ -53,9 +59,8 @@ def render_body(session):
             dark_mode=dark_mode,
             show_command_palette=show_command_palette,
             null=null,
-            notification_banner=notification_banner_html,
             command_palette=command_palette_html,
-            current_entry=get_name(),
+            title=title_html,
             blocks=blocks_html,
             )
 
@@ -77,14 +82,6 @@ def root(session):
     block.set_all_markdown(session, contents)
 
     return render(session)
-
-
-def notification(session, show):
-    show_notifications = show == "on"
-    if not show_notifications:
-        notifications.reset()
-
-    return notifications.render(session)
 
 
 def command_palette_toggle(session, state):
@@ -192,6 +189,4 @@ def save_entry(session):
 
     html = render_null(session)
     resp = Response(html)
-    notifications.set_info("Entry saved.")
-    resp.headers['HX-Trigger'] = "notification"
     return resp

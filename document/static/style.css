@@ -12,11 +12,6 @@
 :root {
   --main-ff: dejavu;
   --display-ff: serif;
-
-  --info-color: #0F0F0F;
-  --info-background-color: #00B800;
-  --error-color: #F0F0F0;
-  --error-background-color: #8B0000;
 }
 
 body {
@@ -35,7 +30,7 @@ div {
 }
 div#wrapper {
   position: absolute;
-  top: 7.5%;
+  top: 0;
   bottom: 0;
   z-index: 0;
 
@@ -91,7 +86,7 @@ div#command-palette {
   z-index: 1;
 
   position: fixed;
-  top: 7.5%;
+  top: 0;
   left: 0;
 
   background-color: var(--shade-color);
@@ -276,32 +271,6 @@ textarea {
 }
 span {
 
-}
-#notification-banner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 7.5%;
-  z-index: 2;
-
-  margin: 0;
-  border: 0;
-
-  font-weight: bold;
-}
-#notification-banner.none {
-  color: var(--background-color);
-  background-color: var(--main-color);
-}
-#notification-banner.info {
-  color: var(--info-color);
-  background-color: var(--info-background-color);
-}
-#notification-banner.error {
-  color: var(--error-color);
-  background-color: var(--error-background-color);
 }
 
 h1 {

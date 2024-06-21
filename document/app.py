@@ -28,14 +28,6 @@ def unexpected_error():
     return user_error_msg
 
 
-@app.route("/notification/<show>", methods=['PUT'])
-@errors.handler
-def notification(show):
-    assert htmx is not None
-
-    return project.notification(session, show)
-
-
 @app.route("/")
 @errors.handler
 def root():
@@ -122,6 +114,16 @@ def save_entry():
     assert htmx is not None
 
     return project.save_entry(session)
+
+
+@app.route("/title/<show_saved_str>", methods=['PUT'])
+@errors.handler
+def render_title(show_saved_str):
+    assert htmx is not None
+
+    show_saved = show_saved_str == "true"
+
+    return project.render_title(session, show_saved=show_saved)
 
 
 @app.route("/<path:filepath>", methods=['GET'])

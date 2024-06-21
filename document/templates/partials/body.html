@@ -6,7 +6,6 @@
   {% endif %}
   <link rel="stylesheet" type="text/css" href="/static/style.css">
 
-  {{ notification_banner|safe }}
   {{ command_palette|safe }}
   <!-- component for sending requests that should have no effect -->
   {{ null|safe }}
@@ -14,30 +13,7 @@
     id="wrapper"
     class="{{ 'contracted' if show_command_palette else 'expanded' }}"
     >
-    <div id="title">
-      <form
-        id="title-form"
-        hx-post="/save"
-        hx-target="#null"
-        hx-swap="outerHTML"
-        enctype="multipart/form-data"
-        >
-        <label for="save-file" hidden>SAVE</label>
-        <input
-        id="title-name"
-        type="text"
-        name="name"
-        value="{{ current_entry }}"
-        id="save-entry"
-        'readonly'
-        />
-        <input
-        id="save"
-        type="submit"
-        value="◼"
-        />
-      </form>
-    </div>
+    {{ title|safe }}
     {{ blocks|safe }}
   </div>
 </body>

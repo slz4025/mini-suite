@@ -3,7 +3,7 @@
 sheet() {
     sheet_dir="${MINISUITE_PATH}/spreadsheet"
     source "${sheet_dir}/.venv/bin/activate"
-    python "${sheet_dir}/spreadsheet.py" --port 5000 "$@"
+    python "${sheet_dir}/spreadsheet.py" --port 5001 "$@"
 }
 
 doc() {

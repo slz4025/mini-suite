@@ -161,10 +161,6 @@ def command_palette_toggle(session, state):
     return render_body(session)
 
 
-def get_block_in_focus(session):
-    return block.get_in_focus(session)
-
-
 def block_operation(session, id, operation):
     return block.render_operation(session, id, operation)
 

@@ -8,6 +8,34 @@
   hx-swap="outerHTML"
   >
   <div id="block-controls-{{ id }}" class="block-controls">
+    <button
+      id="render-block-button"
+      title="render block"
+      hx-post="/block/unfocus"
+      hx-trigger="click"
+      hx-target="#block-{{id}}"
+      hx-swap="outerHTML"
+      >
+      <span>◤</span>
+    </button>
+    <button
+      id="prev-block-button"
+      title="previous block"
+      hx-post="/block/prev"
+      hx-trigger="click"
+      hx-target="#block-{{id}}"
+      hx-swap="outerHTML"
+      style="display: none;"
+      ></button>
+    <button
+      id="next-block-button"
+      title="next block"
+      hx-post="/block/next"
+      hx-trigger="click"
+      hx-target="#block-{{id}}"
+      hx-swap="outerHTML"
+      style="display: none;"
+      ></button>
     {% if show_linking %}
     <button
       title="append media"
@@ -16,7 +44,7 @@
       hx-target="#block-{{id}}-form"
       hx-swap="outerHTML"
       >
-      <span>✱</span>
+      <span>*</span>
     </button>
     <button
       title="add link"
@@ -27,25 +55,25 @@
       >
       <span>◥</span>
     </button>
-      {% endif %}
-      <button
-        hx-put="/block/{{id}}/insert"
-        hx-trigger="click"
-        hx-target="#block-{{ id }}"
-        hx-swap="outerHTML"
-        title="insert below"
-        >
-        <span>✚</span>
-      </button>
-  <button
-    hx-put="/block/{{id}}/delete"
-    hx-trigger="click"
-    hx-target="#block-{{ id }}"
-    hx-swap="outerHTML"
-    title="delete"
-    >
-    <span>✖</span>
-  </button>
+    {% endif %}
+    <button
+      hx-put="/block/{{id}}/insert"
+      hx-trigger="click"
+      hx-target="#block-{{ id }}"
+      hx-swap="outerHTML"
+      title="insert below"
+      >
+      <span>✚</span>
+    </button>
+    <button
+      hx-put="/block/{{id}}/delete"
+      hx-trigger="click"
+      hx-target="#block-{{ id }}"
+      hx-swap="outerHTML"
+      title="delete"
+      >
+      <span>✖</span>
+    </button>
   </div>
   <form id="block-{{id}}-form" class="block" style="display: none;"></form>
 

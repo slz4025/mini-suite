@@ -64,16 +64,6 @@ def command_palette_toggle(state):
     return project.command_palette_toggle(session, state)
 
 
-@app.route("/block/infocus", methods=['GET'])
-@errors.handler
-def get_block_in_focus():
-    id = project.get_block_in_focus(session)
-    if id is None:
-        return {}
-    else:
-        return {"id": id}
-
-
 @app.route("/block/<id>/inputs/<operation>", methods=['PUT'])
 @errors.handler
 def block_operation(id, operation):

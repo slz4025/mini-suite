@@ -1,67 +1,32 @@
-from enum import Enum
-from flask import render_template, Response, redirect, send_from_directory
+from flask import render_template, Response, send_from_directory
 
 import os
 
 from settings import Settings
 import src.block as block
 import src.command_palette as command_palette
-import src.entry as entry
-import src.errors as errors
 import src.notifications as notifications
-import src.selector as selector
-import src.wiki as wiki
 
 
-class Mode(Enum):
-    FILE = 1
-    WIKI = 2
-
-
-MODE = None
 FILE_PATH = None
-FILE_DIR = None
-FILE_NAME = None
-TAB_NAME = None
 
 
-def setup(wiki_path, one_off_file):
-    global TAB_NAME, MODE
+def setup(path):
+    global FILE_PATH
+    FILE_PATH = path
 
-    if one_off_file is not None:
-        global FILE_PATH, FILE_DIR, FILE_NAME
-        dir, basename = os.path.split(one_off_file)
-        FILE_NAME = basename
-        FILE_DIR = dir
-        FILE_PATH = one_off_file
-        MODE = Mode.FILE
-        TAB_NAME = FILE_NAME
-        command_palette.init(show=False)
-    elif wiki_path is not None:
-        wiki.set(wiki_path)
-        MODE = Mode.WIKI
-        _, basename = os.path.split(wiki_path)
-        TAB_NAME = basename
-        command_palette.init(show=True)
-    else:
-        raise Exception("Mode not specified.")
-
+    command_palette.init(show=False)
     notifications.init()
 
 
-def check_using_file():
-    if MODE != Mode.FILE:
-        raise Exception("Not in one-off file mode.")
+def get_dir():
+    dir, basename = os.path.split(FILE_PATH)
+    return dir
 
 
-def check_using_wiki():
-    if MODE != Mode.WIKI:
-        raise Exception("Not in wiki mode.")
-
-
-def check_in_wiki(name):
-    entry.check_name(name)
-    wiki.check_exists(name)
+def get_name():
+    dir, basename = os.path.split(FILE_PATH)
+    return basename
 
 
 def render_null(session):
@@ -77,19 +42,11 @@ def render_body(session):
     show_command_palette = command_palette.get_show()
     command_palette_html = command_palette.render(
             session,
-            show_io=MODE == Mode.WIKI,
             )
-
-    match MODE:
-        case Mode.FILE:
-            current_entry = FILE_NAME
-        case Mode.WIKI:
-            current_entry = entry.get_name()
 
     blocks_html = block.render_all(
             session,
-            show_linking=MODE == Mode.WIKI,
-            base_rel_path=FILE_DIR,
+            base_rel_path=get_dir(),
             )
     return render_template(
             "partials/body.html",
@@ -98,8 +55,7 @@ def render_body(session):
             null=null,
             notification_banner=notification_banner_html,
             command_palette=command_palette_html,
-            non_editable_title=MODE == Mode.FILE,
-            current_entry=current_entry if current_entry is not None else '',
+            current_entry=get_name(),
             blocks=blocks_html,
             )
 
@@ -109,28 +65,11 @@ def render(session):
     return render_template(
             "index.html",
             body=body,
-            tab_name=TAB_NAME,
+            tab_name=get_name(),
             )
 
 
-def get_file(files):
-    if 'input' not in files:
-        raise errors.UserError("File was not chosen.")
-    file = files['input']
-    return file
-
-
 def root(session):
-    match MODE:
-        case Mode.FILE:
-            return redirect("/file")
-        case Mode.WIKI:
-            return redirect("/entry/temp")
-
-
-def get_one_off_file(session):
-    check_using_file()
-
     contents = ""
     if os.path.isfile(FILE_PATH):
         with open(FILE_PATH, 'r') as file:
@@ -148,21 +87,11 @@ def notification(session, show):
     return notifications.render(session)
 
 
-def command_palette_operation(session, operation):
-    check_using_wiki()
-
-    return command_palette.render_operation(session, operation)
-
-
 def command_palette_toggle(session, state):
     show = state == 'open'
     command_palette.set_show(show)
 
     return render_body(session)
-
-
-def block_operation(session, id, operation):
-    return block.render_operation(session, id, operation)
 
 
 def block_unfocus(session):
@@ -172,8 +101,7 @@ def block_unfocus(session):
     return block.render(
             session,
             id,
-            show_linking=MODE == Mode.WIKI,
-            base_rel_path=FILE_DIR,
+            base_rel_path=get_dir(),
             )
 
 
@@ -184,8 +112,7 @@ def block_focus(session, id):
     html = block.render(
             session,
             id,
-            show_linking=MODE == Mode.WIKI,
-            base_rel_path=FILE_DIR,
+            base_rel_path=get_dir(),
             )
     resp = Response(html)
     if prev_in_focus is not None:
@@ -201,8 +128,7 @@ def block_next(session):
     html = block.render(
             session,
             id,
-            show_linking=MODE == Mode.WIKI,
-            base_rel_path=FILE_DIR,
+            base_rel_path=get_dir(),
             )
     resp = Response(html)
     next_in_focus = block.get_in_focus(session)
@@ -218,8 +144,7 @@ def block_prev(session):
     html = block.render(
             session,
             id,
-            show_linking=MODE == Mode.WIKI,
-            base_rel_path=FILE_DIR,
+            base_rel_path=get_dir(),
             )
     resp = Response(html)
     next_in_focus = block.get_in_focus(session)
@@ -234,79 +159,17 @@ def block_edit(session, id, contents):
     return render_null(session)
 
 
-def block_link(session, id, name):
-    check_using_wiki()
-
-    error = None
-    try:
-        check_in_wiki(name)
-        block.add_link(session, id, name)
-    except errors.UserError as e:
-        error = e
-
-    if error is not None:
-        notifications.set_error(error)
-    else:
-        notifications.set_info("Link added.")
-
-    html = block.render(
-            session,
-            id,
-            show_linking=MODE == Mode.WIKI,
-            base_rel_path=FILE_DIR,
-            )
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
-
-
 def get_file_obj(session, filepath):
-    check_using_file()
-
     filepath = "/" + filepath
     filedir, filename = os.path.split(filepath)
     return send_from_directory(filedir, filename)
-
-
-def get_media(session, filename):
-    check_using_wiki()
-
-    return entry.get_media(session, filename)
-
-
-def block_media(request, session, id):
-    check_using_wiki()
-
-    error = None
-    try:
-        file = get_file(request.files)
-        media_id = entry.save_media(session, file)
-        block.append_media_reference(session, id, media_id, alt=file.name)
-    except errors.UserError as e:
-        error = e
-
-    if error is not None:
-        notifications.set_error(error)
-    else:
-        notifications.set_info("Media appended.")
-
-    html = block.render(
-            session,
-            id,
-            show_linking=MODE == Mode.WIKI,
-            base_rel_path=FILE_DIR,
-            )
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
 
 
 def block_insert(session, id):
     return block.insert(
             session,
             id,
-            show_linking=MODE == Mode.WIKI,
-            base_rel_path=FILE_DIR,
+            base_rel_path=get_dir(),
             )
 
 
@@ -318,144 +181,17 @@ def block_render(session, id):
     return block.render(
             session,
             id=id,
-            show_linking=MODE == Mode.WIKI,
-            base_rel_path=FILE_DIR,
+            base_rel_path=get_dir(),
             )
 
 
-def new_entry(session):
-    check_using_wiki()
-
-    notifications.set_info("Creating new entry.")
-    resp = Response()
-    resp.headers["HX-Redirect"] = "/entry/temp"
-    return resp
-
-
-def open_entry(session, name):
-    check_using_wiki()
-
-    error = None
-    try:
-        check_in_wiki(name)
-    except errors.UserError as e:
-        error = e
-
-    if error is not None:
-        notifications.set_error(error)
-        html = render_null(session)
-        resp = Response(html)
-        resp.headers['HX-Trigger'] = "notification"
-        return resp
-    else:
-        resp = Response()
-        notifications.set_info("Entry opened.")
-        resp.headers["HX-Redirect"] = f"/entry/{name}"
-        return resp
-
-
-def save_entry(session, name):
-    match MODE:
-        case Mode.FILE:
-            if name != FILE_NAME:
-                raise Exception("Cannot change name in one-file mode.")
-
-            markdown = block.get_all_markdown(session)
-            with open(FILE_PATH, 'w+') as file:
-                file.write(markdown)
-
-            html = render_null(session)
-            resp = Response(html)
-            notifications.set_info("Entry saved.")
-            resp.headers['HX-Trigger'] = "notification"
-            return resp
-
-        case Mode.WIKI:
-            error = None
-            try:
-                entry.save(session, name)
-            except errors.UserError as e:
-                error = e
-
-            if error is not None:
-                notifications.set_error(error)
-                html = render_null(session)
-                resp = Response(html)
-                resp.headers['HX-Trigger'] = "notification"
-                return resp
-            else:
-                resp = Response()
-                notifications.set_info("Entry saved.")
-                resp.headers["HX-Redirect"] = f"/entry/{name}"
-                return resp
-
-
-def get_entry_results(session, operation, search):
-    check_using_wiki()
-
-    return selector.render_results(session, operation, search)
-
-
-def get_temp_entry(session):
-    check_using_wiki()
-
-    entry.use_temp(session)
-
-    return render(session)
-
-
-def get_wiki_entry(session, name):
-    check_using_wiki()
-
-    error = None
-    try:
-        entry.set(session, name)
-    except errors.UserError as e:
-        error = e
-
-    if error is not None:
-        notifications.set_error(error)
-        return redirect("/")
-    else:
-        return render(session)
-
-
-def import_markdown(request, session):
-    check_using_wiki()
-
-    error = None
-    try:
-        file = get_file(request.files)
-        entry.import_file(session, file)
-    except errors.UserError as e:
-        error = e
-
-    if error is not None:
-        notifications.set_error(error)
-    else:
-        notifications.set_info("Markdown imported.")
-
-    html = block.render_all(session)
-    resp = Response(html)
-    resp.headers['HX-Trigger'] = "notification"
-    return resp
-
-
-def export_html(session, filename):
-    check_using_wiki()
-
-    error = None
-    try:
-        entry.export(session, filename)
-    except errors.UserError as e:
-        error = e
-
-    if error is not None:
-        notifications.set_error(error)
-    else:
-        notifications.set_info("HTML exported.")
+def save_entry(session):
+    markdown = block.get_all_markdown(session)
+    with open(FILE_PATH, 'w+') as file:
+        file.write(markdown)
 
     html = render_null(session)
     resp = Response(html)
+    notifications.set_info("Entry saved.")
     resp.headers['HX-Trigger'] = "notification"
     return resp

@@ -1,4 +1,4 @@
-from flask import Flask, session, request, redirect
+from flask import Flask, session, request
 from flask_htmx import HTMX
 import secrets
 from waitress import serve
@@ -42,34 +42,12 @@ def root():
     return project.root(session)
 
 
-@app.route("/file", methods=['GET'])
-@errors.handler
-def get_one_off_file():
-    return project.get_one_off_file(session)
-
-
-@app.route("/command-palette/io/<operation>", methods=['PUT'])
-@errors.handler
-def command_palette_operation(operation):
-    assert htmx is not None
-
-    return project.command_palette_operation(session, operation)
-
-
 @app.route("/command-palette/<state>", methods=['PUT'])
 @errors.handler
 def command_palette_toggle(state):
     assert htmx is not None
 
     return project.command_palette_toggle(session, state)
-
-
-@app.route("/block/<id>/inputs/<operation>", methods=['PUT'])
-@errors.handler
-def block_operation(id, operation):
-    assert htmx is not None
-
-    return project.block_operation(session, id, operation)
 
 
 @app.route("/block/unfocus", methods=['POST'])
@@ -114,22 +92,6 @@ def block_edit(id):
     return project.block_edit(session, id, contents)
 
 
-@app.route("/block/<id>/link/<name>", methods=['POST'])
-@errors.handler
-def block_link(id, name):
-    assert htmx is not None
-
-    return project.block_link(session, id, name)
-
-
-@app.route("/block/<id>/media", methods=['POST'])
-@errors.handler
-def block_media(id):
-    assert htmx is not None
-
-    return project.block_media(request, session, id)
-
-
 @app.route("/block/<id>/insert", methods=['PUT'])
 @errors.handler
 def block_insert(id):
@@ -154,52 +116,12 @@ def block_render(id):
     return project.block_render(session, id)
 
 
-@app.route("/new", methods=['POST'])
-@errors.handler
-def new_entry():
-    assert htmx is not None
-
-    return project.new_entry(session)
-
-
-@app.route("/open/<name>", methods=['POST'])
-@errors.handler
-def open_entry(name):
-    assert htmx is not None
-
-    return project.open_entry(session, name)
-
-
 @app.route("/save", methods=['POST'])
 @errors.handler
 def save_entry():
     assert htmx is not None
 
-    name = request.form["name"]
-
-    return project.save_entry(session, name)
-
-
-@app.route("/entry/<operation>/results", methods=['POST'])
-@errors.handler
-def get_entry_results(operation):
-    assert htmx is not None
-
-    search = request.form["search"]
-
-    return project.get_entry_results(session, operation, search)
-
-
-@app.route("/entry/temp", methods=['GET'])
-@errors.handler
-def get_temp_entry():
-    return project.get_temp_entry(session)
-
-
-@app.route("/entry/<name>", methods=['GET'])
-@errors.handler
-def get_wiki_entry(name):
-    return project.get_wiki_entry(session, name)
+    return project.save_entry(session)
 
 
 @app.route("/<path:filepath>", methods=['GET'])
@@ -208,31 +130,8 @@ def get_file_obj(filepath):
     return project.get_file_obj(session, filepath)
 
 
-@app.route("/media/<path:filename>", methods=['GET'])
-@errors.handler
-def get_media(filename):
-    return project.get_media(session, filename)
-
-
-@app.route("/import", methods=['POST'])
-@errors.handler
-def import_markdown():
-    assert htmx is not None
-
-    return project.import_markdown(request, session)
-
-
-@app.route("/export", methods=['POST'])
-@errors.handler
-def export_html():
-    assert htmx is not None
-
-    filename = request.form["input"]
-    return project.export_html(session, filename)
-
-
-def start(port, wiki_path, one_off_file=None):
-    project.setup(wiki_path, one_off_file)
+def start(port, path):
+    project.setup(path)
     # key for this session
     app.secret_key = secrets.token_hex()
     app.logger.info("Starting server")

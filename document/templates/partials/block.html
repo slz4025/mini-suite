@@ -36,26 +36,6 @@
       hx-swap="outerHTML"
       style="display: none;"
       ></button>
-    {% if show_linking %}
-    <button
-      title="append media"
-      hx-put="/block/{{id}}/inputs/media"
-      hx-trigger="click"
-      hx-target="#block-{{id}}-form"
-      hx-swap="outerHTML"
-      >
-      <span>*</span>
-    </button>
-    <button
-      title="add link"
-      hx-put="/block/{{id}}/inputs/link"
-      hx-trigger="click"
-      hx-target="#block-{{id}}-form"
-      hx-swap="outerHTML"
-      >
-      <span>◥</span>
-    </button>
-    {% endif %}
     <button
       hx-put="/block/{{id}}/insert"
       hx-trigger="click"
@@ -75,8 +55,6 @@
       <span>✖</span>
     </button>
   </div>
-  <form id="block-{{id}}-form" class="block" style="display: none;"></form>
-
   <textarea
     id="block-editor-{{ id }}"
     name="contents"

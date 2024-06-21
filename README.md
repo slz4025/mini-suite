@@ -16,11 +16,9 @@ Note that it is not collaborative and does not have file versioning. Use `git` o
 
 ![demo](./media/readme.png)
 
-The document editor allows you edit markdown files. It has two modes:
-1. Create/edit a one-off markdown file and save changes back to the file,
-1. Create/edit a wiki of inter-linking markdown files to explore later or rendered as html.
+The document editor allows you edit a markdown file.
 
-After you [setup](#setup) your environment, you can create/edit a one-off markdown file via `doc my_file.md` and create/edit a wiki via `wiki my-wiki-dir`.
+After you [setup](#setup) your environment, you can create/edit a markdown file via `doc my_file.md`.
 
 
 ## What can I do with the spreadsheet editor?

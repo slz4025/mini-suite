@@ -9,11 +9,5 @@ sheet() {
 doc() {
     doc_dir="${MINISUITE_PATH}/document"
     source "${doc_dir}/.venv/bin/activate"
-    python "${doc_dir}/document.py" --port 5000 file "$@"
-}
-
-wiki() {
-    doc_dir="${MINISUITE_PATH}/document"
-    source "${doc_dir}/.venv/bin/activate"
-    python "${doc_dir}/document.py" wiki "$@"
+    python "${doc_dir}/document.py" --port 5000 "$@"
 }

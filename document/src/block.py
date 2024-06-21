@@ -3,7 +3,6 @@ from typing import Dict, List
 import uuid
 
 import src.markdown as md
-import src.selector as selector
 
 
 all_markdown: Dict[str, str] = {}
@@ -40,19 +39,6 @@ def get_pos(id):
     if id not in reverse_order:
         raise Exception("Id 'id' does not have valid block position.")
     return reverse_order[id]
-
-
-def swap_order(pos1, pos2):
-    global order, reverse_order
-
-    id1 = get_id(pos1)
-    id2 = get_id(pos2)
-
-    order[pos1] = id2
-    order[pos2] = id1
-
-    reverse_order[id1] = pos2
-    reverse_order[id2] = pos1
 
 
 def remove_from_order(id):
@@ -124,55 +110,25 @@ def set_next_in_focus(session):
     next_id = get_id(next_pos)
     set_in_focus(session, next_id)
 
-
-def render_media(session, id):
-    return render_template(
-            "partials/block/media.html",
-            id=id,
-            )
-
-
-def render_link(session, id):
-    link_entry_selector = selector.render(session, f"link-to-block-{id}")
-    return render_template(
-            "partials/block/link.html",
-            id=id,
-            link_entry_selector=link_entry_selector,
-            )
-
-
-def render_operation(session, id, operation):
-    match operation:
-        case 'media':
-            return render_media(session, id)
-        case 'link':
-            return render_link(session, id)
-        case _:
-            raise Exception(
-                    f"'{operation}' is not a block operation."
-                    )
-
-
-def render(session, id, show_linking=True, base_rel_path=None):
+def render(session, id, base_rel_path=None):
     in_focus = get_in_focus(session)
     focused = in_focus == id
     markdown = get_markdown(id)
-    rendered = md.html_for_internal(markdown, base_rel_path)
+    rendered = md.get_html(markdown, base_rel_path)
 
     return render_template(
             "partials/block.html",
             focused=focused,
             id=id,
-            show_linking=show_linking,
             markdown=markdown,
             markdown_html=rendered,
             )
 
 
-def render_all(session, show_linking=True, base_rel_path=None):
+def render_all(session, base_rel_path=None):
     all_block_html = []
     for id in order:
-        block_html = render(session, id, show_linking, base_rel_path)
+        block_html = render(session, id, base_rel_path)
         all_block_html.append(block_html)
     blocks_html = "\n".join(all_block_html)
     return render_template(
@@ -181,15 +137,15 @@ def render_all(session, show_linking=True, base_rel_path=None):
             )
 
 
-def insert(session, id, show_linking=True, base_rel_path=None):
+def insert(session, id, base_rel_path=None):
     new_id = create_id()
     set_markdown("", new_id)
 
     pos = get_pos(id)
     insert_into_order(new_id, pos+1)
 
-    curr_block = render(session, id, show_linking, base_rel_path)
-    next_block = render(session, new_id, show_linking, base_rel_path)
+    curr_block = render(session, id, base_rel_path)
+    next_block = render(session, new_id, base_rel_path)
     return "\n".join([curr_block, next_block])
 
 
@@ -198,20 +154,6 @@ def delete(session, id):
     remove_from_order(id)
 
     return ""
-
-
-def append_media_reference(session, id, mediapath, alt):
-    ref = f"![{alt}](/media/{mediapath})"
-    markdown = get_markdown(id)
-    markdown += f"\n\n{ref}"
-    set_markdown(markdown, id)
-
-
-def add_link(session, id, name):
-    link = f"[{name}](/entry/{name})"
-    markdown = get_markdown(id)
-    markdown += f"\n\n{link}"
-    set_markdown(markdown, id)
 
 
 def set_all_markdown(session, contents):

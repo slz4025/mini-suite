@@ -1,48 +1,5 @@
 {% if show %}
 <div id="command-palette" class="open">
-  {% if show_io %}
-  <fieldset>
-    <legend>INPUT/OUTPUT</legend>
-    <div 
-      id="command-palette-io"
-      class="command-palette-section"
-      >
-      <button
-        title="new entry"
-        hx-post="/new"
-        hx-trigger="click"
-        hx-target="#null"
-        hx-swap="outerHTML"
-        >➕</button>
-      <button
-        title="open entry"
-        hx-put="/command-palette/io/open"
-        hx-trigger="click"
-        hx-target="#command-palette-io-form"
-        hx-swap="outerHTML"
-        >📂</button>
-      <button
-        title="import from markdown"
-        hx-put="/command-palette/io/import"
-        hx-trigger="click"
-        hx-target="#command-palette-io-form"
-        hx-swap="outerHTML"
-        style="font-size: 1.25rem;"
-        >⬏</button>
-      <button
-        title="export to html"
-        hx-put="/command-palette/io/export"
-        hx-trigger="click"
-        hx-target="#command-palette-io-form"
-        hx-swap="outerHTML"
-        style="font-size: 1.25rem;"
-        >⬎</button>
-    </div>
-
-      <form id="command-palette-io-form" style="display: none;"></form>
-  </fieldset>
-  {% endif %}
-
   <div
     id="command-palette-key-maps"
     class="command-palette-section"

@@ -37,6 +37,7 @@
       style="display: none;"
       ></button>
     <button
+      id="insert-block-button"
       hx-put="/block/{{id}}/insert"
       hx-trigger="click"
       hx-target="#block-{{ id }}"
@@ -46,6 +47,7 @@
       <span>✚</span>
     </button>
     <button
+      id="delete-block-button"
       hx-put="/block/{{id}}/delete"
       hx-trigger="click"
       hx-target="#block-{{ id }}"

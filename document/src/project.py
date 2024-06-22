@@ -30,10 +30,9 @@ def render_null(session):
             )
 
 
-def render_title(session, show_saved=False):
+def render_banner(session, show_saved=False):
     return render_template(
-            "partials/title.html",
-            name=get_name(),
+            "partials/banner.html",
             show_saved=show_saved,
             )
 
@@ -41,11 +40,7 @@ def render_title(session, show_saved=False):
 def render_body(session):
     dark_mode = Settings.DARK_MODE
     null = render_null(session)
-    banner_html = render_template(
-            "partials/banner.html",
-            )
-    title_html = render_title(session)
-
+    banner_html = render_banner(session, show_saved=False)
     blocks_html = block.render_all(
             session,
             base_rel_path=get_dir(),
@@ -55,7 +50,7 @@ def render_body(session):
             dark_mode=dark_mode,
             banner=banner_html,
             null=null,
-            title=title_html,
+            name=get_name(),
             blocks=blocks_html,
             )
 
@@ -170,11 +165,11 @@ def block_render(session, id):
             )
 
 
-def save_entry(session):
+def save(session):
     markdown = block.get_all_markdown(session)
     with open(FILE_PATH, 'w+') as file:
         file.write(markdown)
 
-    html = render_null(session)
+    html = render_banner(session, show_saved=True)
     resp = Response(html)
     return resp

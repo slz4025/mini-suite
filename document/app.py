@@ -102,20 +102,18 @@ def block_render(id):
 
 @app.route("/save", methods=['POST'])
 @errors.handler
-def save_entry():
+def save():
     assert htmx is not None
 
-    return project.save_entry(session)
+    return project.save(session)
 
 
-@app.route("/title/<show_saved_str>", methods=['PUT'])
+@app.route("/banner/reset", methods=['PUT'])
 @errors.handler
-def render_title(show_saved_str):
+def reset_banner():
     assert htmx is not None
 
-    show_saved = show_saved_str == "true"
-
-    return project.render_title(session, show_saved=show_saved)
+    return project.render_banner(session, show_saved=False)
 
 
 @app.route("/<path:filepath>", methods=['GET'])

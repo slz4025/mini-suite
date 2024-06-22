@@ -12,6 +12,9 @@
 :root {
   --main-ff: dejavu;
   --display-ff: serif;
+
+  --info-color: #0F0F0F;
+  --info-background-color: #00B800;
 }
 
 body {
@@ -41,14 +44,17 @@ div#wrapper {
 }
 div#title {
   position: relative;
+  height: 2rem;
   width: 800px;
   left: 50%;
   transform: translate(-50%, 0%);
   
-  margin: 0;
+  margin: 1rem;
   border: 0;
   padding: 1rem;
 
+  text-align: center;
+  font-size: 1.5rem;
   color: var(--main-color); 
 }
 div#blocks {
@@ -137,12 +143,6 @@ form {
 form.block {
   margin-bottom: 0.5rem;
 }
-form#title-form {
-  padding: 0;
-  
-  display: flex;
-  align-items: center;
-}
 legend {
   color: var(--main-color);
   font-family: var(--main-ff);
@@ -183,11 +183,6 @@ input[type=file]::file-selector-button {
 }
 input.select-entry {
   width: 100%;
-}
-input#title-name {
-  height: 2rem;
-
-  font-size: 1.5rem;
 }
 input#save {
   height: 2rem;
@@ -354,7 +349,12 @@ img {
 
   text-align: center;
   font-weight: bold;
-
+}
+#banner.none {
   color: var(--background-color);
   background-color: var(--main-color);
+}
+#banner.saved {
+  color: var(--info-color);
+  background-color: var(--info-background-color);
 }

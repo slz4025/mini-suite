@@ -2,7 +2,7 @@
 <div 
   id="block-{{ block_id }}"
   class="block focused"
-  hx-put="/block/{{ entry_id }}/{{ block_id }}"
+  hx-put="/entry/{{ entry_id }}/block/{{ block_id }}"
   hx-trigger="block-{{ block_id }} from:body"
   hx-target="this"
   hx-swap="outerHTML"
@@ -11,7 +11,7 @@
     <button
       id="render-block-button"
       title="render block"
-      hx-post="/block/unfocus/{{ entry_id }}"
+      hx-post="/entry/{{ entry_id }}/block/unfocus"
       hx-trigger="click"
       hx-target="#block-{{ block_id }}"
       hx-swap="outerHTML"
@@ -21,7 +21,7 @@
     <button
       id="prev-block-button"
       title="previous block"
-      hx-post="/block/prev/{{ entry_id }}"
+      hx-post="/entry/{{ entry_id }}/block/prev"
       hx-trigger="click"
       hx-target="#block-{{ block_id }}"
       hx-swap="outerHTML"
@@ -29,14 +29,14 @@
     <button
       id="next-block-button"
       title="next block"
-      hx-post="/block/next/{{ entry_id }}"
+      hx-post="/entry/{{ entry_id }}/block/next"
       hx-trigger="click"
       hx-target="#block-{{ block_id }}"
       hx-swap="outerHTML"
       >▼</button>
     <button
       id="insert-block-button"
-      hx-put="/block/insert/{{ entry_id }}"
+      hx-put="/entry/{{ entry_id }}/block/insert"
       hx-trigger="click"
       hx-target="#block-{{ block_id }}"
       hx-swap="outerHTML"
@@ -46,7 +46,7 @@
     </button>
     <button
       id="delete-block-button"
-      hx-put="/block/delete/{{ entry_id }}"
+      hx-put="/entry/{{ entry_id }}/block/delete"
       hx-trigger="click"
       hx-target="#block-{{ block_id }}"
       hx-swap="outerHTML"
@@ -58,7 +58,7 @@
   <textarea
     id="block-editor"
     name="contents"
-    hx-post="/block/edit/{{ entry_id }}"
+    hx-post="/entry/{{ entry_id }}/block/edit"
     hx-target="#null"
     hx-trigger="keyup changed delay:100ms"
     hx-swap="outerHTML"
@@ -68,7 +68,7 @@
 <div
   id="block-{{ block_id }}"
   class="block"
-  hx-put="/block/{{ entry_id }}/{{ block_id }}"
+  hx-put="/entry/{{ entry_id }}/block/{{ block_id }}"
   hx-trigger="block-{{ block_id }} from:body"
   hx-target="this"
   hx-swap="outerHTML"
@@ -76,7 +76,7 @@
   >
   <button
     class="edit"
-    hx-post="/block/focus/{{ entry_id }}/{{ block_id }}"
+    hx-post="/entry/{{ entry_id }}/block/focus/{{ block_id }}"
     hx-trigger="click"
     hx-target="#block-{{ block_id }}"
     hx-swap="outerHTML"

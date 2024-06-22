@@ -8,6 +8,9 @@ import src.markdown as md
 
 class Entry:
     def __init__(self, entry_id, file_path):
+        if not file_path.endswith(".md"):
+            raise Exception(f"File path '{file_path}' is not a markdown file.")
+
         self.id = entry_id
 
         self.file_path: str = file_path

@@ -6,7 +6,7 @@ import sys
 from app import start
 from settings import Settings
 
-from src.state import add_entry
+from src.state import setup
 
 
 def find_port():
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     args = parser.parse_args(sys.argv[1:])
 
     path = os.path.abspath(args.path)
-    add_entry(path)
+    setup(path)
 
     port = args.port
     if args.port == 0:

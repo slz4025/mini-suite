@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, send_from_directory
+from flask import Flask, redirect, request, Response, send_from_directory
 from flask_htmx import HTMX
 import os
 from waitress import serve
@@ -6,7 +6,7 @@ from waitress import serve
 from settings import Settings
 
 import src.errors as errors
-from src.state import get_entry, get_singleton
+from src.state import get_init_entry_id, get_entry
 
 
 app = Flask(__name__)
@@ -33,9 +33,15 @@ def unexpected_error():
 @app.route("/")
 @errors.handler
 def root():
+    entry_id = get_init_entry_id()
+    return redirect(f"/entry/{entry_id}")
+
+
+@app.route("/entry/<entry_id>")
+@errors.handler
+def render_entry(entry_id):
     resp = Response()
 
-    entry_id = get_singleton()
     entry = get_entry(entry_id)
 
     dark_mode = Settings.DARK_MODE
@@ -44,7 +50,7 @@ def root():
     return resp
 
 
-@app.route("/block/<entry_id>/<block_id>", methods=['PUT'])
+@app.route("/entry/<entry_id>/block/<block_id>", methods=['PUT'])
 @errors.handler
 def render_block(entry_id, block_id):
     assert htmx is not None
@@ -58,7 +64,7 @@ def render_block(entry_id, block_id):
     return resp
 
 
-@app.route("/block/focus/<entry_id>/<block_id>", methods=['POST'])
+@app.route("/entry/<entry_id>/block/focus/<block_id>", methods=['POST'])
 @errors.handler
 def focus_block(entry_id, block_id):
     assert htmx is not None
@@ -79,7 +85,7 @@ def focus_block(entry_id, block_id):
     return resp
 
 
-@app.route("/block/unfocus/<entry_id>", methods=['POST'])
+@app.route("/entry/<entry_id>/block/unfocus", methods=['POST'])
 @errors.handler
 def unfocus_block(entry_id):
     assert htmx is not None
@@ -95,7 +101,7 @@ def unfocus_block(entry_id):
     return resp
 
 
-@app.route("/block/next/<entry_id>", methods=['POST'])
+@app.route("/entry/<entry_id>/block/next", methods=['POST'])
 @errors.handler
 def next_block(entry_id):
     assert htmx is not None
@@ -115,7 +121,7 @@ def next_block(entry_id):
     return resp
 
 
-@app.route("/block/prev/<entry_id>", methods=['POST'])
+@app.route("/entry/<entry_id>/block/prev", methods=['POST'])
 @errors.handler
 def prev_block(entry_id):
     assert htmx is not None
@@ -135,7 +141,7 @@ def prev_block(entry_id):
     return resp
 
 
-@app.route("/block/edit/<entry_id>", methods=['POST'])
+@app.route("/entry/<entry_id>/block/edit", methods=['POST'])
 @errors.handler
 def edit_block(entry_id):
     assert htmx is not None
@@ -153,7 +159,7 @@ def edit_block(entry_id):
     return resp
 
 
-@app.route("/block/insert/<entry_id>", methods=['PUT'])
+@app.route("/entry/<entry_id>/block/insert", methods=['PUT'])
 @errors.handler
 def insert_block(entry_id):
     assert htmx is not None
@@ -172,7 +178,7 @@ def insert_block(entry_id):
     return blocks_html
 
 
-@app.route("/block/delete/<entry_id>", methods=['PUT'])
+@app.route("/entry/<entry_id>/block/delete", methods=['PUT'])
 @errors.handler
 def delete_block(entry_id):
     assert htmx is not None
@@ -188,7 +194,7 @@ def delete_block(entry_id):
     return blocks_html
 
 
-@app.route("/save/<entry_id>", methods=['POST'])
+@app.route("/entry/<entry_id>/save", methods=['POST'])
 @errors.handler
 def save(entry_id):
     assert htmx is not None
@@ -204,7 +210,7 @@ def save(entry_id):
     return resp
 
 
-@app.route("/banner/reset/<entry_id>", methods=['PUT'])
+@app.route("/entry/<entry_id>/banner/reset", methods=['PUT'])
 @errors.handler
 def reset_banner(entry_id):
     assert htmx is not None

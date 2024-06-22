@@ -37,105 +37,133 @@ def render_banner(show_saved=False):
             )
 
 
-def render_body():
+def render():
+    dark_mode = Settings.DARK_MODE
     null = render_null()
     banner_html = render_banner(show_saved=False)
     blocks_html = block.render_all(
             base_rel_path=get_dir(),
             )
-    return render_template(
+    body_html = render_template(
             "partials/body.html",
             banner=banner_html,
             null=null,
             name=get_name(),
             blocks=blocks_html,
             )
-
-
-def render():
-    dark_mode = Settings.DARK_MODE
-    body = render_body()
     return render_template(
             "index.html",
             tab_name=get_name(),
             dark_mode=dark_mode,
-            body=body,
+            body=body_html,
             )
 
 
 def root():
+    resp = Response()
+
     contents = ""
     if os.path.isfile(FILE_PATH):
         with open(FILE_PATH, 'r') as file:
             contents = file.read()
     block.set_all_markdown(contents)
-    return render()
+
+    html = render()
+    resp.set_data(html)
+    return resp
 
 
 def block_render(id):
-    return block.render(id=id, base_rel_path=get_dir())
+    resp = Response()
+
+    block_html = block.render(id=id, base_rel_path=get_dir())
+    resp.set_data(block_html)
+    return resp
 
 
 def block_focus(id):
+    resp = Response()
+
     prev_in_focus = block.get_in_focus()
     block.set_in_focus(id)
 
-    html = block.render(id, base_rel_path=get_dir())
-    resp = Response(html)
     if prev_in_focus is not None:
         # rerender so shows as unfocused
         resp.headers['HX-Trigger'] = f"block-{prev_in_focus}"
+
+    block_html = block.render(id, base_rel_path=get_dir())
+    resp.set_data(block_html)
     return resp
 
 
 def block_unfocus():
+    resp = Response()
+
     id = block.get_in_focus()
     block.reset_in_focus()
 
-    return block.render(id, base_rel_path=get_dir())
+    block_html = block.render(id, base_rel_path=get_dir())
+    resp.set_data(block_html)
+    return resp
 
 
 def block_next():
+    resp = Response()
+
     id = block.get_in_focus()
     block.set_next_in_focus()
 
-    html = block.render(id, base_rel_path=get_dir())
-    resp = Response(html)
     next_in_focus = block.get_in_focus()
     if next_in_focus != id:
         resp.headers['HX-Trigger'] = f"block-{next_in_focus}"
+
+    block_html = block.render(id, base_rel_path=get_dir())
+    resp.set_data(block_html)
     return resp
 
 
 def block_prev():
+    resp = Response()
+
     id = block.get_in_focus()
     block.set_prev_in_focus()
 
-    html = block.render(id, base_rel_path=get_dir())
-    resp = Response(html)
     next_in_focus = block.get_in_focus()
     if next_in_focus != id:
         resp.headers['HX-Trigger'] = f"block-{next_in_focus}"
+
+    block_html = block.render(id, base_rel_path=get_dir())
+    resp.set_data(block_html)
     return resp
 
 
 def block_edit(contents):
+    resp = Response()
+
     id = block.get_in_focus()
     block.set_markdown(contents, id=id)
 
-    return render_null()
+    null_html = render_null()
+    resp.set_data(null_html)
+    return resp
 
 
 def block_insert():
+    resp = Response()
     id = block.get_in_focus()
 
-    return block.insert(id, base_rel_path=get_dir())
+    blocks_html = block.insert(id, base_rel_path=get_dir())
+    resp.set_data(blocks_html)
+    return blocks_html
 
 
 def block_delete():
+    resp = Response()
     id = block.get_in_focus()
 
-    return block.delete(id)
+    blocks_html = block.delete(id)
+    resp.set_data(blocks_html)
+    return blocks_html
 
 
 def get_file_obj(filepath):
@@ -145,10 +173,20 @@ def get_file_obj(filepath):
 
 
 def save():
+    resp = Response()
+
     markdown = block.get_all_markdown()
     with open(FILE_PATH, 'w+') as file:
         file.write(markdown)
 
-    html = render_banner(show_saved=True)
-    resp = Response(html)
+    banner_html = render_banner(show_saved=True)
+    resp.set_data(banner_html)
+    return resp
+
+
+def reset_banner():
+    resp = Response()
+
+    banner_html = render_banner(show_saved=False)
+    resp.set_data(banner_html)
     return resp

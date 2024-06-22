@@ -112,7 +112,7 @@ def save():
 def reset_banner():
     assert htmx is not None
 
-    return project.render_banner(show_saved=False)
+    return project.reset_banner()
 
 
 @app.route("/<path:filepath>", methods=['GET'])

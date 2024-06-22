@@ -4,7 +4,6 @@ import os
 
 from settings import Settings
 import src.block as block
-import src.command_palette as command_palette
 
 
 FILE_PATH = None
@@ -13,8 +12,6 @@ FILE_PATH = None
 def setup(path):
     global FILE_PATH
     FILE_PATH = path
-
-    command_palette.init(show=False)
 
 
 def get_dir():
@@ -44,9 +41,8 @@ def render_title(session, show_saved=False):
 def render_body(session):
     dark_mode = Settings.DARK_MODE
     null = render_null(session)
-    show_command_palette = command_palette.get_show()
-    command_palette_html = command_palette.render(
-            session,
+    banner_html = render_template(
+            "partials/banner.html",
             )
     title_html = render_title(session)
 
@@ -57,9 +53,8 @@ def render_body(session):
     return render_template(
             "partials/body.html",
             dark_mode=dark_mode,
-            show_command_palette=show_command_palette,
+            banner=banner_html,
             null=null,
-            command_palette=command_palette_html,
             title=title_html,
             blocks=blocks_html,
             )
@@ -82,13 +77,6 @@ def root(session):
     block.set_all_markdown(session, contents)
 
     return render(session)
-
-
-def command_palette_toggle(session, state):
-    show = state == 'open'
-    command_palette.set_show(show)
-
-    return render_body(session)
 
 
 def block_unfocus(session):

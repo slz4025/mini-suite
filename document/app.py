@@ -13,7 +13,7 @@ htmx = HTMX(app)
 
 @app.route("/error")
 def unexpected_error():
-    error_message = errors.get_message(session)
+    error_message = errors.get_message()
     app.logger.error(error_message)
 
     user_error_msg = f"""
@@ -32,14 +32,6 @@ def unexpected_error():
 @errors.handler
 def root():
     return project.root(session)
-
-
-@app.route("/command-palette/<state>", methods=['PUT'])
-@errors.handler
-def command_palette_toggle(state):
-    assert htmx is not None
-
-    return project.command_palette_toggle(session, state)
 
 
 @app.route("/block/unfocus", methods=['POST'])

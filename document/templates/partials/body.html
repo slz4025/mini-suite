@@ -6,12 +6,11 @@
   {% endif %}
   <link rel="stylesheet" type="text/css" href="/static/style.css">
 
-  {{ command_palette|safe }}
+  {{ banner|safe }}
   <!-- component for sending requests that should have no effect -->
   {{ null|safe }}
   <div
     id="wrapper"
-    class="{{ 'contracted' if show_command_palette else 'expanded' }}"
     >
     {{ title|safe }}
     {{ blocks|safe }}

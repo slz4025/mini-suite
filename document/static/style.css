@@ -49,19 +49,6 @@ div#footer {
   border: 0;
   padding: 0;
 }
-div#title {
-  position: relative;
-  height: 2rem;
-  width: 100%;
-  
-  margin: 1rem;
-  border: 0;
-  padding: 1rem;
-
-  text-align: center;
-  font-size: 1.5rem;
-  color: var(--main-color); 
-}
 div#blocks {
   position: relative;
   width: 100%;

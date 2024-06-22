@@ -1,6 +1,5 @@
-from flask import Flask, session, request
+from flask import Flask, request
 from flask_htmx import HTMX
-import secrets
 from waitress import serve
 
 import src.errors as errors
@@ -31,7 +30,7 @@ def unexpected_error():
 @app.route("/")
 @errors.handler
 def root():
-    return project.root(session)
+    return project.root()
 
 
 @app.route("/block/unfocus", methods=['POST'])
@@ -39,7 +38,7 @@ def root():
 def block_unfocus():
     assert htmx is not None
 
-    return project.block_unfocus(session)
+    return project.block_unfocus()
 
 
 @app.route("/block/<id>/focus", methods=['POST'])
@@ -47,7 +46,7 @@ def block_unfocus():
 def block_focus(id):
     assert htmx is not None
 
-    return project.block_focus(session, id)
+    return project.block_focus(id)
 
 
 @app.route("/block/next", methods=['POST'])
@@ -55,7 +54,7 @@ def block_focus(id):
 def block_next():
     assert htmx is not None
 
-    return project.block_next(session)
+    return project.block_next()
 
 
 @app.route("/block/prev", methods=['POST'])
@@ -63,7 +62,7 @@ def block_next():
 def block_prev():
     assert htmx is not None
 
-    return project.block_prev(session)
+    return project.block_prev()
 
 
 @app.route("/block/<id>/edit", methods=['POST'])
@@ -73,7 +72,7 @@ def block_edit(id):
 
     contents = request.form["contents"]
 
-    return project.block_edit(session, id, contents)
+    return project.block_edit(id, contents)
 
 
 @app.route("/block/<id>/insert", methods=['PUT'])
@@ -81,7 +80,7 @@ def block_edit(id):
 def block_insert(id):
     assert htmx is not None
 
-    return project.block_insert(session, id)
+    return project.block_insert(id)
 
 
 @app.route("/block/<id>/delete", methods=['PUT'])
@@ -89,7 +88,7 @@ def block_insert(id):
 def block_delete(id):
     assert htmx is not None
 
-    return project.block_delete(session, id)
+    return project.block_delete(id)
 
 
 @app.route("/block/<id>", methods=['PUT'])
@@ -97,7 +96,7 @@ def block_delete(id):
 def block_render(id):
     assert htmx is not None
 
-    return project.block_render(session, id)
+    return project.block_render(id)
 
 
 @app.route("/save", methods=['POST'])
@@ -105,7 +104,7 @@ def block_render(id):
 def save():
     assert htmx is not None
 
-    return project.save(session)
+    return project.save()
 
 
 @app.route("/banner/reset", methods=['PUT'])
@@ -113,18 +112,16 @@ def save():
 def reset_banner():
     assert htmx is not None
 
-    return project.render_banner(session, show_saved=False)
+    return project.render_banner(show_saved=False)
 
 
 @app.route("/<path:filepath>", methods=['GET'])
 @errors.handler
 def get_file_obj(filepath):
-    return project.get_file_obj(session, filepath)
+    return project.get_file_obj(filepath)
 
 
 def start(port, path):
     project.setup(path)
-    # key for this session
-    app.secret_key = secrets.token_hex()
     app.logger.info("Starting server")
     serve(app, host='0.0.0.0', port=port)

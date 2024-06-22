@@ -24,25 +24,24 @@ def get_name():
     return basename
 
 
-def render_null(session):
+def render_null():
     return render_template(
             "partials/null.html",
             )
 
 
-def render_banner(session, show_saved=False):
+def render_banner(show_saved=False):
     return render_template(
             "partials/banner.html",
             show_saved=show_saved,
             )
 
 
-def render_body(session):
+def render_body():
     dark_mode = Settings.DARK_MODE
-    null = render_null(session)
-    banner_html = render_banner(session, show_saved=False)
+    null = render_null()
+    banner_html = render_banner(show_saved=False)
     blocks_html = block.render_all(
-            session,
             base_rel_path=get_dir(),
             )
     return render_template(
@@ -55,8 +54,8 @@ def render_body(session):
             )
 
 
-def render(session):
-    body = render_body(session)
+def render():
+    body = render_body()
     return render_template(
             "index.html",
             body=body,
@@ -64,36 +63,27 @@ def render(session):
             )
 
 
-def root(session):
+def root():
     contents = ""
     if os.path.isfile(FILE_PATH):
         with open(FILE_PATH, 'r') as file:
             contents = file.read()
-    block.set_all_markdown(session, contents)
-
-    return render(session)
-
-
-def block_unfocus(session):
-    id = block.get_in_focus(session)
-    block.reset_in_focus(session)
-
-    return block.render(
-            session,
-            id,
-            base_rel_path=get_dir(),
-            )
+    block.set_all_markdown(contents)
+    return render()
 
 
-def block_focus(session, id):
-    prev_in_focus = block.get_in_focus(session)
-    block.set_in_focus(session, id)
+def block_unfocus():
+    id = block.get_in_focus()
+    block.reset_in_focus()
 
-    html = block.render(
-            session,
-            id,
-            base_rel_path=get_dir(),
-            )
+    return block.render(id, base_rel_path=get_dir())
+
+
+def block_focus(id):
+    prev_in_focus = block.get_in_focus()
+    block.set_in_focus(id)
+
+    html = block.render(id, base_rel_path=get_dir())
     resp = Response(html)
     if prev_in_focus is not None:
         # rerender so shows as unfocused
@@ -101,75 +91,59 @@ def block_focus(session, id):
     return resp
 
 
-def block_next(session):
-    id = block.get_in_focus(session)
-    block.set_next_in_focus(session)
+def block_next():
+    id = block.get_in_focus()
+    block.set_next_in_focus()
 
-    html = block.render(
-            session,
-            id,
-            base_rel_path=get_dir(),
-            )
+    html = block.render(id, base_rel_path=get_dir())
     resp = Response(html)
-    next_in_focus = block.get_in_focus(session)
+    next_in_focus = block.get_in_focus()
     if next_in_focus != id:
         resp.headers['HX-Trigger'] = f"block-{next_in_focus}"
     return resp
 
 
-def block_prev(session):
-    id = block.get_in_focus(session)
-    block.set_prev_in_focus(session)
+def block_prev():
+    id = block.get_in_focus()
+    block.set_prev_in_focus()
 
-    html = block.render(
-            session,
-            id,
-            base_rel_path=get_dir(),
-            )
+    html = block.render(id, base_rel_path=get_dir())
     resp = Response(html)
-    next_in_focus = block.get_in_focus(session)
+    next_in_focus = block.get_in_focus()
     if next_in_focus != id:
         resp.headers['HX-Trigger'] = f"block-{next_in_focus}"
     return resp
 
 
-def block_edit(session, id, contents):
+def block_edit(id, contents):
     block.set_markdown(contents, id=id)
 
-    return render_null(session)
+    return render_null()
 
 
-def get_file_obj(session, filepath):
+def get_file_obj(filepath):
     filepath = "/" + filepath
     filedir, filename = os.path.split(filepath)
     return send_from_directory(filedir, filename)
 
 
-def block_insert(session, id):
-    return block.insert(
-            session,
-            id,
-            base_rel_path=get_dir(),
-            )
+def block_insert(id):
+    return block.insert(id, base_rel_path=get_dir())
 
 
-def block_delete(session, id):
-    return block.delete(session, id)
+def block_delete(id):
+    return block.delete(id)
 
 
-def block_render(session, id):
-    return block.render(
-            session,
-            id=id,
-            base_rel_path=get_dir(),
-            )
+def block_render(id):
+    return block.render(id=id, base_rel_path=get_dir())
 
 
-def save(session):
-    markdown = block.get_all_markdown(session)
+def save():
+    markdown = block.get_all_markdown()
     with open(FILE_PATH, 'w+') as file:
         file.write(markdown)
 
-    html = render_banner(session, show_saved=True)
+    html = render_banner(show_saved=True)
     resp = Response(html)
     return resp

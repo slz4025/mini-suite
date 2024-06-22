@@ -8,6 +8,23 @@ import src.markdown as md
 all_markdown: Dict[str, str] = {}
 
 
+in_focus = None
+
+
+def get_in_focus():
+    return in_focus
+
+
+def set_in_focus(id):
+    global in_focus
+    in_focus = id
+
+
+def reset_in_focus():
+    global in_focus
+    in_focus = None
+
+
 def get_markdown(id):
     global all_markdown
     if id not in all_markdown:
@@ -73,45 +90,31 @@ def create_id():
     return id
 
 
-def get_in_focus(session):
-    if "in-focus" not in session:
-        return None
-    in_focus = session["in-focus"]
-    return in_focus
-
-
-def set_in_focus(session, id):
-    session["in-focus"] = id
-
-
-def reset_in_focus(session):
-    if "in-focus" in session:
-        del session["in-focus"]
-
-
-def set_prev_in_focus(session):
-    in_focus = get_in_focus(session)
+def set_prev_in_focus():
+    global in_focus
     pos = get_pos(in_focus)
     if pos == 0:
         return
 
     prev_pos = pos - 1
     prev_id = get_id(prev_pos)
-    set_in_focus(session, prev_id)
+
+    in_focus = prev_id
 
 
-def set_next_in_focus(session):
-    in_focus = get_in_focus(session)
+def set_next_in_focus():
+    global in_focus
     pos = get_pos(in_focus)
     if pos == len(order) - 1:
         return
 
     next_pos = pos + 1
     next_id = get_id(next_pos)
-    set_in_focus(session, next_id)
 
-def render(session, id, base_rel_path=None):
-    in_focus = get_in_focus(session)
+    in_focus = next_id
+
+
+def render(id, base_rel_path=None):
     focused = in_focus == id
     markdown = get_markdown(id)
     rendered = md.get_html(markdown, base_rel_path)
@@ -125,10 +128,10 @@ def render(session, id, base_rel_path=None):
             )
 
 
-def render_all(session, base_rel_path=None):
+def render_all(base_rel_path=None):
     all_block_html = []
     for id in order:
-        block_html = render(session, id, base_rel_path)
+        block_html = render(id, base_rel_path)
         all_block_html.append(block_html)
     blocks_html = "\n".join(all_block_html)
     return render_template(
@@ -137,26 +140,26 @@ def render_all(session, base_rel_path=None):
             )
 
 
-def insert(session, id, base_rel_path=None):
+def insert(id, base_rel_path=None):
     new_id = create_id()
     set_markdown("", new_id)
 
     pos = get_pos(id)
     insert_into_order(new_id, pos+1)
 
-    curr_block = render(session, id, base_rel_path)
-    next_block = render(session, new_id, base_rel_path)
+    curr_block = render(id, base_rel_path)
+    next_block = render(new_id, base_rel_path)
     return "\n".join([curr_block, next_block])
 
 
-def delete(session, id):
+def delete(id):
     remove_markdown(id)
     remove_from_order(id)
 
     return ""
 
 
-def set_all_markdown(session, contents):
+def set_all_markdown(contents):
     global all_markdown, order, reverse_order
     all_markdown = {}
     order = []
@@ -174,8 +177,6 @@ def set_all_markdown(session, contents):
     order.append(id)
     reverse_order[id] = len(blocks)
 
-    reset_in_focus(session)
 
-
-def get_all_markdown(session):
+def get_all_markdown():
     return "\n\n\n".join([v for v in all_markdown.values() if v != ''])

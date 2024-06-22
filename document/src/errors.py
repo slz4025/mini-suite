@@ -1,19 +1,15 @@
 from flask import (
-        session,
         make_response,
         url_for,
         )
 import traceback
 
 
-def get_message(session):
-    if "error-message" not in session:
-        return None
-    return session["error-message"]
+error_message = None
 
 
-def set_message(session, error_message):
-    session["error-message"] = error_message
+def get_message():
+    return error_message
 
 
 def handler(func):
@@ -29,8 +25,9 @@ def handler(func):
 
         if error is not None:
             stack_trace = "".join(traceback.format_tb(error.__traceback__))
+
+            global error_message
             error_message = f"ERROR: {error}\n{stack_trace}"
-            set_message(session, error_message)
 
             # Print error in case can't redirect to page.
             # Seems like this usually happens when an unexpected bug

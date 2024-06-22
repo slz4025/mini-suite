@@ -8,22 +8,25 @@ from settings import Settings
 
 
 def find_port():
-  min_port = Settings.MIN_PORT
-  max_port = Settings.MAX_PORT
+    min_port = Settings.MIN_PORT
+    max_port = Settings.MAX_PORT
 
-  for port in range(min_port, max_port+1):
-    s = socket.socket()
-    success = True
-    try:
-      s.bind(("127.0.0.1", port))
-    except OSError:
-      success = False
+    for port in range(min_port, max_port+1):
+        s = socket.socket()
 
-    if success:
-      s.close()
-      return port
+        success = True
+        try:
+            s.bind(("127.0.0.1", port))
+        except OSError:
+            success = False
 
-  raise Exception(f"Could not find usable port in range {min_port} to {max_port}.")
+        if success:
+            s.close()
+            return port
+
+    raise Exception(
+        f"Could not find usable port in range {min_port} to {max_port}."
+    )
 
 
 if __name__ == "__main__":

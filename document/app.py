@@ -33,12 +33,12 @@ def root():
     return project.root()
 
 
-@app.route("/block/unfocus", methods=['POST'])
+@app.route("/block/<id>", methods=['PUT'])
 @errors.handler
-def block_unfocus():
+def block_render(id):
     assert htmx is not None
 
-    return project.block_unfocus()
+    return project.block_render(id)
 
 
 @app.route("/block/<id>/focus", methods=['POST'])
@@ -47,6 +47,14 @@ def block_focus(id):
     assert htmx is not None
 
     return project.block_focus(id)
+
+
+@app.route("/block/unfocus", methods=['POST'])
+@errors.handler
+def block_unfocus():
+    assert htmx is not None
+
+    return project.block_unfocus()
 
 
 @app.route("/block/next", methods=['POST'])
@@ -65,38 +73,30 @@ def block_prev():
     return project.block_prev()
 
 
-@app.route("/block/<id>/edit", methods=['POST'])
+@app.route("/block/edit", methods=['POST'])
 @errors.handler
-def block_edit(id):
+def block_edit():
     assert htmx is not None
 
     contents = request.form["contents"]
 
-    return project.block_edit(id, contents)
+    return project.block_edit(contents)
 
 
-@app.route("/block/<id>/insert", methods=['PUT'])
+@app.route("/block/insert", methods=['PUT'])
 @errors.handler
-def block_insert(id):
+def block_insert():
     assert htmx is not None
 
-    return project.block_insert(id)
+    return project.block_insert()
 
 
-@app.route("/block/<id>/delete", methods=['PUT'])
+@app.route("/block/delete", methods=['PUT'])
 @errors.handler
-def block_delete(id):
+def block_delete():
     assert htmx is not None
 
-    return project.block_delete(id)
-
-
-@app.route("/block/<id>", methods=['PUT'])
-@errors.handler
-def block_render(id):
-    assert htmx is not None
-
-    return project.block_render(id)
+    return project.block_delete()
 
 
 @app.route("/save", methods=['POST'])

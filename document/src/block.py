@@ -6,23 +6,9 @@ import src.markdown as md
 
 
 all_markdown: Dict[str, str] = {}
-
-
+order: List[str]
+reverse_order: Dict[str, int]
 in_focus = None
-
-
-def get_in_focus():
-    return in_focus
-
-
-def set_in_focus(id):
-    global in_focus
-    in_focus = id
-
-
-def reset_in_focus():
-    global in_focus
-    in_focus = None
 
 
 def get_markdown(id):
@@ -42,8 +28,18 @@ def remove_markdown(id):
     del all_markdown[id]
 
 
-order: List[str]
-reverse_order: Dict[str, int]
+def get_in_focus():
+    return in_focus
+
+
+def set_in_focus(id):
+    global in_focus
+    in_focus = id
+
+
+def reset_in_focus():
+    global in_focus
+    in_focus = None
 
 
 def get_id(pos):

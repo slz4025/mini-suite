@@ -7,7 +7,7 @@
   hx-target="this"
   hx-swap="outerHTML"
   >
-  <div id="block-controls" class="block-controls">
+  <div id="block-controls">
     <button
       id="render-block-button"
       title="render block"
@@ -36,7 +36,7 @@
       >▼</button>
     <button
       id="insert-block-button"
-      hx-put="/block/{{id}}/insert"
+      hx-put="/block/insert"
       hx-trigger="click"
       hx-target="#block-{{ id }}"
       hx-swap="outerHTML"
@@ -46,7 +46,7 @@
     </button>
     <button
       id="delete-block-button"
-      hx-put="/block/{{id}}/delete"
+      hx-put="/block/delete"
       hx-trigger="click"
       hx-target="#block-{{ id }}"
       hx-swap="outerHTML"
@@ -58,7 +58,7 @@
   <textarea
     id="block-editor"
     name="contents"
-    hx-post="/block/{{ id }}/edit"
+    hx-post="/block/edit"
     hx-target="#null"
     hx-trigger="keyup changed delay:100ms"
     hx-swap="outerHTML"

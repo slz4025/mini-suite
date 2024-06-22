@@ -72,11 +72,8 @@ def root():
     return render()
 
 
-def block_unfocus():
-    id = block.get_in_focus()
-    block.reset_in_focus()
-
-    return block.render(id, base_rel_path=get_dir())
+def block_render(id):
+    return block.render(id=id, base_rel_path=get_dir())
 
 
 def block_focus(id):
@@ -89,6 +86,13 @@ def block_focus(id):
         # rerender so shows as unfocused
         resp.headers['HX-Trigger'] = f"block-{prev_in_focus}"
     return resp
+
+
+def block_unfocus():
+    id = block.get_in_focus()
+    block.reset_in_focus()
+
+    return block.render(id, base_rel_path=get_dir())
 
 
 def block_next():
@@ -115,28 +119,29 @@ def block_prev():
     return resp
 
 
-def block_edit(id, contents):
+def block_edit(contents):
+    id = block.get_in_focus()
     block.set_markdown(contents, id=id)
 
     return render_null()
+
+
+def block_insert():
+    id = block.get_in_focus()
+
+    return block.insert(id, base_rel_path=get_dir())
+
+
+def block_delete():
+    id = block.get_in_focus()
+
+    return block.delete(id)
 
 
 def get_file_obj(filepath):
     filepath = "/" + filepath
     filedir, filename = os.path.split(filepath)
     return send_from_directory(filedir, filename)
-
-
-def block_insert(id):
-    return block.insert(id, base_rel_path=get_dir())
-
-
-def block_delete(id):
-    return block.delete(id)
-
-
-def block_render(id):
-    return block.render(id=id, base_rel_path=get_dir())
 
 
 def save():

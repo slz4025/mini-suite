@@ -38,7 +38,6 @@ def render_banner(show_saved=False):
 
 
 def render_body():
-    dark_mode = Settings.DARK_MODE
     null = render_null()
     banner_html = render_banner(show_saved=False)
     blocks_html = block.render_all(
@@ -46,7 +45,6 @@ def render_body():
             )
     return render_template(
             "partials/body.html",
-            dark_mode=dark_mode,
             banner=banner_html,
             null=null,
             name=get_name(),
@@ -55,11 +53,13 @@ def render_body():
 
 
 def render():
+    dark_mode = Settings.DARK_MODE
     body = render_body()
     return render_template(
             "index.html",
-            body=body,
             tab_name=get_name(),
+            dark_mode=dark_mode,
+            body=body,
             )
 
 

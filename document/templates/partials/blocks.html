@@ -5,8 +5,8 @@
   new MutationObserver((mutations, _observer) => {
     // Mutation of blocks may indicate change in focus.
     const editor = document.getElementById("block-editor");
-    const controls = document.getElementById("block-controls");
+    const block = editor.parentNode;
     editor?.focus();
-    controls?.scrollIntoView();
+    block?.scrollIntoView();
   }).observe(document.getElementById("blocks"), {childList: true});
 </script>

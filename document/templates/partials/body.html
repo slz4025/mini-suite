@@ -6,7 +6,6 @@
   {% endif %}
   <link rel="stylesheet" type="text/css" href="/static/style.css">
 
-  {{ banner|safe }}
   <!-- component for sending requests that should have no effect -->
   {{ null|safe }}
   <div
@@ -16,5 +15,7 @@
       {{ name }}
     </div>
     {{ blocks|safe }}
+    <div id="footer"></div>
   </div>
+  {{ banner|safe }}
 </body>

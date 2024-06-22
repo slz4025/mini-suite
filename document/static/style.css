@@ -35,7 +35,9 @@ div#wrapper {
   position: absolute;
   top: 7.5%;
   bottom: 0;
-  width: 100%;
+  width: 800px;
+  left: 50%;
+  transform: translate(-50%, 0%);
   z-index: 0;
 
   margin: 0;
@@ -45,9 +47,7 @@ div#wrapper {
 div#title {
   position: relative;
   height: 2rem;
-  width: 800px;
-  left: 50%;
-  transform: translate(-50%, 0%);
+  width: 100%;
   
   margin: 1rem;
   border: 0;
@@ -59,59 +59,13 @@ div#title {
 }
 div#blocks {
   position: relative;
-  width: 800px;
-  left: 50%;
-  transform: translate(-50%, 0%);
+  width: 100%;
 
   margin: 0;
   border: 0;
   padding: 1rem;
 
   color: var(--main-color); 
-}
-div.block {
-  /* Let edit button be absolute relative to this. */
-  position: relative;
-  min-height: 2rem;
-
-  margin-bottom: 0.5rem;
-
-  font-family: var(--display-ff);
-}
-div.focused {
-  border: 0.15rem solid var(--main-color);
-  cursor: auto;
-}
-div#command-palette {
-  z-index: 1;
-
-  position: fixed;
-  top: 0;
-  left: 0;
-
-  background-color: var(--shade-color);
-}
-div#command-palette.open {
-  width: 25%;
-  margin: 0;
-  border: 0.1rem solid var(--secondary-color);
-  padding: 0.5rem;
-}
-div#command-palette.close {
-  width: auto;
-  margin: 0;
-  border: 0;
-  padding: 0;
-}
-div.command-palette-section {
-  margin: 0;
-  border: 0;
-  padding: 0;
-
-  align-items: center;
-
-  display: flex;
-  align-items: center;
 }
 div.block-controls {
   margin-bottom: 0.5rem;
@@ -127,85 +81,19 @@ div.block-controls {
 
   font-family: var(--main-ff);
 }
-div.entry-results {
-  z-index: 2;
+div.block {
+  /* Let edit button be absolute relative to this. */
+  position: relative;
+  min-height: 2rem;
 
-  margin: 0;
-  border: 0;
-  padding: 0;
-}
-form {
-  width: 100%;
-  margin: 0;
-  border: 0;
-  padding: 0.25rem;
-}
-form.block {
   margin-bottom: 0.5rem;
-}
-legend {
-  color: var(--main-color);
-  font-family: var(--main-ff);
-}
-label {
-  color: var(--main-color);
-  font-family: var(--main-ff);
-}
-input {
-  background-color: var(--background-color);
-  margin: 0;
-  border: 0.1rem solid var(--secondary-color);
 
-  font-family: var(--main-ff);
-  color: var(--main-color);
-  height: 1.5rem;
+  font-family: var(--display-ff);
 }
-input[type=submit] {
-  background-color: var(--invert-color);
-  cursor: pointer;
+div.focused {
+  border: 0.15rem solid var(--main-color);
+  cursor: auto;
 }
-input[type=submit]:hover {
-  background-color: var(--secondary-color);
-}
-input[type=submit]:focus {
-  background-color: var(--secondary-color);
-}
-input[type=submit]:active {
-  background-color: var(--main-color);
-  color: var(--invert-color);
-}
-input[type=file]::file-selector-button {
-  background-color: transparent;
-  color: var(--main-color);
-  font-family: var(--main-ff);
-  border: 0.1rem solid var(--secondary-color);
-  height: 100%;
-}
-input.select-entry {
-  width: 100%;
-}
-input#save {
-  height: 2rem;
-  margin-left: 1rem;
-
-  font-size: 1.25rem;
-}
-select {
-  background-color: transparent;
-  border: 0.1rem solid var(--secondary-color);
-  width: 100%;
-
-  font-family: var(--main-ff);
-  color: var(--main-color);
-}
-option {
-  background-color: var(--background-color);
-  border: 0.1rem solid var(--secondary-color);
-
-  font-family: var(--main-ff);
-  color: var(--main-color);
-}
-
 button {
   background-color: var(--invert-color);
   margin: 0.25rem;
@@ -229,26 +117,15 @@ button:active {
   color: var(--invert-color);
 }
 button.edit {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 2rem;
-    height: 2rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2rem;
+  height: 2rem;
 
-    margin: 0;
- 
-    font-size: 1.5rem;
-}
-button.entry-result {
-  width: 100%;
   margin: 0;
 
-  text-align: left;
-}
-button#command-palette-toggle-button {
-  position: absolute;
-
-  font-size: 1.25rem;
+  font-size: 1.5rem;
 }
 textarea {
   width: 100%;

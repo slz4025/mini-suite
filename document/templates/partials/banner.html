@@ -4,7 +4,7 @@
   >
   <button
     id="save"
-    {{ 'hx-put=/banner/reset' if show_saved else 'hx-post=/save' }}
+    {{ 'hx-put=/banner/reset/' + entry_id if show_saved else 'hx-post=/save/' + entry_id }}
     hx-trigger="{{ 'load delay:3s' if show_saved else 'click' }}"
     hx-target="#banner"
     hx-swap="outerHTML"

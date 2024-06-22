@@ -3,8 +3,10 @@ import os
 import socket
 import sys
 
-import app
+from app import start
 from settings import Settings
+
+from src.state import add_entry
 
 
 def find_port():
@@ -50,14 +52,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args(sys.argv[1:])
 
+    path = os.path.abspath(args.path)
+    add_entry(path)
+
     port = args.port
     if args.port == 0:
         port = find_port()
     print(f"Serving on port {port}")
 
-    path = os.path.abspath(args.path)
-
-    app.start(
-            port=port,
-            path=path,
-            )
+    start(port=port)

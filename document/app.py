@@ -168,14 +168,14 @@ def insert_block(entry_id):
 
     entry = get_entry(entry_id)
 
-    in_focus = entry.get_in_focus()
-    curr_block = entry.render_block(in_focus)
+    curr_id = entry.get_in_focus()
     new_id = entry.insert_block()
+    curr_block = entry.render_block(curr_id)
     next_block = entry.render_block(new_id)
     blocks_html = "\n".join([curr_block, next_block])
 
     resp.set_data(blocks_html)
-    return blocks_html
+    return resp
 
 
 @app.route("/entry/<entry_id>/block/delete", methods=['PUT'])
@@ -189,9 +189,13 @@ def delete_block(entry_id):
 
     entry.delete_block()
 
+    curr_id = entry.get_in_focus()
+    if curr_id is not None:
+        resp.headers['HX-Trigger'] = f"block-{curr_id}"
+
     blocks_html = ""
     resp.set_data(blocks_html)
-    return blocks_html
+    return resp
 
 
 @app.route("/entry/<entry_id>/save", methods=['POST'])

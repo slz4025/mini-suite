@@ -129,7 +129,8 @@ class Entry:
             assert i == self.reverse_block_order[temp_id] + 1
             self.reverse_block_order[temp_id] = i
 
-        return new_id
+        self.block_in_focus = new_id
+        return self.block_in_focus
 
     def delete_block(self):
         pos = self.get_pos(self.block_in_focus)
@@ -144,6 +145,13 @@ class Entry:
             self.reverse_block_order[temp_id] = i
 
         self.reset_in_focus()
+        if pos > 0:
+            pos -= 1
+        try:
+            prev_id = self.get_id(pos)
+            self.block_in_focus = prev_id
+        except Exception:
+            pass
 
     def render_block(self, block_id):
         focused = self.block_in_focus == block_id

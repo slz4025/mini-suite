@@ -99,7 +99,27 @@ div.focused {
   border: 0.15rem solid var(--main-color);
   cursor: auto;
 }
-button {
+button.save {
+  background-color: var(--info-background-color);
+  margin: 0.25rem;
+  border: 0.1rem solid var(--secondary-color);
+
+  cursor: pointer;
+
+  font-size: 1rem;
+  font-family: var(--main-ff);
+  color: var(--info-color);
+  font-weight: bold;
+}
+button.save:hover {
+  background-color: var(--info-color);
+  color: var(--info-background-color);
+}
+button.save:focus {
+  background-color: var(--info-color);
+  color: var(--info-background-color);
+}
+button.icon {
   background-color: var(--invert-color);
   margin: 0.25rem;
   border: 0.1rem solid var(--secondary-color);
@@ -111,15 +131,11 @@ button {
   width: 2rem;
   cursor: pointer;
 }
-button:hover {
+button.icon:hover {
   background-color: var(--secondary-color);
 }
-button:focus {
+button.icon:focus {
   background-color: var(--secondary-color);
-}
-button:active {
-  background-color: var(--main-color);
-  color: var(--invert-color);
 }
 button.edit {
   position: absolute;

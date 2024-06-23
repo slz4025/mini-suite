@@ -10,6 +10,7 @@
   <div id="block-controls">
     <button
       id="render-block-button"
+      class="icon"
       title="render block"
       hx-post="/entry/{{ entry_id }}/block/unfocus"
       hx-trigger="click"
@@ -20,6 +21,7 @@
     </button>
     <button
       id="prev-block-button"
+      class="icon"
       title="previous block"
       hx-post="/entry/{{ entry_id }}/block/prev"
       hx-trigger="click"
@@ -28,6 +30,7 @@
       >▲</button>
     <button
       id="next-block-button"
+      class="icon"
       title="next block"
       hx-post="/entry/{{ entry_id }}/block/next"
       hx-trigger="click"
@@ -36,21 +39,23 @@
       >▼</button>
     <button
       id="insert-block-button"
+      class="icon"
       hx-put="/entry/{{ entry_id }}/block/insert"
       hx-trigger="click"
       hx-target="#block-{{ block_id }}"
       hx-swap="outerHTML"
-      title="insert below"
+      title="insert block"
       >
       <span>✚</span>
     </button>
     <button
       id="delete-block-button"
+      class="icon"
       hx-put="/entry/{{ entry_id }}/block/delete"
       hx-trigger="click"
       hx-target="#block-{{ block_id }}"
       hx-swap="outerHTML"
-      title="delete"
+      title="delete block"
       >
       <span>✖</span>
     </button>
@@ -75,12 +80,12 @@
   style="padding-top: 2rem; padding-left: 2rem;"
   >
   <button
-    class="edit"
+    class="icon edit"
     hx-post="/entry/{{ entry_id }}/block/focus/{{ block_id }}"
     hx-trigger="click"
     hx-target="#block-{{ block_id }}"
     hx-swap="outerHTML"
-    title="edit"
+    title="edit block"
     >
     <span>✎</span>
   </button>

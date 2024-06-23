@@ -12,55 +12,41 @@
 }
 
 body {
-  background-color: var(--background-color);
+  box-sizing: border-box;
   margin: 0;
+
+  background-color: var(--background-color);
 
   font-family: var(--main-ff);
   font-size: 1rem;
 }
 
 div {
+  box-sizing: border-box;
   width: 100%;
 
-  border: 0.1rem solid var(--secondary-color);
-  padding: 1rem;
+  margin: 0;
+  border: 0;
+  padding: 0;
 }
 div#wrapper {
   position: absolute;
-  height: 100%;
-  width: 800px;
+  width: 1000px;
   left: 50%;
   transform: translate(-50%, 0%);
-
-  margin: 0;
-  border: 0;
-  padding: 0;
 }
 div#footer {
-  height: 7.5%;
-
-  margin: 0;
-  border: 0;
-  padding: 0;
+  height: 2rem;
 }
 div#blocks {
   position: relative;
-  width: 100%;
 
-  margin: 0;
-  border: 0;
-  padding: 1rem;
+  margin: 2rem 0;
 
   color: var(--main-color); 
 }
 div#block-controls {
   margin-bottom: 0.5rem;
-  margin-top: 0;
-  margin-left: 0;
-  margin-right: 0;
-
-  border: 0;
-  padding: 0;
 
   display: flex;
   align-items: center;
@@ -69,11 +55,10 @@ div#block-controls {
 }
 div#banner {
   position: fixed;
-  bottom: 0;
   width: 100%;
+  bottom: 0;
 
-  margin: 0;
-  border: 0;
+  padding: 0.5rem;
 
   text-align: center;
   font-weight: bold;
@@ -92,12 +77,17 @@ div.block {
   min-height: 2rem;
 
   margin-bottom: 0.5rem;
+  border: 0.1rem solid var(--secondary-color);
+  padding: 0.5rem;
 
   font-family: var(--display-ff);
 }
 div.focused {
   border: 0.15rem solid var(--main-color);
-  cursor: auto;
+}
+
+button {
+  box-sizing: border-box;
 }
 button.save {
   background-color: var(--info-background-color);
@@ -148,14 +138,21 @@ button.edit {
 
   font-size: 1.5rem;
 }
+
 textarea {
+  box-sizing: border-box;
   width: 100%;
   height: 30vh;
+
+  margin: 0;
+  border: 0;
+  padding: 0;
 
   background-color: transparent;
   border: 0.1rem solid var(--secondary-color);
   color: var(--main-color);
 }
+
 
 h1 {
   font-size: 1.5rem;

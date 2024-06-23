@@ -16,7 +16,7 @@ Note that it is not collaborative and does not have file versioning. Use `git` o
 
 ![demo](./media/readme.png)
 
-The document editor allows you edit a markdown file.
+The document editor allows you edit a markdown file as a series of blocks. A new block is formed wherever there is a double new-line in your markdown contents. You can explore other markdown files that are linked from the markdown file you are currently viewing/editing.
 
 After you [setup](#setup) your environment, you can create/edit a markdown file via `doc my_file.md`.
 
@@ -53,7 +53,7 @@ You can also configure dark-mode for each tool by going to the `settings.py` in 
 
 Each tool runs as a web application so it can be used on any standard operating system. It uses HTML/CSS that I would expect to be compatible with most browsers.
 
-I'm testing this with Firefox and [qutebrowser](https://www.qutebrowser.org/) on [OpenBSD 7.3](https://www.openbsd.org/73.html) and Firefox on MacOS. The tools offer key shortcuts which can be pressed with the Ctrl or Meta key. Note that because qutebrowser is modal, the key shortcuts will not work.
+I'm testing this with Firefox and [qutebrowser](https://www.qutebrowser.org/) on [OpenBSD 7.3](https://www.openbsd.org/73.html) and Firefox on MacOS. The tools offer key shortcuts which can be pressed with the Ctrl or Meta key. Note that because qutebrowser is modal, some of the keyboard shortcuts will not work.
 
 The server is written in [Python 3.10](https://www.python.org/downloads/release/python-3100/) using [flask](https://flask.palletsprojects.com/en/3.0.x/). The frontend has some JavaScript and communicates with the backend using [htmx](https://htmx.org/).
 

@@ -208,8 +208,12 @@ class Entry:
                 )
 
     def save(self):
-        all_markdown = "\n\n\n".join(
-            [v for v in self.all_block_markdown.values() if v != '']
-        )
+        all_markdown = []
+        for block_id in self.block_order:
+            markdown = self.all_block_markdown[block_id]
+            if markdown == "":
+                continue
+            all_markdown.append(markdown)
+
         with open(self.file_path, 'w+') as file:
-            file.write(all_markdown)
+            file.write("\n\n\n".join(all_markdown))

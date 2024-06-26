@@ -16,6 +16,9 @@
         const row = "{{ index }}";
         const col = "-1";
 
+        // ensure that browser does not focus on current element
+        event.preventDefault();
+
         begin_selection(row, col);
       }
     });

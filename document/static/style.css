@@ -1,3 +1,9 @@
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
 @font-face {
   font-family: 'dejavu';
   src: url('./DejaVuSans.ttf');
@@ -12,7 +18,6 @@
 }
 
 body {
-  box-sizing: border-box;
   margin: 0;
 
   background-color: var(--background-color);
@@ -22,7 +27,6 @@ body {
 }
 
 div {
-  box-sizing: border-box;
   width: 100%;
 
   margin: 0;
@@ -87,7 +91,6 @@ div.focused {
 }
 
 button {
-  box-sizing: border-box;
 }
 button.save {
   background-color: var(--info-background-color);
@@ -140,7 +143,6 @@ button.edit {
 }
 
 textarea {
-  box-sizing: border-box;
   width: 100%;
   height: 30vh;
 
